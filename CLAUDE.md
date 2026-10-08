@@ -1,19 +1,24 @@
-# FAXI — instrucciones para Claude Code
+# CLAUDE.md · contexto para Claude Code
 
-Plataforma de movilidad para Santo Domingo (RD). Idioma de la UI: español dominicano. Moneda: DOP (RD$). Zona horaria: America/Santo_Domingo.
-
-## Estado
-- `supabase/`: backend escrito (esquema, RPC, RLS, seed, test). **Aún no aplicado.** Fuente de verdad del dominio.
-- `*.dc.html` + `faxi-core.js`: prototipo de referencia visual y de flujo (datos simulados). No es código de producción.
-- Plan: `docs/PLAN_TECNICO.md`. Setup: `docs/SUPABASE_SETUP.md`. Arquitectura: `ARCHITECTURE.md`.
-
-## Objetivo
-Monorepo con `apps/passenger` (Expo), `apps/driver` (Expo), `apps/admin` (Next.js), `packages/core`, `packages/ui`, más `supabase/`.
+Proyecto: **faxi**, plataforma de viajes en Santo Domingo (RD). Moneda DOP, idioma español dominicano, pago solo en efectivo por ahora.
+Lee `README.md` y `docs/PLAN_TECNICO.md` antes de cambiar algo.
 
 ## Reglas
-- No rediseñar: replicar pantallas, textos y flujos del prototipo.
-- Las apps nunca calculan precio, comisión ni estado: siempre RPC de Supabase.
-- Nunca usar la service_role key en apps ni en el admin del navegador.
-- Cada cambio de base de datos va en una nueva migración en `supabase/migrations/` con su test en `supabase/tests/`.
-- No guardar números de tarjeta; solo marca y últimos 4.
-- Una tarea a la vez; al terminar, explicar cómo probarla.
+- **El servidor manda.** Precio, comisión, estados y despacho se calculan en Postgres. Las apps solo leen tablas (RLS) y escriben con RPC. No dupliques lógica de negocio en el cliente.
+- Nuevas reglas de negocio = **nueva migración** `supabase/migrations/AAAAMMDDHHMMSS_nombre.sql` + test en `supabase/tests/` que termine en `ROLLBACK` y emita un `NOTICE ... OK`. Nunca edites migraciones ya aplicadas.
+- Toda función nueva: `security definer set search_path = public`, `revoke ... from public, anon` y `grant ... to authenticated` explícitos.
+- Errores para el usuario con `errcode`: `42501` permiso, `FX409` estado inválido, `22023` dato inválido, `23505` duplicado, `P0002` no encontrado. El mensaje debe estar en español y ser mostrable.
+- Llamadas a Supabase solo desde `packages/core/src/api.ts` (y realtime.ts). Las pantallas no llaman `sb()` directamente (excepción: admin).
+- UI móvil: usa `@faxi/ui` (tokens en `packages/ui/src/tokens.ts`). Objetivos táctiles ≥ 44 px. Textos de permisos claros.
+- Nunca pongas la `service_role` key en una app. Solo en Edge Functions.
+- Viajes con mala conexión: toda pantalla de viaje debe recuperarse al reabrir la app (`activeTrip()`).
+
+## Comandos
+- `npm install` en la raíz · `npm run passenger` · `npm run driver` · `npm run admin`
+- `cd apps/<app> && npx expo install --fix` tras actualizar el SDK
+- `npx tsc --noEmit -p apps/<app>` para revisar tipos
+- Tests SQL: con el MCP de Supabase, ejecuta `supabase/tests/*.sql`
+
+## Estado (octubre 2026)
+Hecho: migraciones 001–004, login OTP, alta de conductor con documentos, despacho, viaje completo, cobro en efectivo, calificación, push, borrado de cuenta, panel admin (aprobaciones, viajes, tarifas, soporte).
+Siguiente: probar en teléfonos reales con un piloto cerrado, iconos y textos de tienda, Sentry, polígono de zona de servicio real.
