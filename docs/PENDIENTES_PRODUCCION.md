@@ -3,8 +3,9 @@
 Estado a 8-oct-2026. Solo es una lista; nada de esto está implementado todavía.
 
 ## Bloqueos actuales (Fase 1 sin cerrar)
-- [ ] **Pruebas SQL sin correr.** `001_trip_flow.sql` y `002_mobile.sql` deben dar `FAXI OK` y `FAXI MÓVIL OK` en **faxi-pruebas** (`hwypoksdxrfffvaaludj`) antes de dar por buena la base. Faltan en faxi-pruebas: `delete_my_account`, la política `docs_owner_delete` y el seed (`supabase/PEGAR_EN_PRUEBAS.sql`). Motivo: la herramienta de Supabase de la sesión se cuelga con SQL que contiene `DELETE`, y la red de la sesión bloquea la API y la base directa.
-- [ ] **Verificar producción (faxi, `opehqsltrzhtsqqlctdg`).** Migraciones 001–003, 004 (sin `delete_my_account`) y cron aplicados desde la sesión; `delete_my_account` y `docs_owner_delete` pegados a mano por el dueño. Falta confirmar con las pruebas en faxi-pruebas que el esquema es idéntico.
+- [x] **Pruebas SQL en faxi-pruebas (`hwypoksdxrfffvaaludj`), 8-oct-2026:** migraciones 001–004 + cron + seed aplicados; `001_trip_flow.sql` y `002_mobile.sql` corrieron sin ningún error de aserción y sin dejar datos (ROLLBACK verificado: 42 usuarios y 50 viajes del seed intactos). La herramienta usada no muestra los `NOTICE`, así que el texto literal "FAXI OK" / "FAXI MÓVIL OK" no se vio; confirmarlo una vez en el SQL Editor si se quiere la evidencia visual.
+  Huella del esquema de faxi-pruebas: 20 tablas, 45 funciones, 41 políticas (public+storage), 27 triggers, 52 índices, 1 job de cron.
+- [ ] **Verificar producción (faxi, `opehqsltrzhtsqqlctdg`).** Migraciones 001–003, 004 (sin `delete_my_account`) y cron aplicados desde la sesión; `delete_my_account` y `docs_owner_delete` pegados a mano por el dueño. Falta comparar su huella con la de faxi-pruebas (arriba) con una consulta de solo lectura; la sesión ya no tiene permiso de lectura sobre faxi.
 - [ ] **Expo:** correr `npx expo install --fix` y `npx expo-doctor` en `apps/passenger` y `apps/driver` con acceso a `api.expo.dev` (en la sesión dio 16/18 por bloqueo de red; los 2 fallos eran de red, no de código).
 - [ ] **Seguridad:** una clave `sb_secret_…` de faxi-pruebas se pegó en el chat. Rotarla (Settings → API Keys). Mantener la regla: credenciales solo en `.env`.
 
