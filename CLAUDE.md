@@ -22,3 +22,11 @@ Lee `README.md` y `docs/PLAN_TECNICO.md` antes de cambiar algo.
 ## Estado (octubre 2026)
 Hecho: migraciones 001–004, login OTP, alta de conductor con documentos, despacho, viaje completo, cobro en efectivo, calificación, push, borrado de cuenta, panel admin (aprobaciones, viajes, tarifas, soporte).
 Siguiente: probar en teléfonos reales con un piloto cerrado, iconos y textos de tienda, Sentry, polígono de zona de servicio real.
+
+## Reglas fijas de base de datos (no negociables)
+Proyectos Supabase: **faxi** = producción (ref `opehqsltrzhtsqqlctdg`) · **faxi-pruebas** = solo pruebas (ref en `.env` → `SUPABASE_TEST_PROJECT_REF`).
+1. `supabase/seed.sql`, `supabase/tests/001_trip_flow.sql` y `supabase/tests/002_mobile.sql` corren SOLO en faxi-pruebas. Nunca en faxi.
+2. Antes de cualquier comando contra la base de datos, confirmar en voz alta a qué proyecto (ref) se está conectado.
+3. Todo cambio de esquema va primero en faxi-pruebas. Solo cuando las dos pruebas den `FAXI OK` y `FAXI MÓVIL OK` se aplica en faxi, y solo con el visto bueno explícito del dueño.
+4. Credenciales (refs de prueba, contraseñas, tokens) solo en `.env`; nunca en un commit.
+5. Si una prueba falla, se arregla la migración, nunca la prueba.
