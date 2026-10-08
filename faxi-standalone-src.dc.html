@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ext-resource-dependency" content="./faxi-driver.dc.html" data-resource-id="./faxi-driver.dc.html">
+<meta name="ext-resource-dependency" content="./faxi-admin.dc.html" data-resource-id="./faxi-admin.dc.html">
+<meta name="ext-resource-dependency" content="./android-frame.jsx" data-resource-id="./android-frame.jsx">
+<meta name="ext-resource-dependency" content="./faxi-core.js" data-resource-id="./faxi-core.js">
+<meta name="ext-resource-dependency" content="https://unpkg.com/react@18.3.1/umd/react.production.min.js" data-resource-id="https://unpkg.com/react@18.3.1/umd/react.production.min.js">
+<meta name="ext-resource-dependency" content="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" data-resource-id="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js">
+<meta name="ext-resource-dependency" content="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" data-resource-id="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#1B7A57"><svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill="#1B7A57"/><text x="190" y="235" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="800" font-size="110" letter-spacing="-6" fill="#FFFFFF">faxi</text><circle cx="292" cy="228" r="12" fill="#5FD3A0"/></svg></template>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block">
+<script src="./faxi-core.js"></script>
+<style>
+body{margin:0;background:#E9ECE7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#181C1A;-webkit-font-smoothing:antialiased}
+a{color:#1B7A57}a:hover{color:#0F5A3F}
+input,textarea,button{font-family:inherit;color:inherit}
+@keyframes faxiUp{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+@keyframes faxiFade{from{opacity:0}to{opacity:1}}
+@keyframes faxiPop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes faxiPulse{0%{transform:scale(.25);opacity:.5}100%{transform:scale(1);opacity:0}}
+@keyframes faxiIndet{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+@keyframes faxiSpin{to{transform:rotate(360deg)}}
+@keyframes faxiShimmer{0%{background-position:-300px 0}100%{background-position:300px 0}}
+@keyframes faxiDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes faxiToast{from{transform:translateY(-140%)}to{transform:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+<header style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 28px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;align-items:baseline;gap:2px"><span style="font-weight:800;font-size:26px;letter-spacing:-.05em;color:#181C1A">faxi</span><span style="width:7px;height:7px;border-radius:50%;background:#1B7A57;display:block"></span></div>
+    <span style="font-size:12px;font-weight:600;color:#414943;padding:5px 11px;border:1px solid #C1C9C2;border-radius:999px">Prototipo · Santo Domingo · DOP</span>
+  </div>
+  <nav style="display:flex;gap:4px;padding:4px;background:#DDE3DD;border-radius:999px">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+      <button onClick="{{ t.select }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 18px;border:0;border-radius:999px;background:{{ t.bg }};color:{{ t.color }};font-weight:700;font-size:14px;cursor:pointer;transition:background .2s"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">{{ t.icon }}</span>{{ t.label }}</button>
+    </sc-for>
+  </nav>
+</header>
+<sc-if value="{{ isPassenger }}" hint-placeholder-val="{{ true }}">
+<main style="flex:1;display:flex;justify-content:center;align-items:flex-start;gap:40px;padding:4px 24px 56px;flex-wrap:wrap">
+  <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="424px,904px">
+    <div style="position:relative;width:100%;height:812px;overflow:hidden;background:#E3E7E0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#181C1A">
+      <sc-if value="{{ s.showMap }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0">{{ mapEl }}</div></sc-if>
+<sc-if value="{{ s.topMenu }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;animation:faxiFade .4s ease">
+    <button onClick="{{ openMenu }}" style="width:48px;height:48px;border-radius:50%;border:0;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:15px;color:#00311F;padding:0"><span style="width:40px;height:40px;border-radius:50%;background:#CFEFDD;display:flex;align-items:center;justify-content:center">{{ user.initials }}</span></button>
+    <div style="display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:20px;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.12);font-size:13px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:#1B7A57"></span>7 conductores cerca</div>
+  </div>
+</sc-if>
+<sc-if value="{{ s.topBack }}" hint-placeholder-val="{{ false }}">
+  <button onClick="{{ back }}" style="position:absolute;top:16px;left:16px;width:48px;height:48px;border-radius:50%;border:0;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:faxiFade .4s ease"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button>
+</sc-if>
+<sc-if value="{{ s.locDenied }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;top:76px;left:16px;right:16px;display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;border-radius:16px;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.14);animation:faxiFade .4s ease">
+    <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#7A5900">location_disabled</span>
+    <div style="flex:1;font-size:13px;line-height:1.35"><b>Ubicación desactivada.</b> Usamos una ubicación aproximada.</div>
+    <button onClick="{{ enableLocation }}" style="height:36px;padding:0 14px;border-radius:18px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:13px;cursor:pointer">Activar</button>
+  </div>
+</sc-if>
+<sc-if value="{{ s.home }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:faxiUp .5s cubic-bezier(.2,.8,.2,1)">
+    <button onClick="{{ recenter }}" style="position:absolute;top:-68px;right:16px;width:52px;height:52px;border-radius:16px;border:0;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.16);display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#1B7A57">my_location</span></button>
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="font-size:24px;font-weight:800;letter-spacing:-.03em;margin-bottom:14px">{{ greeting }}</div>
+    <button onClick="{{ openSearch }}" style="width:100%;height:60px;display:flex;align-items:center;gap:12px;padding:0 8px 0 18px;border:0;border-radius:30px;background:#E6EBE4;cursor:pointer;text-align:left">
+      <span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1">search</span>
+      <span style="flex:1;font-size:18px;font-weight:700">¿A dónde vas?</span>
+      <span style="display:flex;align-items:center;gap:4px;height:44px;padding:0 14px;border-radius:22px;background:#FFFFFF;font-size:13px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">schedule</span>Ahora</span>
+    </button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 10px">
+      <button onClick="{{ goCasa }}" style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;border:1px solid #DDE3DD;background:#FFFFFF;cursor:pointer;text-align:left"><span style="width:36px;height:36px;border-radius:12px;background:#CFEFDD;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#00311F">home</span><span><span style="display:block;font-weight:700;font-size:14px">Casa</span><span style="display:block;font-size:12px;color:#414943">Los Cacicazgos</span></span></button>
+      <button onClick="{{ goWork }}" style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;border:1px solid #DDE3DD;background:#FFFFFF;cursor:pointer;text-align:left"><span style="width:36px;height:36px;border-radius:12px;background:#CFEFDD;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#00311F">work</span><span><span style="display:block;font-weight:700;font-size:14px">Trabajo</span><span style="display:block;font-size:12px;color:#414943">Novo-Centro</span></span></button>
+    </div>
+    <sc-for list="{{ recents }}" as="r" hint-placeholder-count="2">
+      <button onClick="{{ r.pick }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:10px 4px;border:0;background:transparent;cursor:pointer;text-align:left;border-bottom:1px solid #EEF2EC">
+        <span style="width:40px;height:40px;border-radius:50%;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ r.icon }}</span>
+        <span style="flex:1;min-width:0"><span style="display:block;font-weight:700;font-size:15px">{{ r.name }}</span><span style="display:block;font-size:12.5px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.addr }}</span></span>
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">chevron_right</span>
+      </button>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.pickup }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:faxiUp .45s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="font-size:20px;font-weight:800;letter-spacing:-.02em">Confirma el punto de recogida</div>
+    <div style="font-size:13px;color:#414943;margin:4px 0 14px">Tu conductor te buscará aquí. Destino: <b style="color:#181C1A">{{ place.name }}</b></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#FFFFFF;border:1px solid #DDE3DD;margin-bottom:14px">
+      <span style="width:12px;height:12px;border-radius:50%;border:4px solid #181C1A;box-sizing:border-box"></span>
+      <div style="flex:1"><div style="font-weight:700;font-size:15px">{{ pickupAddr }}</div><div style="font-size:12px;color:#414943">{{ userArea }}, Santo Domingo</div></div>
+      <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">edit</span>
+    </div>
+    <button onClick="{{ confirmPickup }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer">Confirmar recogida</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.routing }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:faxiUp .45s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="width:18px;height:18px;border-radius:50%;border:2.5px solid #1B7A57;border-top-color:transparent;animation:faxiSpin .8s linear infinite;box-sizing:border-box"></span><span style="font-size:18px;font-weight:800">Calculando la mejor ruta…</span></div>
+    <div style="font-size:13px;color:#414943;margin-bottom:16px">Revisando tráfico en la 27 de Febrero y la Churchill</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="height:56px;border-radius:16px;background:linear-gradient(90deg,#E6EBE4 0,#F1F4EF 50%,#E6EBE4 100%);background-size:600px 100%;animation:faxiShimmer 1.3s linear infinite"></div>
+      <div style="height:56px;border-radius:16px;background:linear-gradient(90deg,#E6EBE4 0,#F1F4EF 50%,#E6EBE4 100%);background-size:600px 100%;animation:faxiShimmer 1.3s linear infinite"></div>
+      <div style="height:56px;border-radius:16px;background:linear-gradient(90deg,#E6EBE4 0,#F1F4EF 50%,#E6EBE4 100%);background-size:600px 100%;animation:faxiShimmer 1.3s linear infinite"></div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.options }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 16px 18px;box-sizing:border-box;animation:faxiUp .45s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 12px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px 10px">
+      <div><div style="font-size:20px;font-weight:800;letter-spacing:-.02em">Elige tu viaje</div><div style="font-size:12.5px;color:#414943">{{ place.km }} km · {{ place.min }} min · llegada {{ place.eta }}</div></div>
+      <button onClick="{{ openBreakdown }}" style="display:flex;align-items:center;gap:4px;height:36px;padding:0 12px;border-radius:18px;border:1px solid #C1C9C2;background:transparent;font-size:13px;font-weight:700;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">receipt_long</span>Desglose</button>
+    </div>
+    <sc-if value="{{ surgeOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;margin:0 4px 8px;padding:8px 12px;border-radius:12px;background:#FFE7A8;color:#3D2E00;font-size:12.5px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">bolt</span>Alta demanda: recargo de hora pico +{{ surgePct }}%</div></sc-if>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+        <button onClick="{{ c.select }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px;border-radius:16px;border:2px solid {{ c.border }};background:{{ c.bg }};cursor:pointer;text-align:left;transition:background .2s,border-color .2s;box-sizing:border-box">
+          <span style="width:50px;height:40px;border-radius:12px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:24px;line-height:1">{{ c.icon }}</span>
+          <span style="flex:1;min-width:0">
+            <span style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:15.5px">{{ c.name }}<span style="display:flex;align-items:center;gap:1px;font-size:12px;font-weight:600;color:#414943"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">person</span>{{ c.cap }}</span></span>
+            <span style="display:block;font-size:12px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.etaLabel }} · {{ c.desc }}</span>
+          </span>
+          <span style="text-align:right;flex:none"><span style="display:block;font-weight:800;font-size:15.5px;font-variant-numeric:tabular-nums">{{ c.price }}</span><sc-if value="{{ c.hasPromo }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:11.5px;color:#727973;text-decoration:line-through">{{ c.before }}</span></sc-if></span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:8px;margin:10px 0 12px">
+      <button onClick="{{ openPicker }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border-radius:14px;border:1px solid #C1C9C2;background:#F8FAF6;cursor:pointer;font-size:13.5px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ method.icon }}</span><span style="flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ method.label }}</span><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></button>
+      <button onClick="{{ togglePromo }}" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 12px;border-radius:14px;border:1px solid {{ promo.border }};background:{{ promo.bg }};cursor:pointer;font-size:13px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">sell</span>{{ promo.label }}</button>
+    </div>
+    <button onClick="{{ request }}" style="width:100%;height:56px;border-radius:28px;border:0;background:{{ cta.bg }};color:#FFFFFF;font-weight:700;font-size:16px;cursor:{{ cta.cursor }};display:flex;align-items:center;justify-content:space-between;padding:0 24px;transition:background .2s"><span>{{ cta.label }}</span><span style="font-variant-numeric:tabular-nums">{{ cta.price }}</span></button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.confirming }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:rgba(248,250,246,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;animation:faxiFade .3s ease;z-index:20">
+    <div style="width:112px;height:112px;border-radius:50%;background:#1B7A57;display:flex;align-items:center;justify-content:center;animation:faxiPop .6s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 12px 40px rgba(27,122,87,.35)"><span style="font-family:'Material Symbols Rounded';font-size:60px;line-height:1;color:#FFFFFF">check</span></div>
+    <div style="text-align:center;animation:faxiUp .5s .15s cubic-bezier(.2,.8,.2,1) both"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Viaje confirmado</div><div style="font-size:14px;color:#414943;margin-top:4px">{{ trip.cat }} a {{ trip.dest }} · {{ trip.total }}</div></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.searchOk }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:faxiUp .45s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="font-size:21px;font-weight:800;letter-spacing:-.02em">Buscando tu conductor…</div>
+    <div style="font-size:13px;color:#414943;margin:4px 0 14px">Enviamos tu solicitud a 7 conductores cerca de {{ userArea }}</div>
+    <div style="height:4px;border-radius:2px;background:#E6EBE4;overflow:hidden;margin-bottom:16px"><div style="width:40%;height:100%;border-radius:2px;background:#1B7A57;animation:faxiIndet 1.4s cubic-bezier(.4,0,.2,1) infinite"></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:#FFFFFF;border:1px solid #DDE3DD;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">flag</span><span style="flex:1;font-weight:700">{{ trip.dest }}</span><span style="font-weight:800">{{ trip.total }}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#414943"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#181C1A">directions_car</span><span style="flex:1">{{ trip.cat }}</span><span>{{ trip.method }}</span></div>
+    </div>
+    <button onClick="{{ cancelSearch }}" style="width:100%;height:52px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:15px;cursor:pointer">Cancelar solicitud</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.searchErr }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:faxiUp .45s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="width:56px;height:56px;border-radius:18px;background:#FFDAD6;display:flex;align-items:center;justify-content:center;margin-bottom:12px"><span style="font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:#93000A">no_crash</span></div>
+    <div style="font-size:21px;font-weight:800;letter-spacing:-.02em">No hay conductores disponibles</div>
+    <div style="font-size:14px;color:#414943;margin:6px 0 18px;line-height:1.45">Todos los {{ trip.cat }} cercanos están ocupados. Prueba otra categoría o reintenta en un momento. No se hizo ningún cargo.</div>
+    <div style="display:flex;gap:10px">
+      <button onClick="{{ changeCat }}" style="flex:1;height:52px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:15px;cursor:pointer">Cambiar tipo</button>
+      <button onClick="{{ retrySearch }}" style="flex:1;height:52px;border-radius:26px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:15px;cursor:pointer">Reintentar</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.driverSheet }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);box-sizing:border-box;animation:faxiUp .5s cubic-bezier(.2,.8,.2,1);overflow:hidden">
+    <div style="padding:10px 20px 14px;background:{{ ds.headBg }};transition:background .5s">
+      <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 12px"></div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+        <div><div style="font-size:12px;font-weight:700;color:#1B7A57;text-transform:uppercase;letter-spacing:.08em">{{ ds.status }}</div><div style="font-size:24px;font-weight:800;letter-spacing:-.03em">{{ ds.title }}</div><div style="font-size:13.5px;color:#414943;font-variant-numeric:tabular-nums">{{ ds.sub }}</div></div>
+        <span style="font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:#1B7A57">hail</span>
+      </div>
+      <div style="height:4px;border-radius:2px;background:#DDE3DD;margin-top:12px;overflow:hidden"><div style="height:100%;width:{{ ds.pct }};background:#1B7A57;border-radius:2px;transition:width .2s linear"></div></div>
+    </div>
+    <div style="padding:16px 20px 20px">
+      <div style="display:flex;align-items:center;gap:14px;animation:faxiUp .5s .1s cubic-bezier(.2,.8,.2,1) both">
+        <div style="position:relative;flex:none"><div style="width:58px;height:58px;border-radius:50%;background:#181C1A;color:#CFEFDD;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px">{{ driver.initials }}</div><span style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1px;padding:1px 6px;border-radius:10px;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.2);font-size:11px;font-weight:800;white-space:nowrap"><span style="font-family:'Material Symbols Rounded';font-size:12px;line-height:1;color:#E0A100;font-variation-settings:'FILL' 1">star</span>{{ driver.rating }}</span></div>
+        <div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:800">{{ driver.name }}</div><div style="font-size:12.5px;color:#414943">{{ driver.trips }} viajes · desde 2022</div><div style="font-size:12.5px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ carInfo.model }} · {{ carInfo.color }}</div></div>
+        <div style="flex:none;padding:6px 10px;border-radius:8px;border:2px solid #181C1A;font-weight:800;font-size:15px;letter-spacing:.06em;font-family:ui-monospace,Menlo,monospace">{{ carInfo.plate }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px">
+        <button onClick="{{ openChat }}" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border:0;border-radius:16px;background:#E6EBE4;cursor:pointer;font-size:12px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">chat</span>Mensaje<sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:6px;right:18px;min-width:18px;height:18px;border-radius:9px;background:#BA1A1A;color:#FFFFFF;font-size:11px;display:flex;align-items:center;justify-content:center">{{ unread }}</span></sc-if></button>
+        <button onClick="{{ openCall }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border:0;border-radius:16px;background:#E6EBE4;cursor:pointer;font-size:12px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">call</span>Llamar</button>
+        <button onClick="{{ share }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border:0;border-radius:16px;background:#E6EBE4;cursor:pointer;font-size:12px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">share_location</span>Compartir</button>
+        <button onClick="{{ openCancel }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border:0;border-radius:16px;background:#FFDAD6;color:#93000A;cursor:pointer;font-size:12px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">close</span>Cancelar</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px;color:#414943"><span style="width:10px;height:10px;border-radius:50%;border:3px solid #181C1A;box-sizing:border-box;flex:none"></span><span style="flex:1">{{ pickupAddr }}</span><span style="font-weight:700;color:#181C1A">{{ trip.total }}</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.tripSheet }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:faxiUp .5s cubic-bezier(.2,.8,.2,1)">
+    <button onClick="{{ safety }}" style="position:absolute;top:-68px;right:16px;width:52px;height:52px;border-radius:16px;border:0;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.16);display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#1B7A57">shield</span></button>
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 12px"></div>
+    <div style="font-size:12px;font-weight:700;color:#1B7A57;text-transform:uppercase;letter-spacing:.08em">{{ ts.status }}</div>
+    <div style="font-size:24px;font-weight:800;letter-spacing:-.03em">{{ ts.title }}</div>
+    <div style="font-size:13.5px;color:#414943;font-variant-numeric:tabular-nums">{{ ts.sub }} · hacia {{ place.name }}</div>
+    <div style="display:flex;align-items:center;gap:10px;margin:14px 0 16px"><span style="width:10px;height:10px;border-radius:50%;border:3px solid #181C1A;box-sizing:border-box"></span><div style="flex:1;height:6px;border-radius:3px;background:#DDE3DD;overflow:hidden"><div style="height:100%;width:{{ ts.pct }};background:#1B7A57;border-radius:3px;transition:width .2s linear"></div></div><span style="width:10px;height:10px;background:#181C1A;border-radius:2px"></span></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#FFFFFF;border:1px solid #DDE3DD">
+      <div style="width:44px;height:44px;border-radius:50%;background:#181C1A;color:#CFEFDD;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex:none">{{ driver.initials }}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:15px">{{ driver.name }} · ★ {{ driver.rating }}</div><div style="font-size:12.5px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ carInfo.model }} · {{ carInfo.plate }}</div></div>
+      <button onClick="{{ openChat }}" style="width:44px;height:44px;border-radius:50%;border:0;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chat</span></button>
+    </div>
+    <button onClick="{{ share }}" style="width:100%;height:52px;margin-top:12px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">share_location</span>Compartir viaje en vivo</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.atDest }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 24px;box-sizing:border-box;animation:faxiUp .5s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="display:flex;align-items:center;gap:14px"><div style="width:52px;height:52px;border-radius:16px;background:#181C1A;display:flex;align-items:center;justify-content:center;animation:faxiPop .6s both"><span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1;color:#FFFFFF">sports_score</span></div><div><div style="font-size:22px;font-weight:800;letter-spacing:-.02em">Llegaste a tu destino</div><div style="font-size:13.5px;color:#414943">{{ place.name }} · {{ driver.first }} está finalizando el viaje</div></div></div>
+    <div style="height:4px;border-radius:2px;background:#E6EBE4;overflow:hidden;margin-top:18px"><div style="width:40%;height:100%;background:#1B7A57;animation:faxiIndet 1.2s ease-in-out infinite"></div></div>
+    <div style="font-size:12.5px;color:#414943;margin-top:10px">Revisa que no olvides nada en el vehículo.</div>
+  </div>
+</sc-if>
+<sc-if value="{{ s.splash }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#181C1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:50">
+    <div style="display:flex;align-items:baseline;gap:4px;animation:faxiPop .9s cubic-bezier(.2,.8,.2,1) both"><span style="font-size:72px;font-weight:800;letter-spacing:-.06em;color:#F8FAF6">faxi</span><span style="width:16px;height:16px;border-radius:50%;background:#5FD3A0;display:block"></span></div>
+    <div style="color:#9DB0A6;font-size:15px;animation:faxiFade .6s .4s both">Muévete por tu ciudad, a tu ritmo.</div>
+    <div style="position:absolute;bottom:64px;width:120px;height:3px;background:#2E3430;border-radius:2px;overflow:hidden"><div style="width:40%;height:100%;background:#5FD3A0;animation:faxiIndet 1.1s ease-in-out infinite"></div></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.onboarding }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;padding:16px 24px 28px;box-sizing:border-box;z-index:40;animation:faxiFade .4s ease">
+    <div style="display:flex;justify-content:flex-end"><button onClick="{{ skipOnboarding }}" style="height:40px;padding:0 14px;border:0;border-radius:20px;background:transparent;font-weight:700;font-size:14px;color:#1B7A57;cursor:pointer">Saltar</button></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px">
+      <div style="width:240px;height:240px;border-radius:80px;background:#CFEFDD;display:flex;align-items:center;justify-content:center;align-self:center"><span style="font-family:'Material Symbols Rounded';font-size:110px;line-height:1;color:#00311F">{{ ob.icon }}</span></div>
+      <div><h1 style="font-size:34px;line-height:1.08;letter-spacing:-.035em;margin:0 0 12px;font-weight:800;text-wrap:balance">{{ ob.title }}</h1><p style="margin:0;font-size:16px;line-height:1.5;color:#414943;text-wrap:pretty">{{ ob.body }}</p></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <div style="display:flex;gap:6px"><sc-for list="{{ obDots }}" as="d" hint-placeholder-count="3"><span style="height:8px;width:{{ d.w }};border-radius:4px;background:{{ d.bg }};transition:all .3s"></span></sc-for></div>
+      <button onClick="{{ nextOnboarding }}" style="height:56px;padding:0 28px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:8px">{{ ob.cta }}<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_forward</span></button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.auth }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;padding:28px 24px 24px;box-sizing:border-box;z-index:40;overflow:auto;animation:faxiFade .4s ease">
+    <div style="display:flex;align-items:baseline;gap:2px;margin-bottom:28px"><span style="font-weight:800;font-size:28px;letter-spacing:-.05em">faxi</span><span style="width:8px;height:8px;border-radius:50%;background:#1B7A57;display:block"></span></div>
+    <div style="display:flex;padding:4px;border-radius:999px;background:#E6EBE4;margin-bottom:24px">
+      <button onClick="{{ setRegister }}" style="flex:1;height:40px;border:0;border-radius:999px;background:{{ auth.regBg }};box-shadow:{{ auth.regShadow }};font-weight:700;font-size:14px;cursor:pointer">Crear cuenta</button>
+      <button onClick="{{ setLogin }}" style="flex:1;height:40px;border:0;border-radius:999px;background:{{ auth.logBg }};box-shadow:{{ auth.logShadow }};font-weight:700;font-size:14px;cursor:pointer">Iniciar sesión</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <sc-if value="{{ auth.isRegister }}" hint-placeholder-val="{{ true }}">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700">Nombre completo</span><input value="{{ form.name }}" onChange="{{ onName }}" placeholder="María Fernández" style="height:56px;padding:0 16px;border-radius:14px;border:1.5px solid {{ err.nameB }};background:transparent;font-size:16px;outline:none;box-sizing:border-box"><sc-if value="{{ err.hasName }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#BA1A1A">{{ err.name }}</span></sc-if></label>
+      </sc-if>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700">Teléfono</span><div style="display:flex;gap:8px"><span style="height:56px;padding:0 14px;border-radius:14px;border:1.5px solid #727973;display:flex;align-items:center;font-weight:700;font-size:15px;box-sizing:border-box">+1</span><input value="{{ form.phone }}" onChange="{{ onPhone }}" placeholder="809 555 0142" inputmode="tel" style="flex:1;min-width:0;height:56px;padding:0 16px;border-radius:14px;border:1.5px solid {{ err.phoneB }};background:transparent;font-size:16px;outline:none;box-sizing:border-box"></div><sc-if value="{{ err.hasPhone }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#BA1A1A">{{ err.phone }}</span></sc-if></label>
+      <sc-if value="{{ auth.isRegister }}" hint-placeholder-val="{{ true }}">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700">Correo electrónico</span><input value="{{ form.email }}" onChange="{{ onEmail }}" placeholder="tu@correo.com" style="height:56px;padding:0 16px;border-radius:14px;border:1.5px solid {{ err.emailB }};background:transparent;font-size:16px;outline:none;box-sizing:border-box"><sc-if value="{{ err.hasEmail }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#BA1A1A">{{ err.email }}</span></sc-if></label>
+      </sc-if>
+      <sc-if value="{{ auth.isLogin }}" hint-placeholder-val="{{ false }}">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700">Contraseña</span><input type="password" value="{{ form.password }}" onChange="{{ onPassword }}" placeholder="••••••••" style="height:56px;padding:0 16px;border-radius:14px;border:1.5px solid {{ err.passB }};background:transparent;font-size:16px;outline:none;box-sizing:border-box"><sc-if value="{{ err.hasPassword }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#BA1A1A">{{ err.password }}</span></sc-if></label>
+        <span style="font-size:13px;font-weight:700;color:#1B7A57">¿Olvidaste tu contraseña?</span>
+      </sc-if>
+    </div>
+    <div style="flex:1;min-height:20px"></div>
+    <button onClick="{{ submitAuth }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">
+      <sc-if value="{{ auth.loading }}" hint-placeholder-val="{{ false }}"><span style="width:18px;height:18px;border-radius:50%;border:2.5px solid #FFFFFF;border-top-color:transparent;animation:faxiSpin .8s linear infinite;box-sizing:border-box"></span>Verificando…</sc-if>
+      <sc-if value="{{ auth.notLoading }}" hint-placeholder-val="{{ true }}">{{ auth.btn }}</sc-if>
+    </button>
+    <button onClick="{{ fillDemo }}" style="margin-top:10px;height:44px;border:0;background:transparent;font-weight:700;font-size:14px;color:#1B7A57;cursor:pointer">Usar datos de demostración</button>
+    <p style="margin:6px 0 0;font-size:11.5px;color:#727973;text-align:center;line-height:1.45">Al continuar aceptas los Términos y la Política de privacidad de faxi. Te enviaremos un código por SMS.</p>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.permission }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;padding:28px 24px;box-sizing:border-box;z-index:40;animation:faxiFade .4s ease">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px">
+      <div style="position:relative;width:200px;height:200px;align-self:center;display:flex;align-items:center;justify-content:center">
+        <span style="position:absolute;inset:0;border-radius:50%;background:#CFEFDD;animation:faxiPulse 2.4s ease-out infinite"></span>
+        <span style="width:120px;height:120px;border-radius:50%;background:#1B7A57;display:flex;align-items:center;justify-content:center;position:relative"><span style="font-family:'Material Symbols Rounded';font-size:60px;line-height:1;color:#FFFFFF;font-variation-settings:'FILL' 1">location_on</span></span>
+      </div>
+      <div><h1 style="font-size:30px;line-height:1.1;letter-spacing:-.03em;margin:0 0 10px;font-weight:800">Activa tu ubicación</h1><p style="margin:0;font-size:15.5px;line-height:1.5;color:#414943">La usamos para encontrar conductores cerca, fijar tu punto de recogida y compartir tu viaje si lo necesitas. Solo mientras usas la app.</p></div>
+    </div>
+    <button onClick="{{ askLocation }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer">Permitir ubicación</button>
+    <button onClick="{{ denyLocation }}" style="margin-top:8px;height:48px;border:0;background:transparent;font-weight:700;font-size:15px;cursor:pointer">Ahora no</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.search }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiUp .35s cubic-bezier(.2,.8,.2,1)">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ goHome }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:20px;font-weight:800">Planifica tu viaje</div></div>
+    <div style="margin:4px 16px 12px;padding:6px 12px 6px 16px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;display:grid;grid-template-columns:16px 1fr;column-gap:12px;align-items:center">
+      <span style="width:10px;height:10px;border-radius:50%;border:3px solid #181C1A;box-sizing:border-box;justify-self:center"></span>
+      <div style="height:46px;display:flex;align-items:center;font-size:15px;color:#414943;border-bottom:1px solid #EEF2EC">{{ pickupAddr }}</div>
+      <span style="width:10px;height:10px;background:#181C1A;border-radius:2px;justify-self:center"></span>
+      <div style="display:flex;align-items:center;gap:6px"><input value="{{ query }}" onChange="{{ onQuery }}" placeholder="¿A dónde vas?" autofocus style="flex:1;min-width:0;height:46px;border:0;background:transparent;font-size:16px;font-weight:600;outline:none"><button onClick="{{ clearQuery }}" style="width:32px;height:32px;border:0;border-radius:50%;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">close</span></button></div>
+    </div>
+    <div style="display:flex;gap:8px;padding:0 16px 8px"><span style="display:flex;align-items:center;gap:4px;height:32px;padding:0 12px;border-radius:8px;border:1px solid #C1C9C2;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">schedule</span>Recoger ahora</span><span style="display:flex;align-items:center;gap:4px;height:32px;padding:0 12px;border-radius:8px;border:1px solid #C1C9C2;font-size:13px;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">person</span>Para mí</span></div>
+    <div style="flex:1;overflow:auto;padding:0 8px">
+      <sc-for list="{{ results }}" as="r" hint-placeholder-count="6">
+        <button onClick="{{ r.pick }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:12px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left" style-hover="background:#EEF2EC">
+          <span style="width:40px;height:40px;border-radius:50%;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;flex:none">{{ r.icon }}</span>
+          <span style="flex:1;min-width:0"><span style="display:block;font-weight:700;font-size:15px">{{ r.name }}</span><span style="display:block;font-size:12.5px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.addr }}</span></span>
+          <span style="font-size:12px;color:#727973;flex:none">{{ r.km }}</span>
+        </button>
+      </sc-for>
+      <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:48px 32px;gap:10px">
+          <span style="width:64px;height:64px;border-radius:20px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:32px;line-height:1;color:#414943">wrong_location</span>
+          <div style="font-weight:800;font-size:17px">No encontramos “{{ query }}”</div>
+          <div style="font-size:13.5px;color:#414943;line-height:1.45">Revisa cómo está escrito o busca por sector, calle o lugar conocido, por ejemplo “Ágora” o “Colonial”.</div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.finished }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#181C1A;color:#F8FAF6;display:flex;flex-direction:column;padding:28px 24px 24px;box-sizing:border-box;z-index:30;animation:faxiFade .4s ease">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:18px">
+      <div style="width:120px;height:120px;border-radius:50%;background:#5FD3A0;display:flex;align-items:center;justify-content:center;animation:faxiPop .7s cubic-bezier(.2,.8,.2,1) both"><span style="font-family:'Material Symbols Rounded';font-size:64px;line-height:1;color:#00311F">done_all</span></div>
+      <div style="animation:faxiUp .6s .15s both"><div style="font-size:13px;font-weight:700;color:#5FD3A0;text-transform:uppercase;letter-spacing:.1em">Viaje finalizado</div><div style="font-size:30px;font-weight:800;letter-spacing:-.03em;margin-top:6px;text-wrap:balance">Llegaste a {{ fin.dest }}</div><div style="font-size:14px;color:#9DB0A6;margin-top:6px">{{ fin.km }} km · {{ fin.min }} min · {{ fin.end }}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:10px;animation:faxiUp .6s .3s both"><span style="font-size:13px;color:#9DB0A6">Total del viaje</span><span style="font-size:44px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums">{{ fin.total }}</span></div>
+    </div>
+    <button onClick="{{ goPayment }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#F8FAF6;color:#181C1A;font-weight:800;font-size:16px;cursor:pointer">Continuar al pago</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.payment }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiUp .35s cubic-bezier(.2,.8,.2,1)">
+    <div style="padding:20px 20px 8px"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Pago</div><div style="font-size:13px;color:#414943">Viaje {{ trip.id }} · {{ trip.dest }}</div></div>
+    <div style="flex:1;overflow:auto;padding:8px 20px">
+      <div style="padding:18px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD">
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:14px;color:#414943;font-weight:600">Total a pagar</span><span style="font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ pay.total }}</span></div>
+        <div style="height:1px;background:#EEF2EC;margin:12px 0"></div>
+        <sc-for list="{{ pay.lines }}" as="l" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0"><span style="color:#414943">{{ l.label }}</span><span style="color:{{ l.color }};font-variant-numeric:tabular-nums;font-weight:600">{{ l.value }}</span></div></sc-for>
+      </div>
+      <div style="font-size:14px;font-weight:800;margin:18px 0 8px">Método de pago</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="5">
+          <button onClick="{{ m.select }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid #DDE3DD;background:{{ m.bg }};cursor:pointer;text-align:left">
+            <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ m.icon }}</span>
+            <span style="flex:1"><span style="display:block;font-weight:700;font-size:14.5px">{{ m.label }}</span><span style="display:block;font-size:12px;color:#414943">{{ m.sub }}</span></span>
+            <span style="width:20px;height:20px;border-radius:50%;border:2px solid {{ m.ring }};display:flex;align-items:center;justify-content:center;box-sizing:border-box"><span style="width:10px;height:10px;border-radius:50%;background:{{ m.dot }}"></span></span>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ pay.cashNote }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;padding:12px 14px;border-radius:14px;background:#FFE7A8;color:#3D2E00;font-size:13px;line-height:1.4">Entrega <b>{{ pay.total }}</b> a {{ driver.first }}. Él confirmará el cobro desde su app.</div></sc-if>
+    </div>
+    <div style="padding:12px 20px 20px;border-top:1px solid #EEF2EC">
+      <sc-if value="{{ pay.idle }}" hint-placeholder-val="{{ true }}"><button onClick="{{ payNow }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer">{{ pay.cta }}</button></sc-if>
+      <sc-if value="{{ pay.processing }}" hint-placeholder-val="{{ false }}"><div style="height:56px;border-radius:28px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700"><span style="width:20px;height:20px;border-radius:50%;border:2.5px solid #1B7A57;border-top-color:transparent;animation:faxiSpin .8s linear infinite;box-sizing:border-box"></span>Procesando pago seguro…</div></sc-if>
+      <sc-if value="{{ pay.success }}" hint-placeholder-val="{{ false }}"><div style="height:56px;border-radius:28px;background:#1B7A57;color:#FFFFFF;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;animation:faxiPop .5s both"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">check_circle</span>Pago aprobado</div></sc-if>
+      <sc-if value="{{ pay.failed }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px;border-radius:16px;background:#FFDAD6;color:#410002;margin-bottom:10px;display:flex;gap:10px;animation:faxiUp .35s both"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#BA1A1A">error</span><div style="font-size:13.5px;line-height:1.4"><b>Tu banco rechazó el pago.</b> No se hizo ningún cargo. Elige otro método o vuelve a intentarlo.</div></div>
+        <button onClick="{{ payRetry }}" style="width:100%;height:52px;border-radius:26px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:15px;cursor:pointer">Reintentar</button>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.rating }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiUp .35s cubic-bezier(.2,.8,.2,1)">
+    <div style="display:flex;justify-content:flex-end;padding:8px 12px 0"><button onClick="{{ skipRating }}" style="height:40px;padding:0 14px;border:0;border-radius:20px;background:transparent;font-weight:700;font-size:14px;color:#414943;cursor:pointer">Omitir</button></div>
+    <div style="flex:1;overflow:auto;padding:0 20px 12px;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="width:84px;height:84px;border-radius:50%;background:#181C1A;color:#CFEFDD;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px">{{ driver.initials }}</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:14px;text-wrap:balance">¿Cómo estuvo tu viaje con {{ driver.first }}?</div>
+      <div style="font-size:13px;color:#414943;margin-top:4px">{{ carInfo.model }} · ★ {{ driver.rating }} promedio</div>
+      <div style="display:flex;gap:4px;margin-top:18px">
+        <sc-for list="{{ stars }}" as="st" hint-placeholder-count="5"><button onClick="{{ st.set }}" style="width:52px;height:52px;border:0;background:transparent;cursor:pointer;padding:0"><span style="font-family:'Material Symbols Rounded';font-size:46px;line-height:1;color:{{ st.color }};font-variation-settings:{{ st.fv }};transition:color .15s">star</span></button></sc-for>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-top:4px;min-height:20px">{{ starLabel }}</div>
+      <sc-if value="{{ hasStars }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px;animation:faxiUp .35s both">
+          <sc-for list="{{ tags }}" as="t" hint-placeholder-count="6"><button onClick="{{ t.toggle }}" style="display:flex;align-items:center;gap:4px;height:34px;padding:0 12px;border-radius:8px;border:1px solid {{ t.border }};background:{{ t.bg }};cursor:pointer;font-size:13px;font-weight:600"><sc-if value="{{ t.showIcon }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span></sc-if>{{ t.label }}</button></sc-for>
+        </div>
+        <textarea value="{{ comment }}" onChange="{{ onComment }}" placeholder="Cuéntanos más (opcional)" style="width:100%;height:76px;margin-top:14px;padding:12px 14px;border-radius:14px;border:1.5px solid #C1C9C2;background:transparent;font-size:14px;resize:none;outline:none;box-sizing:border-box"></textarea>
+        <div style="align-self:stretch;text-align:left;font-size:14px;font-weight:800;margin:16px 0 8px">Agregar propina</div>
+        <div style="align-self:stretch;display:flex;gap:6px"><sc-for list="{{ tips }}" as="tp" hint-placeholder-count="4"><button onClick="{{ tp.set }}" style="flex:1;height:40px;border-radius:12px;border:1px solid {{ tp.border }};background:{{ tp.bg }};color:{{ tp.color }};font-weight:700;font-size:12.5px;cursor:pointer;padding:0 4px">{{ tp.label }}</button></sc-for></div>
+      </sc-if>
+      <button onClick="{{ reportProblem }}" style="margin-top:16px;height:40px;border:0;background:transparent;font-weight:700;font-size:13.5px;color:#BA1A1A;cursor:pointer;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">flag</span>Reportar un problema</button>
+    </div>
+    <div style="padding:12px 20px 20px"><button onClick="{{ submitRating }}" style="width:100%;height:56px;border-radius:28px;border:0;background:{{ rateBtn.bg }};color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer;transition:background .2s">{{ rateBtn.label }}</button></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.receipt }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#EEF2EC;display:flex;flex-direction:column;z-index:30;animation:faxiFade .35s ease">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ backFromReceipt }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:20px;font-weight:800"><sc-if value="{{ rc.isFlow }}" hint-placeholder-val="{{ true }}">Recibo</sc-if><sc-if value="{{ rc.isDetail }}" hint-placeholder-val="{{ false }}">Detalle del viaje</sc-if></div></div>
+    <div style="flex:1;overflow:auto;padding:4px 16px 16px">
+      <sc-if value="{{ rc.isFlow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:4px 4px 14px"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;color:#1B7A57;font-variation-settings:'FILL' 1">verified</span><span style="font-size:15px;font-weight:700">Gracias por viajar con faxi, {{ user.first }}.</span></div></sc-if>
+      <div style="background:#FFFFFF;border-radius:24px;padding:20px;border:1px solid #DDE3DD">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><div style="font-size:12px;color:#727973;font-family:ui-monospace,Menlo,monospace">{{ rc.id }}</div><div style="font-size:15px;font-weight:700;margin-top:2px">{{ rc.date }} · {{ rc.cat }}</div></div><span style="padding:4px 10px;border-radius:8px;background:{{ rc.statusBg }};color:{{ rc.statusColor }};font-size:12px;font-weight:800">{{ rc.status }}</span></div>
+        <div style="display:grid;grid-template-columns:16px 1fr auto;column-gap:12px;row-gap:2px;margin:18px 0;align-items:start">
+          <span style="width:10px;height:10px;border-radius:50%;border:3px solid #181C1A;box-sizing:border-box;margin-top:5px;justify-self:center"></span><div style="font-size:14px;font-weight:700">{{ rc.pickup }}</div><div style="font-size:12.5px;color:#414943">{{ rc.start }}</div>
+          <span style="width:2px;height:22px;background:#C1C9C2;justify-self:center"></span><span></span><span></span>
+          <span style="width:10px;height:10px;background:#181C1A;border-radius:2px;margin-top:5px;justify-self:center"></span><div><div style="font-size:14px;font-weight:700">{{ rc.dest }}</div><div style="font-size:12px;color:#414943">{{ rc.destAddr }}</div></div><div style="font-size:12.5px;color:#414943">{{ rc.end }}</div>
+        </div>
+        <sc-if value="{{ rc.notCanceled }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #EEF2EC;border-bottom:1px solid #EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">badge</span><div style="flex:1"><div style="font-size:14px;font-weight:700">{{ rc.driver }}</div><div style="font-size:12.5px;color:#414943">{{ rc.car }}</div></div><div style="font-size:12.5px;color:#7A5900;font-weight:700">{{ rc.rated }}</div></div>
+          <div style="padding-top:12px"><sc-for list="{{ rc.lines }}" as="l" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0"><span style="color:#414943">{{ l.label }}</span><span style="color:{{ l.color }};font-weight:600;font-variant-numeric:tabular-nums">{{ l.value }}</span></div></sc-for></div>
+        </sc-if>
+        <sc-if value="{{ rc.canceled }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:14px;background:#EEF2EC;font-size:13.5px;color:#414943;line-height:1.4">Cancelaste esta solicitud antes de que un conductor la aceptara. No se realizó ningún cargo.</div></sc-if>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1.5px dashed #C1C9C2;margin-top:12px;padding-top:14px"><span style="font-size:15px;font-weight:800">Total</span><span style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums">{{ rc.total }}</span></div>
+        <div style="font-size:12.5px;color:#414943;margin-top:2px;text-align:right">{{ rc.method }}</div>
+      </div>
+    </div>
+    <div style="padding:12px 16px 20px;display:flex;gap:10px;background:#EEF2EC">
+      <sc-if value="{{ rc.isFlow }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ downloadReceipt }}" style="flex:1;height:52px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:14.5px;cursor:pointer">Enviar por correo</button>
+        <button onClick="{{ goHistory }}" style="flex:1;height:52px;border-radius:26px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:14.5px;cursor:pointer">Ver historial</button>
+      </sc-if>
+      <sc-if value="{{ rc.isDetail }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ reportProblem }}" style="flex:1;height:52px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:14.5px;cursor:pointer">Reportar problema</button>
+        <button onClick="{{ repeatTrip }}" style="flex:1;height:52px;border-radius:26px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:14.5px;cursor:pointer">Repetir viaje</button>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.history }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiFade .3s ease">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ backFromHistory }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:22px;font-weight:800">Tus viajes</div></div>
+    <div style="display:flex;gap:6px;padding:4px 16px 12px;overflow-x:auto"><sc-for list="{{ histTabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.set }}" style="height:34px;padding:0 14px;border-radius:8px;border:1px solid {{ t.border }};background:{{ t.bg }};font-weight:{{ t.weight }};font-size:13px;cursor:pointer;white-space:nowrap">{{ t.label }}</button></sc-for></div>
+    <div style="flex:1;overflow:auto;padding:0 8px 16px">
+      <sc-for list="{{ hist }}" as="h" hint-placeholder-count="4">
+        <button onClick="{{ h.open }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:12px;border:0;border-radius:16px;background:transparent;cursor:pointer;text-align:left" style-hover="background:#EEF2EC">
+          <span style="width:48px;height:48px;border-radius:14px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;flex:none">{{ h.icon }}</span>
+          <span style="flex:1;min-width:0"><span style="display:block;font-weight:700;font-size:15px">{{ h.title }}</span><span style="display:block;font-size:12.5px;color:#414943">{{ h.sub }}</span></span>
+          <span style="text-align:right;flex:none"><span style="display:block;font-weight:800;font-size:14.5px;font-variant-numeric:tabular-nums">{{ h.price }}</span><span style="display:block;font-size:11.5px;font-weight:700;color:{{ h.statusColor }}">{{ h.status }}</span></span>
+        </button>
+      </sc-for>
+      <sc-if value="{{ histEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:64px 32px;gap:10px">
+          <span style="width:72px;height:72px;border-radius:24px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:36px;line-height:1;color:#414943">event_upcoming</span>
+          <div style="font-weight:800;font-size:17px">Nada por aquí todavía</div>
+          <div style="font-size:13.5px;color:#414943;line-height:1.45">Cuando tengas viajes en esta categoría, aparecerán aquí con su recibo.</div>
+          <button onClick="{{ goHome }}" style="margin-top:8px;height:44px;padding:0 20px;border-radius:22px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;cursor:pointer">Pedir un viaje</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ s.menu }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiFade .3s ease">
+    <div style="background:#181C1A;color:#F8FAF6;padding:12px 20px 22px">
+      <button onClick="{{ goHome }}" style="width:44px;height:44px;margin-left:-10px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F8FAF6"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">close</span></button>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:10px"><div style="width:60px;height:60px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px">{{ user.initials }}</div><div><div style="font-size:20px;font-weight:800">{{ user.name }}</div><div style="font-size:13px;color:#9DB0A6">★ 4.95 · Pasajera desde 2024</div></div></div>
+    </div>
+    <div style="flex:1;overflow:auto;padding:12px 8px">
+      <button onClick="{{ goHistory }}" style="width:100%;display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:15.5px;font-weight:600" style-hover="background:#EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">history</span>Historial de viajes</button>
+      <button onClick="{{ goMethods }}" style="width:100%;display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:15.5px;font-weight:600" style-hover="background:#EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">account_balance_wallet</span>Métodos de pago</button>
+      <button onClick="{{ goProfile }}" style="width:100%;display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:15.5px;font-weight:600" style-hover="background:#EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">person</span>Perfil</button>
+      <button onClick="{{ goSettings }}" style="width:100%;display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:15.5px;font-weight:600" style-hover="background:#EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">settings</span>Configuración</button>
+      <button onClick="{{ goHelp }}" style="width:100%;display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:15.5px;font-weight:600" style-hover="background:#EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">help</span>Ayuda y soporte</button>
+      <div style="margin:14px 8px;padding:16px;border-radius:20px;background:#CFEFDD;display:flex;align-items:center;gap:12px"><span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1;color:#00311F">sell</span><div style="flex:1;color:#00311F"><div style="font-weight:800;font-size:15px">20% en tu próximo viaje</div><div style="font-size:12.5px">Usa el código FAXI20 · hasta RD$ 150</div></div></div>
+      <button onClick="{{ logout }}" style="width:100%;display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:15.5px;font-weight:600;color:#BA1A1A"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">logout</span>Cerrar sesión</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.profile }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiFade .3s ease">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ backToMenu }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:22px;font-weight:800">Perfil</div></div>
+    <div style="flex:1;overflow:auto;padding:8px 20px 20px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 0 20px"><div style="width:96px;height:96px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:32px">{{ user.initials }}</div><div style="font-size:21px;font-weight:800">{{ user.name }}</div><div style="display:flex;gap:6px"><span style="padding:4px 10px;border-radius:8px;background:#E6EBE4;font-size:12.5px;font-weight:700">★ 4.95 pasajera</span><span style="padding:4px 10px;border-radius:8px;background:#E6EBE4;font-size:12.5px;font-weight:700">48 viajes</span></div></div>
+      <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#414943">call</span><div><div style="font-size:12px;color:#414943">Teléfono</div><div style="font-weight:700;font-size:14.5px">+1 809 555 0142</div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#414943">mail</span><div><div style="font-size:12px;color:#414943">Correo</div><div style="font-weight:700;font-size:14.5px">maria.fernandez@gmail.com</div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#414943">verified_user</span><div><div style="font-size:12px;color:#414943">Verificación</div><div style="font-weight:700;font-size:14.5px">Teléfono y correo verificados</div></div></div>
+      </div>
+      <div style="font-size:14px;font-weight:800;margin:20px 0 8px">Lugares guardados</div>
+      <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">home</span><div><div style="font-weight:700;font-size:14.5px">Casa</div><div style="font-size:12.5px;color:#414943">C/ Desiderio Valverde, Los Cacicazgos</div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">work</span><div><div style="font-weight:700;font-size:14.5px">Trabajo</div><div style="font-size:12.5px;color:#414943">Torre Novo-Centro, Av. Lope de Vega</div></div></div>
+      </div>
+      <button onClick="{{ editProfile }}" style="width:100%;height:52px;margin-top:20px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:15px;cursor:pointer">Editar perfil</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.methods }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiFade .3s ease">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ backToMenu }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:22px;font-weight:800">Métodos de pago</div></div>
+    <div style="flex:1;overflow:auto;padding:8px 20px 20px">
+      <div style="padding:20px;border-radius:24px;background:#181C1A;color:#F8FAF6;margin-bottom:18px"><div style="font-size:13px;color:#9DB0A6">Saldo faxi</div><div style="font-size:32px;font-weight:800;letter-spacing:-.02em;margin-top:2px">RD$ 250</div><div style="font-size:12.5px;color:#9DB0A6;margin-top:6px">Se aplica automáticamente antes que tu método principal.</div></div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:8px">Método predeterminado</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="5">
+          <button onClick="{{ m.select }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid #DDE3DD;background:{{ m.bg }};cursor:pointer;text-align:left">
+            <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ m.icon }}</span>
+            <span style="flex:1"><span style="display:block;font-weight:700;font-size:14.5px">{{ m.label }}</span><span style="display:block;font-size:12px;color:#414943">{{ m.sub }}</span></span>
+            <span style="width:20px;height:20px;border-radius:50%;border:2px solid {{ m.ring }};display:flex;align-items:center;justify-content:center;box-sizing:border-box"><span style="width:10px;height:10px;border-radius:50%;background:{{ m.dot }}"></span></span>
+          </button>
+        </sc-for>
+      </div>
+      <button onClick="{{ addCard }}" style="width:100%;height:52px;margin-top:14px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">add</span>Agregar tarjeta</button>
+      <div style="display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-size:12px;color:#727973;line-height:1.45"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">lock</span>Los datos de tarjeta se tokenizan con la pasarela de pago. faxi nunca guarda el número completo.</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.settings }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiFade .3s ease">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ backToMenu }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:22px;font-weight:800">Configuración</div></div>
+    <div style="flex:1;overflow:auto;padding:8px 20px 20px">
+      <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden">
+        <sc-for list="{{ settings }}" as="o" hint-placeholder-count="4">
+          <button onClick="{{ o.toggle }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border:0;border-bottom:1px solid #EEF2EC;background:transparent;cursor:pointer;text-align:left">
+            <span style="flex:1"><span style="display:block;font-weight:700;font-size:14.5px">{{ o.label }}</span><span style="display:block;font-size:12.5px;color:#414943">{{ o.sub }}</span></span>
+            <span style="width:52px;height:32px;border-radius:16px;background:{{ o.track }};border:2px solid {{ o.border }};box-sizing:border-box;position:relative;flex:none;transition:background .2s"><span style="position:absolute;top:50%;left:{{ o.x }};width:{{ o.size }};height:{{ o.size }};border-radius:50%;background:{{ o.thumb }};transform:translateY(-50%);transition:all .2s"></span></span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden;margin-top:16px">
+        <div style="display:flex;justify-content:space-between;padding:16px;border-bottom:1px solid #EEF2EC;font-size:14.5px"><span style="font-weight:700">Idioma</span><span style="color:#414943">Español (RD)</span></div>
+        <div style="display:flex;justify-content:space-between;padding:16px;border-bottom:1px solid #EEF2EC;font-size:14.5px"><span style="font-weight:700">Moneda</span><span style="color:#414943">Peso dominicano (DOP)</span></div>
+        <div style="display:flex;justify-content:space-between;padding:16px;border-bottom:1px solid #EEF2EC;font-size:14.5px"><span style="font-weight:700">Contactos de confianza</span><span style="color:#414943">2</span></div>
+        <div style="display:flex;justify-content:space-between;padding:16px;font-size:14.5px"><span style="font-weight:700">Versión</span><span style="color:#414943">1.0.0 · prototipo</span></div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.help }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;z-index:30;animation:faxiFade .3s ease">
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 8px 4px 4px"><button onClick="{{ backToMenu }}" style="width:48px;height:48px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">arrow_back</span></button><div style="font-size:22px;font-weight:800">Ayuda</div></div>
+    <div style="flex:1;overflow:auto;padding:8px 20px 20px">
+      <div style="padding:16px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;display:flex;align-items:center;gap:12px;margin-bottom:16px"><span style="width:44px;height:44px;border-radius:14px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1">receipt_long</span><div style="flex:1"><div style="font-size:12px;color:#414943">Último viaje · {{ trip.id }}</div><div style="font-weight:700;font-size:14.5px">{{ trip.dest }} · {{ trip.total }}</div></div><button onClick="{{ supportChat }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid #727973;background:transparent;font-weight:700;font-size:13px;cursor:pointer">Reportar</button></div>
+      <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid #EEF2EC;font-weight:700;font-size:14.5px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">route</span><span style="flex:1">Problemas con un viaje</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">chevron_right</span></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid #EEF2EC;font-weight:700;font-size:14.5px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">payments</span><span style="flex:1">Cobros y reembolsos</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">chevron_right</span></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid #EEF2EC;font-weight:700;font-size:14.5px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">backpack</span><span style="flex:1">Objetos perdidos</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">chevron_right</span></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid #EEF2EC;font-weight:700;font-size:14.5px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">manage_accounts</span><span style="flex:1">Cuenta y pagos</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">chevron_right</span></div>
+        <div style="display:flex;align-items:center;gap:14px;padding:15px 16px;font-weight:700;font-size:14.5px;color:#BA1A1A"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">emergency</span><span style="flex:1">Emergencia · llamar al 911</span></div>
+      </div>
+      <button onClick="{{ supportChat }}" style="width:100%;height:56px;margin-top:18px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">support_agent</span>Chatear con soporte</button>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ s.permDialog }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.36);display:flex;align-items:center;justify-content:center;padding:24px;z-index:60;animation:faxiFade .2s ease">
+    <div style="width:100%;background:#EEF2EC;border-radius:28px;padding:24px;animation:faxiPop .3s both">
+      <div style="text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;color:#1B7A57">location_on</span></div>
+      <div style="font-size:18px;line-height:1.35;text-align:center;margin:12px 0 18px">¿Permitir que <b>faxi</b> acceda a la ubicación de este dispositivo?</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button onClick="{{ allowLocation }}" style="height:48px;border:0;border-radius:24px;background:#CFEFDD;color:#00311F;font-weight:700;font-size:14.5px;cursor:pointer">Mientras la app está en uso</button>
+        <button onClick="{{ allowLocation }}" style="height:48px;border:0;border-radius:24px;background:#CFEFDD;color:#00311F;font-weight:700;font-size:14.5px;cursor:pointer">Solo esta vez</button>
+        <button onClick="{{ denyLocation }}" style="height:48px;border:0;border-radius:24px;background:#CFEFDD;color:#00311F;font-weight:700;font-size:14.5px;cursor:pointer">No permitir</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.breakdown }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;background:rgba(0,0,0,.36);z-index:60;animation:faxiFade .2s ease"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;padding:10px 20px 24px;z-index:61;animation:faxiUp .35s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="font-size:20px;font-weight:800">Desglose · {{ selCat.name }}</div>
+    <div style="font-size:12.5px;color:#414943;margin:4px 0 14px;font-family:ui-monospace,Menlo,monospace">base + distancia + tiempo + recargos − descuentos</div>
+    <sc-for list="{{ brk }}" as="b" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;font-size:14px;padding:7px 0;border-bottom:1px solid #EEF2EC"><span style="color:#414943">{{ b.label }}</span><span style="font-weight:700;font-variant-numeric:tabular-nums">{{ b.value }}</span></div></sc-for>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px"><span style="font-weight:800;font-size:15px">Precio estimado</span><span style="font-weight:800;font-size:24px;font-variant-numeric:tabular-nums">{{ brkTotal }}</span></div>
+    <p style="font-size:12px;color:#727973;line-height:1.45;margin:10px 0 16px">Tarifa mínima RD$ {{ fare.minimum }}. El precio final puede variar si cambias el destino, agregas paradas o hay demoras significativas.</p>
+    <button onClick="{{ closeOverlay }}" style="width:100%;height:52px;border-radius:26px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:15px;cursor:pointer">Entendido</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.picker }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;background:rgba(0,0,0,.36);z-index:60;animation:faxiFade .2s ease"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;padding:10px 16px 24px;z-index:61;animation:faxiUp .35s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 16px"></div>
+    <div style="font-size:20px;font-weight:800;padding:0 4px 12px">¿Cómo quieres pagar?</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="5">
+        <button onClick="{{ m.select }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid #DDE3DD;background:{{ m.bg }};cursor:pointer;text-align:left">
+          <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ m.icon }}</span>
+          <span style="flex:1"><span style="display:block;font-weight:700;font-size:14.5px">{{ m.label }}</span><span style="display:block;font-size:12px;color:#414943">{{ m.sub }}</span></span>
+          <span style="width:20px;height:20px;border-radius:50%;border:2px solid {{ m.ring }};display:flex;align-items:center;justify-content:center;box-sizing:border-box"><span style="width:10px;height:10px;border-radius:50%;background:{{ m.dot }}"></span></span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.cancel }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.36);display:flex;align-items:center;justify-content:center;padding:24px;z-index:60;animation:faxiFade .2s ease">
+    <div style="width:100%;background:#F8FAF6;border-radius:28px;padding:24px;animation:faxiPop .3s both">
+      <span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;color:#BA1A1A">cancel</span>
+      <div style="font-size:22px;font-weight:800;margin:12px 0 8px">¿Cancelar el viaje?</div>
+      <div style="font-size:14px;color:#414943;line-height:1.5">{{ cancelText }}</div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:22px">
+        <button onClick="{{ closeOverlay }}" style="height:44px;padding:0 16px;border:0;border-radius:22px;background:transparent;font-weight:700;font-size:14px;color:#1B7A57;cursor:pointer">Mantener viaje</button>
+        <button onClick="{{ confirmCancel }}" style="height:44px;padding:0 18px;border:0;border-radius:22px;background:#BA1A1A;color:#FFFFFF;font-weight:700;font-size:14px;cursor:pointer">Cancelar viaje</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.chat }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;background:rgba(0,0,0,.36);z-index:60;animation:faxiFade .2s ease"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:84%;background:#F8FAF6;border-radius:28px 28px 0 0;z-index:61;display:flex;flex-direction:column;animation:faxiUp .35s cubic-bezier(.2,.8,.2,1)">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 12px 12px 20px;border-bottom:1px solid #EEF2EC">
+      <div style="width:44px;height:44px;border-radius:50%;background:#181C1A;color:#CFEFDD;display:flex;align-items:center;justify-content:center;font-weight:800">{{ driver.initials }}</div>
+      <div style="flex:1"><div style="font-weight:800;font-size:16px">{{ driver.name }}</div><div style="font-size:12px;color:#414943">{{ carInfo.model }} · {{ carInfo.plate }}</div></div>
+      <button onClick="{{ openCall }}" style="width:44px;height:44px;border-radius:50%;border:0;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">call</span></button>
+      <button onClick="{{ closeOverlay }}" style="width:44px;height:44px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">close</span></button>
+    </div>
+    <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="align-self:center;font-size:11.5px;color:#727973;text-align:center;max-width:260px;line-height:1.4">Los mensajes se cifran. Tu número no se comparte con el conductor.</div>
+      <sc-if value="{{ noChat }}" hint-placeholder-val="{{ false }}"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#414943;font-size:13.5px"><span style="font-family:'Material Symbols Rounded';font-size:36px;line-height:1;color:#C1C9C2">forum</span>Envía un mensaje rápido a {{ driver.first }}</div></sc-if>
+      <sc-for list="{{ chat }}" as="m" hint-placeholder-count="0">
+        <div style="align-self:{{ m.align }};max-width:78%;display:flex;flex-direction:column;gap:2px;animation:faxiUp .3s both"><div style="padding:10px 14px;border-radius:{{ m.radius }};background:{{ m.bg }};color:{{ m.color }};font-size:14.5px;line-height:1.4">{{ m.text }}</div><div style="font-size:10.5px;color:#727973;align-self:{{ m.align }}">{{ m.time }}</div></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:6px;padding:8px 12px;overflow-x:auto;flex:none"><sc-for list="{{ quick }}" as="q" hint-placeholder-count="4"><button onClick="{{ q.send }}" style="flex:none;height:34px;padding:0 12px;border-radius:8px;border:1px solid #C1C9C2;background:#F8FAF6;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">{{ q.text }}</button></sc-for></div>
+    <div style="display:flex;gap:8px;padding:8px 12px 16px;flex:none">
+      <input value="{{ chatInput }}" onChange="{{ onChatInput }}" onKeyDown="{{ chatKey }}" placeholder="Escribe un mensaje" style="flex:1;min-width:0;height:48px;padding:0 18px;border-radius:24px;border:0;background:#E6EBE4;font-size:15px;outline:none">
+      <button onClick="{{ sendChat }}" style="width:48px;height:48px;border-radius:50%;border:0;background:#181C1A;color:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">send</span></button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.call }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#181C1A;color:#F8FAF6;z-index:70;display:flex;flex-direction:column;align-items:center;padding:80px 24px 56px;box-sizing:border-box;animation:faxiFade .25s ease">
+    <div style="font-size:13px;color:#9DB0A6;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">lock</span>Llamada enmascarada</div>
+    <div style="position:relative;width:132px;height:132px;margin-top:40px;display:flex;align-items:center;justify-content:center"><span style="position:absolute;inset:0;border-radius:50%;background:#2E3430;animation:faxiPulse 2s ease-out infinite"></span><div style="position:relative;width:112px;height:112px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:36px">{{ driver.initials }}</div></div>
+    <div style="font-size:26px;font-weight:800;margin-top:22px">{{ driver.name }}</div>
+    <div style="font-size:15px;color:#9DB0A6;margin-top:4px;font-variant-numeric:tabular-nums">{{ call.status }}</div>
+    <div style="flex:1"></div>
+    <div style="display:flex;gap:28px;align-items:center">
+      <button style="width:60px;height:60px;border-radius:50%;border:0;background:#2E3430;color:#F8FAF6;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1">mic_off</span></button>
+      <button onClick="{{ closeOverlay }}" style="width:76px;height:76px;border-radius:50%;border:0;background:#BA1A1A;color:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:34px;line-height:1">call_end</span></button>
+      <button style="width:60px;height:60px;border-radius:50%;border:0;background:#2E3430;color:#F8FAF6;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1">volume_up</span></button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ s.offline }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;top:72px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:18px;background:#410002;color:#FFDAD6;font-size:13px;font-weight:700;z-index:80;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:faxiFade .3s ease"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">wifi_off</span>Sin conexión · reintentando…</div>
+</sc-if>
+
+<sc-if value="{{ s.toast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;top:8px;left:8px;right:8px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:#FFFFFF;box-shadow:0 8px 28px rgba(24,28,26,.22);z-index:90;animation:faxiToast .45s cubic-bezier(.2,.8,.2,1)">
+    <span style="width:40px;height:40px;border-radius:12px;background:#CFEFDD;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#00311F">{{ toastV.icon }}</span></span>
+    <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14px">{{ toastV.title }}</div><div style="font-size:12.5px;color:#414943;line-height:1.35">{{ toastV.body }}</div></div>
+    <span style="font-size:11px;color:#727973;align-self:flex-start">ahora</span>
+  </div>
+</sc-if>
+    </div>
+  </x-import>
+  <sc-if value="{{ showPanel }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:320px;max-width:100%;display:flex;flex-direction:column;gap:16px">
+    <div style="background:#F8FAF6;border:1px solid #DDE3DD;border-radius:24px;padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px"><div style="font-weight:800;font-size:17px;letter-spacing:-.01em">Flujo del viaje</div><span style="font-size:11px;font-weight:700;color:#00311F;background:#CFEFDD;padding:4px 8px;border-radius:6px;font-family:ui-monospace,Menlo,monospace">{{ stateCode }}</span></div>
+      <p style="margin:0 0 12px;font-size:12.5px;color:#414943;line-height:1.45">Avanza solo, como en la vida real. Toca un paso para saltar a ese estado.</p>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ flow }}" as="f" hint-placeholder-count="21">
+          <button onClick="{{ f.go }}" style="display:flex;align-items:center;gap:10px;padding:5px 8px;border:0;border-radius:10px;background:{{ f.bg }};cursor:pointer;text-align:left;transition:background .25s">
+            <span style="width:22px;height:22px;border-radius:50%;background:{{ f.dotBg }};color:{{ f.dotColor }};font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;transition:background .25s">{{ f.n }}</span>
+            <span style="font-size:13px;font-weight:600;color:{{ f.color }}">{{ f.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="background:#F8FAF6;border:1px solid #DDE3DD;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-weight:800;font-size:17px">Simulación</div>
+      <button onClick="{{ sim.offline.toggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left"><span><span style="display:block;font-weight:700;font-size:14px">Sin conexión</span><span style="display:block;font-size:12px;color:#414943">Bloquea solicitudes, mapa en gris</span></span><span style="width:52px;height:32px;border-radius:16px;background:{{ sim.offline.track }};border:2px solid {{ sim.offline.border }};box-sizing:border-box;position:relative;flex:none;transition:background .2s"><span style="position:absolute;top:50%;left:{{ sim.offline.x }};width:{{ sim.offline.size }};height:{{ sim.offline.size }};border-radius:50%;background:{{ sim.offline.thumb }};transform:translateY(-50%);transition:all .2s"></span></span></button>
+      <button onClick="{{ sim.noDrivers.toggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left"><span><span style="display:block;font-weight:700;font-size:14px">Sin conductores</span><span style="display:block;font-size:12px;color:#414943">La búsqueda termina en error</span></span><span style="width:52px;height:32px;border-radius:16px;background:{{ sim.noDrivers.track }};border:2px solid {{ sim.noDrivers.border }};box-sizing:border-box;position:relative;flex:none;transition:background .2s"><span style="position:absolute;top:50%;left:{{ sim.noDrivers.x }};width:{{ sim.noDrivers.size }};height:{{ sim.noDrivers.size }};border-radius:50%;background:{{ sim.noDrivers.thumb }};transform:translateY(-50%);transition:all .2s"></span></span></button>
+      <button onClick="{{ sim.payFail.toggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left"><span><span style="display:block;font-weight:700;font-size:14px">Rechazar pago</span><span style="display:block;font-size:12px;color:#414943">La tarjeta devuelve error</span></span><span style="width:52px;height:32px;border-radius:16px;background:{{ sim.payFail.track }};border:2px solid {{ sim.payFail.border }};box-sizing:border-box;position:relative;flex:none;transition:background .2s"><span style="position:absolute;top:50%;left:{{ sim.payFail.x }};width:{{ sim.payFail.size }};height:{{ sim.payFail.size }};border-radius:50%;background:{{ sim.payFail.thumb }};transform:translateY(-50%);transition:all .2s"></span></span></button>
+      <button onClick="{{ restart }}" style="height:40px;border-radius:20px;border:1px solid #727973;background:transparent;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">restart_alt</span>Reiniciar demo</button>
+    </div>
+  </aside>
+  </sc-if>
+</main>
+</sc-if>
+<div style="display:none"><x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="0px,0px"></x-import></div>
+<div style="display:{{ driverDisplay }};flex:1;flex-direction:column"><dc-import name="faxi-driver" sim-speed="{{ simSpeedProp }}" hint-size="100%,920px"></dc-import></div>
+<div style="display:{{ adminDisplay }};flex:1;flex-direction:column"><dc-import name="faxi-admin" hint-size="100%,900px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;simSpeed&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1x&quot;,&quot;2x&quot;,&quot;4x&quot;],&quot;default&quot;:&quot;1x&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Simulación&quot;},&quot;surge&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Tarifas&quot;},&quot;showPanel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototipo&quot;}}">
+const W = 396, H = 812;
+// ───────── data/ (mock — replace with API) ─────────
+const XS = [50,150,250,350,450,550,650,750,850,950];
+const YS = [60,150,240,330,420,510,600,690,780,870];
+const SEA_Y = 886;
+const MAJOR_X = {350:'Av. Winston Churchill', 650:'Av. Abraham Lincoln', 850:'Av. Máximo Gómez'};
+const MAJOR_Y = {240:'Av. John F. Kennedy', 510:'Av. 27 de Febrero', 870:'Av. George Washington'};
+const PARKS = [[50,780,350,870],[750,690,850,780],[550,60,750,150]];
+const HOODS = [['PIANTINI',505,565],['NACO',560,380],['BELLA VISTA',200,735],['CIUDAD COLONIAL',900,830],['LA FE',700,200],['LOS PRADOS',150,200],['GAZCUE',700,735]];
+const USER = { x:450, y:600, addr:'Av. Gustavo Mejía Ricart 54', area:'Piantini' };
+const PLACES = [
+  {id:'colonial', name:'Zona Colonial', addr:'Calle El Conde, Ciudad Colonial', km:7.4, min:22, x:850, y:780, icon:'account_balance'},
+  {id:'agora', name:'Ágora Mall', addr:'Av. Abraham Lincoln esq. John F. Kennedy', km:1.8, min:7, x:650, y:330, icon:'local_mall'},
+  {id:'blue', name:'Blue Mall', addr:'Av. Winston Churchill 93, Piantini', km:1.2, min:5, x:350, y:420, icon:'local_mall'},
+  {id:'malecon', name:'Malecón · Hotel Jaragua', addr:'Av. George Washington 367, Gazcue', km:5.6, min:17, x:650, y:870, icon:'beach_access'},
+  {id:'mirador', name:'Parque Mirador Sur', addr:'Av. Anacaona, Bella Vista', km:6.1, min:16, x:150, y:780, icon:'park'},
+  {id:'aila', name:'Aeropuerto Las Américas (SDQ)', addr:'Autopista Las Américas, Punta Caucedo', km:27.5, min:38, x:950, y:690, icon:'flight'},
+  {id:'g360', name:'Galería 360', addr:'Av. John F. Kennedy, Los Prados', km:4.3, min:14, x:150, y:240, icon:'local_mall'},
+  {id:'quisqueya', name:'Estadio Quisqueya', addr:'Av. Tiradentes, Ensanche La Fe', km:2.6, min:9, x:650, y:150, icon:'sports_baseball'},
+  {id:'casa', name:'Casa', addr:'C/ Desiderio Valverde, Los Cacicazgos', km:4.9, min:15, x:250, y:780, icon:'home', hidden:true},
+  {id:'work', name:'Trabajo', addr:'Torre Novo-Centro, Av. Lope de Vega', km:2.1, min:8, x:550, y:420, icon:'work', hidden:true},
+];
+const CATS = [
+  {id:'eco', name:'Económico', desc:'Viajes diarios a buen precio', cap:4, mult:1, eta:3, icon:'directions_car'},
+  {id:'comfort', name:'Confort', desc:'Autos recientes, más espacio', cap:4, mult:1.3, eta:4, icon:'airline_seat_recline_extra'},
+  {id:'premium', name:'Premium', desc:'Sedanes de lujo, top conductores', cap:4, mult:1.9, eta:6, icon:'diamond'},
+  {id:'suv', name:'SUV', desc:'Grupos y equipaje', cap:6, mult:1.65, eta:7, icon:'airport_shuttle'},
+  {id:'van', name:'Van', desc:'Hasta 10 personas', cap:10, mult:2.2, eta:11, icon:'directions_bus'},
+];
+const FARE = { base:60, perKm:22, perMin:6, minimum:150, surgePct:.15, commission:.2, promo:{code:'FAXI20', pct:.2, cap:150} };
+const CFG = () => window.FaxiCore ? window.FaxiCore.config() : {fare:FARE, cats:CATS, surge:false};
+const F = () => CFG().fare;
+const catCfg = c => Object.assign({}, c, CFG().cats.find(x => x.id === c.id) || {});
+const CARS = { eco:['Toyota Corolla 2021','Gris plata','A482915'], comfort:['Honda Accord 2022','Negro','A611208'], premium:['Mercedes-Benz Clase E 2023','Negro obsidiana','A905374'], suv:['Toyota Highlander 2022','Blanco perla','G277541'], van:['Hyundai H-1 2021','Plata','I038162'] };
+const DRIVER = { name:'Rafael Peña', first:'Rafael', initials:'RP', rating:'4.92', trips:'2,184' };
+const APPROACH = [[250,420],[250,600],[450,600]];
+const NEARBY = [
+  {x:350,y:560,ax:'y',amp:44,sp:.00055,ph:0},{x:520,y:600,ax:'x',amp:48,sp:.0005,ph:1.4},{x:450,y:470,ax:'y',amp:36,sp:.0007,ph:2.2},
+  {x:250,y:690,ax:'x',amp:50,sp:.00045,ph:.6},{x:600,y:510,ax:'x',amp:52,sp:.0006,ph:3.1},{x:550,y:700,ax:'y',amp:40,sp:.0005,ph:4.2},{x:330,y:420,ax:'x',amp:46,sp:.00065,ph:5}];
+const METHODS = [
+  {id:'visa', label:'Visa •••• 4821', sub:'Vence 08/28', icon:'credit_card'},
+  {id:'mc', label:'Mastercard •••• 9033', sub:'Vence 02/27', icon:'credit_card'},
+  {id:'cash', label:'Efectivo', sub:'Pagas al conductor al llegar', icon:'payments'},
+  {id:'transfer', label:'Transferencia', sub:'Popular · BHD · Banreservas', icon:'account_balance'},
+  {id:'wallet', label:'Billetera digital', sub:'Google Pay', icon:'account_balance_wallet'},
+];
+const SHEET = {home:372, pickup:236, routing:300, options:566, confirming:300, searching:310, assigned:388, enroute:388, arrived:388, started:336, ontrip:336, atDest:300};
+const FLOW = [
+  ['Abrir app',['splash','onboarding','auth']],['Ubicación actual',['permission']],['¿A dónde vas?',['home']],['Seleccionar destino',['search','pickup']],
+  ['Calcular ruta',['routing']],['Precio estimado',['options']],['Tipo de vehículo',['options']],['Confirmar viaje',['confirming']],
+  ['Buscando conductor',['searching']],['Conductor acepta',['assigned']],['Conductor y vehículo',['assigned']],['Conductor en camino',['enroute']],
+  ['Conductor llega',['arrived']],['Viaje iniciado',['started']],['Seguimiento en mapa',['ontrip']],['Destino',['atDest']],
+  ['Viaje finalizado',['finished']],['Pago',['payment']],['Calificación',['rating']],['Recibo',['receipt']],['Historial',['history']]];
+const ONBOARD = [
+  {icon:'near_me', title:'Pide en segundos', body:'Dinos a dónde vas y conoce el precio antes de confirmar. Sin sorpresas.'},
+  {icon:'radar', title:'Sigue tu viaje en vivo', body:'Mira quién te recoge, su vehículo, su matrícula y dónde está en todo momento.'},
+  {icon:'account_balance_wallet', title:'Paga como prefieras', body:'Tarjeta, efectivo, transferencia o billetera digital. Tu recibo llega al instante.'}];
+const TAGS_GOOD = ['Conducción segura','Auto limpio','Puntual','Buena conversación','Buena música','Conoce la ruta'];
+const TAGS_BAD = ['Ruta más larga','Conducción brusca','Auto sucio','Llegó tarde','Trato inadecuado','Otro'];
+const STAR_LABEL = ['Toca para calificar','Muy malo','Malo','Regular','Bueno','¡Excelente!'];
+const QUICK = ['¿Dónde estás?','Ya estoy aquí.','Estoy frente a la entrada.','Voy saliendo, 2 min.'];
+const REPLY = {'¿Dónde estás?':'Estoy en la Mejía Ricart, a dos cuadras.','Ya estoy aquí.':'Perfecto, ya te veo.','Estoy frente a la entrada.':'Dale, me paro ahí mismo.','Voy saliendo, 2 min.':'Sin problema, te espero.'};
+
+// ───────── services/pricing ─────────
+const fmt = n => 'RD$ ' + Math.round(n).toLocaleString('en-US');
+const Pricing = {
+  quote(cat, place, {surge, promo}) {
+    const m = catCfg(cat).mult, base = F().base*m, dist = place.km*F().perKm*m, time = place.min*F().perMin*m;
+    let sub = base + dist + time; const minAdj = Math.max(0, F().minimum*m - sub); sub += minAdj;
+    const sur = surge ? sub*F().surgePct : 0;
+    const disc = promo ? Math.min(F().promo.cap, (sub+sur)*F().promo.pct) : 0;
+    return {base:Math.round(base), dist:Math.round(dist), time:Math.round(time), minAdj:Math.round(minAdj), surge:Math.round(sur), disc:Math.round(disc), before:Math.round(sub+sur), total:Math.round(sub+sur-disc)};
+  }
+};
+// ───────── services/routing + map geometry ─────────
+const PL = id => PLACES.find(p => p.id === id);
+const routeFor = p => p.x === USER.x ? [[USER.x,USER.y],[p.x,p.y]] : [[USER.x,USER.y],[USER.x,p.y],[p.x,p.y]];
+const pathLen = p => { let L = 0; for (let i=1;i<p.length;i++) L += Math.hypot(p[i][0]-p[i-1][0], p[i][1]-p[i-1][1]); return L; };
+function pointAt(p, t) {
+  const L = pathLen(p)*Math.min(1,Math.max(0,t)); let acc = 0;
+  for (let i=1;i<p.length;i++) { const a=p[i-1], b=p[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    if (acc+d >= L || i === p.length-1) { const k = d ? Math.min(1,(L-acc)/d) : 0;
+      return {x:a[0]+(b[0]-a[0])*k, y:a[1]+(b[1]-a[1])*k, ang:Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI+90, i}; }
+    acc += d; }
+}
+const remaining = (p,t) => { const q = pointAt(p,t); return [[q.x,q.y], ...p.slice(q.i)]; };
+const dPath = p => 'M' + p.map(q => q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' L');
+const ease = t => { t = Math.min(1,Math.max(0,t)); return t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; };
+const box = (c, r) => [[c.x-r,c.y-r],[c.x+r,c.y+r]];
+function clock(add) { const d = new Date(2026,9,3,19,42+add); let h=d.getHours(); const ap = h>=12?'p. m.':'a. m.'; h = h%12||12; return h+':'+String(d.getMinutes()).padStart(2,'0')+' '+ap; }
+function mkTrip(o) {
+  const place = PL(o.placeId), cat = CATS.find(c => c.id === o.catId);
+  return Object.assign({ id:'FX-'+(240000+Math.floor(Math.random()*700000)), q:Pricing.quote(cat, place, {surge:o.surge, promo:o.promo}), car:CARS[cat.id], driver:DRIVER.name,
+    date:'3 oct 2026', start:clock(4), end:clock(4+place.min), status:'Completado', rating:0, tip:0, method:'visa' }, o);
+}
+const SEED_HISTORY = [
+  mkTrip({placeId:'blue', catId:'eco', date:'28 sep 2026', start:'9:15 a. m.', end:'9:21 a. m.', driver:'Luis Almonte', rating:5, method:'visa', id:'FX-238114'}),
+  mkTrip({placeId:'aila', catId:'comfort', date:'25 sep 2026', start:'5:20 a. m.', end:'5:58 a. m.', driver:'Carolina Méndez', rating:5, tip:100, method:'mc', id:'FX-236902'}),
+  mkTrip({placeId:'colonial', catId:'eco', date:'21 sep 2026', start:'8:02 p. m.', end:'—', driver:'—', status:'Cancelado', method:'cash', id:'FX-235517'}),
+  mkTrip({placeId:'g360', catId:'eco', date:'17 sep 2026', start:'4:40 p. m.', end:'4:55 p. m.', driver:'José Taveras', rating:4, method:'visa', id:'FX-233081'}),
+];
+
+class Component extends DCLogic {
+  state = { app:'passenger', phase:'splash', phaseStart:Date.now(), now:Date.now(), obIndex:0, authMode:'register',
+    form:{name:'', phone:'', email:'', password:''}, err:{}, authLoading:false, permDialog:false, locDenied:false,
+    query:'', dest:null, cat:'eco', promo:false, method:'visa', methods:METHODS, trip:null, tripStart:0, overlay:null,
+    chat:[], chatInput:'', unread:0, sentArriving:false, payState:'idle', payAt:0, stars:0, tags:[], comment:'', tip:0,
+    history:SEED_HISTORY, receiptId:null, receiptFrom:'flow', histFilter:'all', toast:null, offline:false, simNoDrivers:false, simPayFail:false,
+    searchError:false, callStart:0, settings:{notifs:true, share:false, quiet:false, promos:true} };
+
+  componentDidMount() { this.timer = setInterval(() => this.tick(), 120); this.base = null; }
+  componentWillUnmount() { clearInterval(this.timer); }
+  speed() { return ({'1x':1,'2x':2,'4x':4})[this.props.simSpeed ?? '1x'] || 1; }
+  surge() { return !!(this.props.surge ?? false) || !!CFG().surge; }
+  ph(p, extra) { return Object.assign({phase:p, phaseStart:Date.now()}, extra||{}); }
+  go(p, extra) { this.setState(this.ph(p, extra)); }
+  mkToast(title, body, icon) { return {title, body, icon:icon||'notifications', until:Date.now()+3800}; }
+  toast(title, body, icon) { this.setState({toast:this.mkToast(title, body, icon)}); }
+  place() { return PL(this.state.dest || 'colonial'); }
+  car() { return (this.state.trip && this.state.trip.car) || CARS[this.state.cat]; }
+
+  // ───────── services/realtime (simulated dispatch + GPS) ─────────
+  tick() {
+    const st = this.state, now = Date.now(), el = now - st.phaseStart, sp = this.speed(), u = {now};
+    if (st.toast && now > st.toast.until) u.toast = null;
+    if (window.FaxiCore && st.phase !== this._lp) { this._lp = st.phase; const pl = PL(st.dest||'colonial'), tq = st.trip && st.trip.q;
+      window.FaxiCore.setLive('passenger', {phase:st.phase, label:(st.form.name.trim()||'María Fernández')+' → '+pl.name, rider:st.form.name.trim()||'María Fernández', dest:pl.name, cat:st.cat, total:tq?tq.total:0, id:st.trip?st.trip.id:null}); }
+    const car = this.car();
+    const set = (p, extra) => Object.assign(u, this.ph(p), extra||{});
+    switch (st.phase) {
+      case 'splash': if (el > 1900) set('onboarding'); break;
+      case 'routing': if (el > 1600) set('options'); break;
+      case 'confirming': if (el > 1500) set('searching'); break;
+      case 'searching':
+        if (!st.offline && !st.searchError && el > 4600/sp) {
+          if (st.simNoDrivers) u.searchError = true;
+          else set('assigned', {toast:this.mkToast(DRIVER.first+' aceptó tu viaje', car[0]+' · '+car[2]+' · llega en 4 min', 'check_circle')});
+        } break;
+      case 'assigned': if (el > 2800) set('enroute'); break;
+      case 'enroute': {
+        const t = el/(16000/sp);
+        if (t > .62 && !st.sentArriving) Object.assign(u, {sentArriving:true, chat:[...st.chat, {from:'driver', text:'Estoy llegando.', time:clock(3)}], unread:st.overlay==='chat'?0:st.unread+1, toast:this.mkToast(DRIVER.first, 'Estoy llegando.', 'chat')});
+        if (t >= 1) set('arrived', {toast:this.mkToast('Tu conductor llegó', 'Busca el '+car[0]+' '+car[1].toLowerCase()+' · '+car[2], 'hail')});
+      } break;
+      case 'arrived': if (el > 7000/sp) set('started', {tripStart:now, overlay:null, toast:this.mkToast('Viaje iniciado', 'Comparte tu viaje con quien quieras desde el panel.', 'navigation')}); break;
+      case 'started': if (el > 2400) set('ontrip'); break;
+      case 'ontrip': if ((now-st.tripStart)/(20000/sp) >= 1) set('atDest'); break;
+      case 'atDest': if (el > 2800) set('finished'); break;
+      case 'payment':
+        if (st.payState === 'processing' && now-st.payAt > 1900) Object.assign(u, {payState:st.simPayFail?'failed':'success', payAt:now});
+        if (st.payState === 'success' && now-st.payAt > 1400) set('rating', {payState:'done'});
+        break;
+    }
+    this.setState(u);
+  }
+
+  // ───────── services/map (MapProvider: simulated SVG; swap for Google Maps / Mapbox) ─────────
+  camera(pts, sheetH) {
+    const xs = pts.map(p=>p[0]), ys = pts.map(p=>p[1]);
+    const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+    const bw=Math.max(maxX-minX,120), bh=Math.max(maxY-minY,120), top=84, visH=H-sheetH-top;
+    let s = Math.min((W-80)/bw, (visH-70)/bh); s = Math.min(1.9, Math.max(.32, s));
+    return {s, tx:W/2-(minX+maxX)/2*s, ty:top+visH/2-(minY+maxY)/2*s};
+  }
+  baseLayer() {
+    if (this.base) return this.base;
+    const h = React.createElement, k = [];
+    k.push(h('rect',{key:'bg',x:-800,y:-800,width:2600,height:2600,fill:'#E3E7E0'}));
+    for (let x=0;x<=1000;x+=100) k.push(h('line',{key:'ax'+x,x1:x,y1:-800,x2:x,y2:SEA_Y,stroke:'#EEF1EB',strokeWidth:3}));
+    for (let y=105;y<=1000;y+=90) k.push(h('line',{key:'ay'+y,x1:-800,y1:y,x2:1800,y2:y,stroke:'#EEF1EB',strokeWidth:3}));
+    XS.forEach(x => { if (!MAJOR_X[x]) k.push(h('line',{key:'vx'+x,x1:x,y1:-800,x2:x,y2:SEA_Y,stroke:'#FFFFFF',strokeWidth:7})); });
+    YS.forEach(y => { if (!MAJOR_Y[y]) k.push(h('line',{key:'hy'+y,x1:-800,y1:y,x2:1800,y2:y,stroke:'#FFFFFF',strokeWidth:7})); });
+    PARKS.forEach((p,i) => k.push(h('rect',{key:'pk'+i,x:p[0]+7,y:p[1]+7,width:p[2]-p[0]-14,height:p[3]-p[1]-14,rx:6,fill:'#CFE3CB'})));
+    Object.keys(MAJOR_X).forEach(x => { k.push(h('line',{key:'mxo'+x,x1:x,y1:-800,x2:x,y2:SEA_Y,stroke:'#D2D8CF',strokeWidth:17})); });
+    Object.keys(MAJOR_Y).forEach(y => { k.push(h('line',{key:'myo'+y,x1:-800,y1:y,x2:1800,y2:y,stroke:'#D2D8CF',strokeWidth:17})); });
+    Object.keys(MAJOR_X).forEach(x => { k.push(h('line',{key:'mx'+x,x1:x,y1:-800,x2:x,y2:SEA_Y,stroke:'#FFFFFF',strokeWidth:13})); });
+    Object.keys(MAJOR_Y).forEach(y => { k.push(h('line',{key:'my'+y,x1:-800,y1:y,x2:1800,y2:y,stroke:'#FFFFFF',strokeWidth:13})); });
+    k.push(h('rect',{key:'sea',x:-800,y:SEA_Y,width:2600,height:1000,fill:'#C5DBE3'}));
+    k.push(h('text',{key:'seat',x:520,y:960,fill:'#8FAFBC',fontSize:15,fontStyle:'italic',letterSpacing:3,textAnchor:'middle'},'Mar Caribe'));
+    const lab = {fill:'#8A938C',fontSize:8.5,fontWeight:600,stroke:'#FFFFFF',strokeWidth:3,paintOrder:'stroke',textAnchor:'middle'};
+    Object.entries(MAJOR_X).forEach(([x,n]) => k.push(h('text',Object.assign({key:'lx'+x,transform:`translate(${+x+3} 300) rotate(-90)`},lab),n)));
+    Object.entries(MAJOR_Y).forEach(([y,n]) => k.push(h('text',Object.assign({key:'ly'+y,x:200,y:+y+3},lab),n)));
+    HOODS.forEach(([n,x,y]) => k.push(h('text',{key:'hd'+n,x,y,fill:'#A0A89F',fontSize:9,fontWeight:700,letterSpacing:2.4,textAnchor:'middle'},n)));
+    this.base = h('g',{key:'base'},k);
+    return this.base;
+  }
+  carShape(fill, key) {
+    const h = React.createElement;
+    return h('g',{key},[
+      h('rect',{key:'s',x:-8,y:-12,width:16,height:26,rx:5,fill:'rgba(0,0,0,.18)',transform:'translate(1.5 2)'}),
+      h('rect',{key:'b',x:-8,y:-13,width:16,height:26,rx:5,fill}),
+      h('rect',{key:'w',x:-6,y:-6,width:12,height:6,rx:2,fill:'#A9BDB5'}),
+      h('rect',{key:'r',x:-6,y:6,width:12,height:3.5,rx:1.5,fill:'#A9BDB5',opacity:.7})]);
+  }
+  buildMap() {
+    const h = React.createElement, st = this.state, P = st.phase, now = st.now, sp = this.speed();
+    const place = this.place(), route = routeFor(place), el = now - st.phaseStart;
+    const showNearby = ['home','pickup','routing','options','confirming','searching'].includes(P);
+    const withRoute = ['routing','options','confirming','started','ontrip','atDest'].includes(P);
+    const tTrip = ['started','ontrip'].includes(P) ? ease((now-st.tripStart)/(20000/sp)) : P==='atDest' ? 1 : 0;
+    let pts;
+    if (['home'].includes(P)) pts = box(USER,150);
+    else if (['pickup','arrived'].includes(P)) pts = box(USER,70);
+    else if (P==='searching') pts = box(USER,115);
+    else if (['assigned','enroute'].includes(P)) pts = APPROACH.concat([[USER.x+40,USER.y+40]]);
+    else pts = route.concat([[route[0][0]-30,route[0][1]+30],[place.x+30,place.y-30]]);
+    const cam = this.camera(pts, SHEET[P] || 300), k = 1/cam.s, TR = 'transform 1.1s cubic-bezier(.2,.8,.2,1)';
+    const mk = (key, x, y, kids) => h('g',{key, transform:`translate(${x} ${y})`}, h('g',{style:{transform:`scale(${k})`, transition:TR}}, kids));
+    const chip = (key, text, dx, dy, dark, wx) => { const w = text.length*6.7+26; if (wx !== undefined && wx*cam.s+cam.tx > W/2) dx = -(w+16); return h('g',{key, transform:`translate(${dx} ${dy})`, style:{animation:'faxiFade .5s ease'}},[
+      h('rect',{key:'r',x:0,y:-15,width:w,height:30,rx:15,fill:dark?'#181C1A':'#FFFFFF',stroke:dark?'none':'#DDE3DD'}),
+      h('text',{key:'t',x:13,y:4.5,fontSize:12,fontWeight:700,fill:dark?'#FFFFFF':'#181C1A',fontFamily:'Plus Jakarta Sans, sans-serif'},text)]); };
+    const dyn = [];
+    if (showNearby) NEARBY.forEach((c,i) => {
+      const s = Math.sin(now*c.sp+c.ph), dv = Math.cos(now*c.sp+c.ph), off = s*c.amp;
+      const x = c.ax==='x' ? c.x+off : c.x, y = c.ax==='y' ? c.y+off : c.y, ang = c.ax==='x' ? (dv>0?90:270) : (dv>0?180:0);
+      dyn.push(h('g',{key:'nb'+i, style:{transform:`translate(${x}px,${y}px)`, transition:'transform .12s linear'}},
+        h('g',{style:{transform:`scale(${k*.85})`, transition:TR}}, h('g',{style:{transform:`rotate(${ang}deg)`, transition:'transform .5s'}}, this.carShape('#2E3430','c')))));
+    });
+    if (withRoute) {
+      const rp = ['started','ontrip','atDest'].includes(P) ? remaining(route, tTrip) : route;
+      dyn.push(h('path',{key:'ru'+place.id, d:dPath(rp), fill:'none', stroke:'#FFFFFF', strokeWidth:11, strokeLinecap:'round', strokeLinejoin:'round', vectorEffect:'non-scaling-stroke'}));
+      dyn.push(h('path',{key:'rl'+place.id+(P==='routing'?'a':'b'), d:dPath(rp), pathLength:P==='routing'?1:undefined, fill:'none', stroke:'#181C1A', strokeWidth:5, strokeLinecap:'round', strokeLinejoin:'round', vectorEffect:'non-scaling-stroke',
+        style:P==='routing'?{strokeDasharray:1, animation:'faxiDraw 1.3s cubic-bezier(.4,0,.2,1) both'}:undefined}));
+    }
+    let drv = null;
+    if (P==='assigned') drv = pointAt(APPROACH,0);
+    if (P==='enroute') drv = pointAt(APPROACH, ease(el/(16000/sp)));
+    if (P==='arrived') drv = pointAt(APPROACH,1);
+    if (['assigned','enroute'].includes(P)) {
+      const rp = remaining(APPROACH, P==='enroute' ? ease(el/(16000/sp)) : 0);
+      dyn.push(h('path',{key:'ap', d:dPath(rp), fill:'none', stroke:'#1B7A57', strokeWidth:4.5, strokeDasharray:'1 9', strokeLinecap:'round', vectorEffect:'non-scaling-stroke'}));
+    }
+    if (['started','ontrip','atDest'].includes(P)) drv = pointAt(route, tTrip);
+    if (P==='searching' && !st.searchError) dyn.push(mk('radar', USER.x, USER.y, [0,1,2].map(i => h('circle',{key:i, r:120, fill:'rgba(27,122,87,.16)', stroke:'rgba(27,122,87,.35)', strokeWidth:1, style:{transformBox:'fill-box', transformOrigin:'center', animation:`faxiPulse 2.7s ${i*.9}s cubic-bezier(.2,.6,.3,1) infinite`, opacity:0}}))));
+    if (!['started','ontrip','atDest'].includes(P)) {
+      const pick = ['pickup','routing','options','confirming','assigned','enroute','arrived'].includes(P);
+      dyn.push(mk('me', USER.x, USER.y, pick ? [
+        h('circle',{key:'h',r:15,fill:'rgba(24,28,26,.12)'}), h('circle',{key:'o',r:9.5,fill:'#181C1A'}), h('circle',{key:'i',r:3.8,fill:'#FFFFFF'}),
+        P==='pickup' ? chip('cl','Recogida · '+USER.addr.replace('Av. ',''), 16, -26, true, USER.x) : null,
+        P==='arrived' ? chip('cl', DRIVER.first+' está aquí', 16, -26, true, USER.x) : null,
+      ] : [
+        h('circle',{key:'p',r:30,fill:'rgba(27,122,87,.22)',style:{transformBox:'fill-box',transformOrigin:'center',animation:'faxiPulse 2.4s ease-out infinite'}}),
+        h('circle',{key:'w',r:10,fill:'#FFFFFF',style:{filter:'drop-shadow(0 1px 3px rgba(0,0,0,.3))'}}), h('circle',{key:'d',r:6.5,fill:'#1B7A57'})]));
+    }
+    if (withRoute) dyn.push(mk('dest', place.x, place.y, [
+      h('rect',{key:'o',x:-9,y:-9,width:18,height:18,rx:3,fill:'#181C1A'}), h('rect',{key:'i',x:-3.2,y:-3.2,width:6.4,height:6.4,fill:'#FFFFFF'}),
+      chip('dl', place.name.split(' (')[0] + (P==='options'||P==='routing' ? ' · '+place.min+' min' : ''), 16, -26, false, place.x)]));
+    if (drv) dyn.push(h('g',{key:'drv', style:{transform:`translate(${drv.x}px,${drv.y}px)`, transition:'transform .12s linear'}},
+      h('g',{style:{transform:`scale(${k*1.15})`, transition:TR}}, h('g',{style:{transformBox:'fill-box', transformOrigin:'center', animation:'faxiPop .6s cubic-bezier(.2,.8,.2,1) both'}}, [
+        h('circle',{key:'halo',r:22,fill:'rgba(27,122,87,.18)'}),
+        h('g',{key:'rot', style:{transform:`rotate(${drv.ang}deg)`, transition:'transform .45s'}}, this.carShape('#1B7A57','c'))]))));
+    return h('svg',{width:'100%', height:'100%', viewBox:`0 0 ${W} ${H}`, style:{display:'block', filter:st.offline?'grayscale(.9)':'none', transition:'filter .4s'}},
+      h('g',{style:{transform:`translate(${cam.tx}px,${cam.ty}px) scale(${cam.s})`, transformOrigin:'0 0', transition:TR}}, [this.baseLayer(), ...dyn]));
+  }
+
+  // ───────── services/trips (actions) ─────────
+  jump(p) {
+    const st = this.state, idx = ['confirming','searching','assigned','enroute','arrived','started','ontrip','atDest','finished','payment','rating','receipt'].indexOf(p);
+    const u = this.ph(p, {overlay:null, searchError:false, payState:'idle'});
+    if (!st.dest && !['splash','onboarding','auth','permission','home','search'].includes(p)) u.dest = 'colonial';
+    if (idx >= 0 && !st.trip) u.trip = mkTrip({placeId:u.dest||st.dest||'colonial', catId:st.cat, surge:this.surge(), promo:st.promo, method:st.method});
+    if (['started','ontrip'].includes(p)) u.tripStart = Date.now() - (p==='ontrip' ? 4000/this.speed() : 0);
+    if (p==='splash') { u.obIndex = 0; }
+    if (p==='receipt') { const t = u.trip || st.trip; u.receiptId = t.id; u.receiptFrom = 'flow'; if (!st.history.find(x => x.id===t.id)) u.history = [t, ...st.history]; }
+    if (p==='rating') { u.stars = 0; u.tags = []; u.tip = 0; u.comment = ''; }
+    this.setState(u);
+  }
+  request() {
+    const st = this.state; if (st.offline) return;
+    const trip = mkTrip({placeId:st.dest, catId:st.cat, surge:this.surge(), promo:st.promo, method:st.method});
+    this.go('confirming', {trip, chat:[], unread:0, sentArriving:false, searchError:false, stars:0, tags:[], tip:0, comment:''});
+  }
+  validate() {
+    const f = this.state.form, e = {}, reg = this.state.authMode==='register';
+    if (reg && f.name.trim().length < 3) e.name = 'Escribe tu nombre y apellido.';
+    if (f.phone.replace(/\D/g,'').length !== 10) e.phone = 'Número dominicano de 10 dígitos (809, 829 u 849).';
+    else if (!/^(809|829|849)/.test(f.phone.replace(/\D/g,''))) e.phone = 'Debe empezar por 809, 829 u 849.';
+    if (reg && !/^\S+@\S+\.\S+$/.test(f.email)) e.email = 'Correo no válido.';
+    if (!reg && f.password.length < 6) e.password = 'Mínimo 6 caracteres.';
+    return e;
+  }
+  submitAuth() {
+    const e = this.validate(); this.setState({err:e}); if (Object.keys(e).length) return;
+    this.setState({authLoading:true});
+    setTimeout(() => this.setState(Object.assign({authLoading:false}, this.ph('permission'))), 1100);
+  }
+  sendChat(text) {
+    if (!text.trim()) return;
+    const st = this.state; this.setState({chat:[...st.chat, {from:'me', text, time:clock(2)}], chatInput:''});
+    setTimeout(() => this.setState(s => ({chat:[...s.chat, {from:'driver', text:REPLY[text] || 'Entendido 👍'.replace(' 👍',''), time:clock(2)}], unread:s.overlay==='chat'?0:s.unread+1})), 1400);
+  }
+  submitRating(skip) {
+    const st = this.state, t = Object.assign({}, st.trip, {rating:skip?0:st.stars, tip:skip?0:st.tip, tags:st.tags});
+    if (window.FaxiCore) window.FaxiCore.logTrip({id:t.id, rider:st.form.name.trim()||'María Fernández', driver:DRIVER.name, from:USER.area, to:PL(t.placeId).name, cat:t.catId, total:t.q.total+(t.tip||0), method:(METHODS.find(m=>m.id===t.method)||{label:'Visa'}).label.split(' ')[0], status:'Completado', source:'App pasajero'});
+    this.go('receipt', {trip:t, receiptId:t.id, receiptFrom:'flow', history:[t, ...st.history.filter(x => x.id!==t.id)],
+      toast: !skip && st.stars ? this.mkToast('¡Gracias por calificar!', 'Tu opinión ayuda a mantener la calidad de faxi.', 'favorite') : null});
+  }
+
+  renderVals() {
+    const st = this.state, P = st.phase, sp = this.speed(), now = st.now, el = now - st.phaseStart;
+    const place = this.place(), car = this.car(), surge = this.surge();
+    const mapPhases = ['home','pickup','routing','options','confirming','searching','assigned','enroute','arrived','started','ontrip','atDest'];
+    const userName = st.form.name.trim() || 'María Fernández', first = userName.split(' ')[0];
+    const initials = userName.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const methodObj = st.methods.find(m => m.id===st.method) || st.methods[0];
+    const s = { splash:P==='splash', onboarding:P==='onboarding', auth:P==='auth', permission:P==='permission', home:P==='home', search:P==='search',
+      pickup:P==='pickup', routing:P==='routing', options:P==='options', confirming:P==='confirming', searchOk:P==='searching'&&!st.searchError, searchErr:P==='searching'&&st.searchError,
+      driverSheet:['assigned','enroute','arrived'].includes(P), tripSheet:['started','ontrip'].includes(P), atDest:P==='atDest', finished:P==='finished',
+      payment:P==='payment', rating:P==='rating', receipt:P==='receipt', history:P==='history', menu:P==='menu', profile:P==='profile', methods:P==='methods',
+      settings:P==='settings', help:P==='help', showMap:mapPhases.includes(P), topMenu:P==='home', topBack:['pickup','routing','options'].includes(P),
+      locDenied:P==='home'&&st.locDenied, offline:st.offline, toast:!!st.toast,
+      chat:st.overlay==='chat', call:st.overlay==='call', cancel:st.overlay==='cancel', picker:st.overlay==='picker', breakdown:st.overlay==='breakdown', permDialog:st.permDialog };
+    const tab = (id, label, icon) => ({label, icon, select:()=>this.setState({app:id}), bg:st.app===id?'#181C1A':'transparent', color:st.app===id?'#FFFFFF':'#414943'});
+    const curIdx = FLOW.findIndex(f => f[1].includes(P));
+    const flow = FLOW.map((f,i) => ({n:i+1, label:f[0], go:()=>this.jump(f[1][f[1].length>1&&f[0]==='Abrir app'?0:0]),
+      bg: i===curIdx||(curIdx>=0&&FLOW[curIdx][1].join()===f[1].join()) ? '#CFEFDD' : 'transparent',
+      dotBg: i<curIdx ? '#1B7A57' : (FLOW[curIdx]&&FLOW[curIdx][1].join()===f[1].join()) ? '#181C1A' : '#E6EBE4',
+      dotColor: i<curIdx || (FLOW[curIdx]&&FLOW[curIdx][1].join()===f[1].join()) ? '#FFFFFF' : '#727973',
+      color: i<=curIdx || (FLOW[curIdx]&&FLOW[curIdx][1].join()===f[1].join()) ? '#181C1A' : '#727973'}));
+    const sw = (on, toggle) => ({toggle, track:on?'#1B7A57':'#E6EBE4', border:on?'#1B7A57':'#727973', thumb:on?'#FFFFFF':'#727973', x:on?'22px':'4px', size:on?'24px':'16px'});
+    // onboarding
+    const ob = ONBOARD[st.obIndex];
+    // search
+    const q = st.query.trim().toLowerCase();
+    const results = PLACES.filter(p => !p.hidden && (!q || (p.name+' '+p.addr).toLowerCase().includes(q))).map(p => ({name:p.name, addr:p.addr, icon:p.icon, km:p.km+' km', pick:()=>this.go('pickup',{dest:p.id})}));
+    // options
+    const cats = CATS.filter(c => catCfg(c).enabled !== false).map(c => { const qq = Pricing.quote(c, place, {surge, promo:st.promo}), sel = st.cat===c.id;
+      return {name:c.name, desc:c.desc, cap:c.cap, icon:c.icon, price:fmt(qq.total), before:fmt(qq.before), hasPromo:st.promo&&qq.disc>0, etaLabel:'a '+c.eta+' min',
+        select:()=>this.setState({cat:c.id}), bg:sel?'#E3F4EA':'#F8FAF6', border:sel?'#1B7A57':'transparent'}; });
+    const selCat = CATS.find(c => c.id===st.cat), quote = Pricing.quote(selCat, place, {surge, promo:st.promo});
+    const brk = [['Tarifa base', fmt(quote.base)], ['Distancia · '+place.km+' km × '+fmt(F().perKm*selCat.mult).replace('RD$ ','RD$'), fmt(quote.dist)], ['Tiempo · '+place.min+' min × RD$'+(F().perMin*selCat.mult).toFixed(1).replace('.0',''), fmt(quote.time)]];
+    if (quote.minAdj) brk.push(['Ajuste a tarifa mínima', fmt(quote.minAdj)]);
+    if (quote.surge) brk.push(['Recargo hora pico (+'+Math.round(F().surgePct*100)+'%)', fmt(quote.surge)]);
+    if (quote.disc) brk.push(['Descuento '+F().promo.code, '− '+fmt(quote.disc)]);
+    // driver sheet
+    const tA = P==='enroute' ? Math.min(1, el/(16000/sp)) : P==='arrived' ? 1 : 0;
+    const etaD = Math.max(1, Math.ceil((1-tA)*4)), waitS = Math.max(0, Math.round(120*(1-el/(7000/sp))));
+    const ds = P==='assigned' ? {status:'Conductor asignado', title:DRIVER.first+' aceptó tu viaje', sub:'Llega en 4 min · '+clock(4), pct:'4%'}
+      : P==='enroute' ? {status:'En camino', title:'Llega en '+etaD+' min', sub:DRIVER.first+' va en camino · '+(1.1*(1-tA)).toFixed(1)+' km', pct:(4+tA*96).toFixed(1)+'%'}
+      : {status:'Llegó', title:'Tu conductor llegó', sub:'Te espera · '+Math.floor(waitS/60)+':'+String(waitS%60).padStart(2,'0')+' sin cargo', pct:'100%'};
+    ds.isArrived = P==='arrived'; ds.headBg = P==='arrived' ? '#CFEFDD' : '#F8FAF6';
+    // trip sheet
+    const tT = ['started','ontrip'].includes(P) ? Math.min(1,(now-st.tripStart)/(20000/sp)) : 1;
+    const remMin = Math.max(1, Math.ceil(place.min*(1-ease(tT)))), remKm = (place.km*(1-ease(tT))).toFixed(1);
+    const ts = {title:P==='started' ? '¡Buen viaje, '+first+'!' : 'Llegada '+clock(4+place.min), sub:remMin+' min · '+remKm+' km restantes', pct:(ease(tT)*100).toFixed(1)+'%', status:P==='started'?'Viaje iniciado':'En viaje'};
+    // trip / payment
+    const trip = st.trip || mkTrip({placeId:place.id, catId:st.cat, surge, promo:st.promo});
+    const tq = trip.q, tCat = CATS.find(c => c.id===trip.catId), tPlace = PL(trip.placeId);
+    const lines = t => { const qq = t.q, p = PL(t.placeId), r = [['Tarifa base', fmt(qq.base)], ['Distancia ('+p.km+' km)', fmt(qq.dist)], ['Tiempo ('+p.min+' min)', fmt(qq.time)]];
+      if (qq.minAdj) r.push(['Ajuste tarifa mínima', fmt(qq.minAdj)]); if (qq.surge) r.push(['Recargo hora pico', fmt(qq.surge)]);
+      if (qq.disc) r.push(['Descuento '+F().promo.code, '− '+fmt(qq.disc)]); if (t.tip) r.push(['Propina', fmt(t.tip)]);
+      return r.map(x => ({label:x[0], value:x[1], color:x[1].startsWith('−')?'#1B7A57':'#181C1A'})); };
+    const payMethods = st.methods.map(m => ({label:m.label, sub:m.sub, icon:m.icon, select:()=>this.setState({method:m.id, payState:st.payState==='failed'?'idle':st.payState, overlay:st.overlay==='picker'?null:st.overlay}),
+      ring:st.method===m.id?'#1B7A57':'#727973', dot:st.method===m.id?'#1B7A57':'transparent', bg:st.method===m.id?'#E3F4EA':'#F8FAF6'}));
+    const isCash = st.method==='cash';
+    const pay = {total:fmt(tq.total), idle:st.payState==='idle', processing:st.payState==='processing', failed:st.payState==='failed', success:['success','done'].includes(st.payState),
+      cta: isCash ? 'Confirmar pago en efectivo' : 'Pagar '+fmt(tq.total), cashNote:isCash, lines:lines(Object.assign({}, trip, {tip:0}))};
+    // rating
+    const tags = (st.stars && st.stars<=3 ? TAGS_BAD : TAGS_GOOD).map(t => { const on = st.tags.includes(t);
+      return {label:t, toggle:()=>this.setState(s => ({tags:on ? s.tags.filter(x=>x!==t) : [...s.tags, t]})), bg:on?'#CFEFDD':'#F8FAF6', border:on?'#1B7A57':'#C1C9C2', icon:on?'check':'', showIcon:on}; });
+    const stars = [1,2,3,4,5].map(n => ({set:()=>this.setState({stars:n, tags:[]}), fv:n<=st.stars?"'FILL' 1":"'FILL' 0", color:n<=st.stars?'#E0A100':'#C1C9C2'}));
+    const tips = [0,50,100,150].map(v => ({label:v?fmt(v):'Sin propina', set:()=>this.setState({tip:v}), bg:st.tip===v?'#181C1A':'#F8FAF6', color:st.tip===v?'#FFFFFF':'#181C1A', border:st.tip===v?'#181C1A':'#C1C9C2'}));
+    // receipt
+    const rt = st.history.find(x => x.id===st.receiptId) || trip, rp = PL(rt.placeId), rCat = CATS.find(c => c.id===rt.catId), rm = METHODS.find(m=>m.id===rt.method) || methodObj;
+    const rc = {isFlow:st.receiptFrom==='flow', isDetail:st.receiptFrom!=='flow', id:rt.id, date:rt.date, start:rt.start, end:rt.end, pickup:USER.addr, dest:rp.name, destAddr:rp.addr,
+      driver:rt.driver, car:rt.car[0]+' · '+rt.car[2], cat:rCat.name, lines:lines(rt), total:rt.status==='Cancelado'?'RD$ 0':fmt(rt.q.total+(rt.tip||0)), method:rm.label,
+      status:rt.status==='Cancelado'?'Cancelado · sin cargo':'Pagado', statusBg:rt.status==='Cancelado'?'#FFDAD6':'#CFEFDD', statusColor:rt.status==='Cancelado'?'#93000A':'#00311F',
+      rated:rt.rating?('★'.repeat(rt.rating)+' · calificaste a '+rt.driver.split(' ')[0]):'Sin calificación', canceled:rt.status==='Cancelado', notCanceled:rt.status!=='Cancelado'};
+    // history
+    const hf = st.histFilter;
+    const hist = st.history.filter(t => hf==='all' || (hf==='done'&&t.status==='Completado') || (hf==='cancel'&&t.status==='Cancelado') || (hf==='sched'&&t.status==='Programado'))
+      .map(t => { const p = PL(t.placeId); return {title:p.name, icon:p.icon, sub:t.date+' · '+t.start+' · '+CATS.find(c=>c.id===t.catId).name, price:t.status==='Cancelado'?'RD$ 0':fmt(t.q.total+(t.tip||0)), status:t.status,
+        statusColor:t.status==='Cancelado'?'#BA1A1A':'#1B7A57', open:()=>this.go('receipt',{receiptId:t.id, receiptFrom:'history'})}; });
+    const histTabs = [['all','Todos'],['done','Completados'],['cancel','Cancelados'],['sched','Programados']].map(([id,l]) => ({label:l, set:()=>this.setState({histFilter:id}), bg:hf===id?'#CFEFDD':'transparent', border:hf===id?'#CFEFDD':'#C1C9C2', weight:hf===id?'700':'500'}));
+    // chat
+    const chat = st.chat.map(m => ({text:m.text, time:m.time, align:m.from==='me'?'flex-end':'flex-start', bg:m.from==='me'?'#181C1A':'#E6EBE4', color:m.from==='me'?'#FFFFFF':'#181C1A', radius:m.from==='me'?'20px 20px 6px 20px':'20px 20px 20px 6px'}));
+    const callSec = Math.max(0, Math.floor((now-st.callStart)/1000)-2);
+    const cancelFee = ['enroute','arrived'].includes(P);
+    const settings = [['notifs','Notificaciones del viaje','Estado del conductor, llegada y recibos'],['share','Compartir viajes automáticamente','Con tus contactos de confianza'],['quiet','Preferir viaje en silencio','Se lo indicamos al conductor'],['promos','Promociones','Descuentos y novedades de faxi']]
+      .map(([id,l,sub]) => Object.assign({label:l, sub}, sw(st.settings[id], ()=>this.setState(s => ({settings:Object.assign({}, s.settings, {[id]:!s.settings[id]})})))));
+    const f = st.form, fe = st.err;
+    const field = k => e => this.setState({form:Object.assign({}, this.state.form, {[k]:e.target.value}), err:Object.assign({}, this.state.err, {[k]:null})});
+    return {
+      tabs:[tab('passenger','Pasajero','person'), tab('driver','Conductor','directions_car'), tab('admin','Admin','monitoring')],
+      isPassenger:st.app==='passenger', driverDisplay:st.app==='driver'?'flex':'none', adminDisplay:st.app==='admin'?'flex':'none', simSpeedProp:this.props.simSpeed ?? '1x', surgePct:Math.round(F().surgePct*100), isDriver:st.app==='driver', isAdmin:st.app==='admin', showPanel:(this.props.showPanel ?? true),
+      s, mapEl:s.showMap ? this.buildMap() : null, flow, stateCode:P.toUpperCase()+(st.searchError?' · ERROR':'')+(st.offline?' · OFFLINE':''),
+      sim:{offline:sw(st.offline, ()=>this.setState(x=>({offline:!x.offline, toast:x.offline?this.mkToast('Conexión restablecida','Todo vuelve a funcionar con normalidad.','wifi'):null}))),
+        noDrivers:sw(st.simNoDrivers, ()=>this.setState(x=>({simNoDrivers:!x.simNoDrivers}))), payFail:sw(st.simPayFail, ()=>this.setState(x=>({simPayFail:!x.simPayFail})))},
+      restart:()=>this.setState(Object.assign(this.ph('splash'), {obIndex:0, dest:null, trip:null, overlay:null, chat:[], unread:0, history:SEED_HISTORY, permDialog:false, searchError:false, payState:'idle', promo:false})),
+      // onboarding + auth
+      ob:{icon:ob.icon, title:ob.title, body:ob.body, cta:st.obIndex<2?'Siguiente':'Empezar'},
+      obDots:ONBOARD.map((_,i)=>({w:i===st.obIndex?'28px':'8px', bg:i===st.obIndex?'#181C1A':'#C1C9C2'})),
+      nextOnboarding:()=> st.obIndex<2 ? this.setState({obIndex:st.obIndex+1}) : this.go('auth'), skipOnboarding:()=>this.go('auth'),
+      auth:{isRegister:st.authMode==='register', isLogin:st.authMode==='login', loading:st.authLoading, notLoading:!st.authLoading,
+        btn:st.authMode==='register'?'Crear cuenta':'Iniciar sesión', regBg:st.authMode==='register'?'#FFFFFF':'transparent', logBg:st.authMode==='login'?'#FFFFFF':'transparent',
+        regShadow:st.authMode==='register'?'0 1px 3px rgba(0,0,0,.12)':'none', logShadow:st.authMode==='login'?'0 1px 3px rgba(0,0,0,.12)':'none'},
+      setRegister:()=>this.setState({authMode:'register', err:{}}), setLogin:()=>this.setState({authMode:'login', err:{}}),
+      form:f, err:{name:fe.name, phone:fe.phone, email:fe.email, password:fe.password, hasName:!!fe.name, hasPhone:!!fe.phone, hasEmail:!!fe.email, hasPassword:!!fe.password,
+        nameB:fe.name?'#BA1A1A':'#727973', phoneB:fe.phone?'#BA1A1A':'#727973', emailB:fe.email?'#BA1A1A':'#727973', passB:fe.password?'#BA1A1A':'#727973'},
+      onName:field('name'), onPhone:field('phone'), onEmail:field('email'), onPassword:field('password'), submitAuth:()=>this.submitAuth(),
+      fillDemo:()=>this.setState({form:{name:'María Fernández', phone:'809 555 0142', email:'maria.fernandez@gmail.com', password:'faxi2026'}, err:{}}),
+      askLocation:()=>this.setState({permDialog:true}), allowLocation:()=>this.setState(Object.assign({permDialog:false, locDenied:false}, this.ph('home'))),
+      denyLocation:()=>this.setState(Object.assign({permDialog:false, locDenied:true}, this.ph('home'))), enableLocation:()=>this.setState({locDenied:false, toast:this.mkToast('Ubicación activada','Te ubicamos en '+USER.area+'.','my_location')}),
+      // home + search
+      user:{name:userName, first, initials}, userArea:USER.area, pickupAddr:USER.addr,
+      greeting:'Hola, '+first, openSearch:()=>this.go('search',{query:''}), openMenu:()=>this.go('menu'), goHome:()=>this.go('home',{overlay:null}),
+      goCasa:()=>this.go('pickup',{dest:'casa'}), goWork:()=>this.go('pickup',{dest:'work'}),
+      recents:['colonial','agora'].map(id => { const p = PL(id); return {name:p.name, addr:p.addr, icon:'history', pick:()=>this.go('pickup',{dest:id})}; }),
+      recenter:()=>this.toast('Ubicación actualizada', USER.addr+', '+USER.area, 'my_location'),
+      query:st.query, onQuery:e=>this.setState({query:e.target.value}), clearQuery:()=>this.setState({query:''}), results, noResults:results.length===0, hasResults:results.length>0,
+      // pickup/options
+      place:{name:place.name, addr:place.addr, km:place.km, min:place.min, eta:clock(4+place.min)}, confirmPickup:()=>this.go('routing'),
+      back:()=>this.go(P==='options'||P==='routing' ? 'pickup' : P==='pickup' ? 'search' : 'home'),
+      cats, selCat:{name:selCat.name, price:fmt(quote.total)}, brk:brk.map(b=>({label:b[0], value:b[1]})), brkTotal:fmt(quote.total), surgeOn:surge, fare:F(),
+      method:{label:methodObj.label, icon:methodObj.icon}, promo:{on:st.promo, off:!st.promo, label:st.promo?F().promo.code+' aplicado':'Agregar promo', bg:st.promo?'#CFEFDD':'#F8FAF6', border:st.promo?'#CFEFDD':'#C1C9C2'},
+      togglePromo:()=>this.setState({promo:!st.promo, toast:!st.promo?this.mkToast('Código '+F().promo.code+' aplicado','20% de descuento, hasta RD$ 150.','sell'):null}),
+      cta:{label:st.offline?'Sin conexión':'Solicitar '+selCat.name, price:st.offline?'':fmt(quote.total), bg:st.offline?'#C1C9C2':'#181C1A', cursor:st.offline?'not-allowed':'pointer'},
+      request:()=>this.request(), openBreakdown:()=>this.setState({overlay:'breakdown'}), openPicker:()=>this.setState({overlay:'picker'}), closeOverlay:()=>this.setState({overlay:null}),
+      // searching
+      cancelSearch:()=>this.go('home',{trip:null, searchError:false, toast:this.mkToast('Solicitud cancelada','No se realizó ningún cargo.','close')}),
+      retrySearch:()=>this.setState(Object.assign(this.ph('searching'), {searchError:false, simNoDrivers:false})), changeCat:()=>this.go('options',{searchError:false, trip:null}),
+      trip:{total:fmt(tq.total), cat:tCat.name, method:(st.methods.find(m=>m.id===trip.method)||methodObj).label, dest:tPlace.name, km:tPlace.km, min:tPlace.min, id:trip.id},
+      // driver
+      driver:DRIVER, carInfo:{model:car[0], color:car[1], plate:car[2]}, ds, ts, unread:st.unread, hasUnread:st.unread>0,
+      openChat:()=>this.setState({overlay:'chat', unread:0}), openCall:()=>this.setState({overlay:'call', callStart:Date.now()}), openCancel:()=>this.setState({overlay:'cancel'}),
+      share:()=>this.toast('Enlace de seguimiento copiado','Tus contactos pueden seguir el viaje en tiempo real.','share'),
+      safety:()=>this.toast('Centro de seguridad','Comparte tu ubicación o llama al 911 desde aquí.','shield'),
+      cancelFee, cancelText:cancelFee ? DRIVER.first+' ya va en camino. Si cancelas ahora se aplicará un cargo de '+fmt(F().cancelFee)+'.' : 'Todavía puedes cancelar sin cargo.',
+      confirmCancel:()=>{ if (window.FaxiCore && st.trip) window.FaxiCore.logTrip({id:st.trip.id, rider:userName, driver:DRIVER.name, from:USER.area, to:place.name, cat:st.cat, total:cancelFee?F().cancelFee:0, method:methodObj.label.split(' ')[0], status:'Cancelado', source:'App pasajero'}); this.go('home',{overlay:null, trip:null, toast:this.mkToast('Viaje cancelado', cancelFee?'Se aplicó un cargo de '+fmt(F().cancelFee)+'.':'No se realizó ningún cargo.','close')}); },
+      chat, quick:QUICK.map(t=>({text:t, send:()=>this.sendChat(t)})), chatInput:st.chatInput, onChatInput:e=>this.setState({chatInput:e.target.value}),
+      sendChat:()=>this.sendChat(st.chatInput), chatKey:e=>{ if (e.key==='Enter') this.sendChat(st.chatInput); }, hasChat:chat.length>0, noChat:chat.length===0,
+      call:{status:callSec<=0?'Llamando…':String(Math.floor(callSec/60)).padStart(2,'0')+':'+String(callSec%60).padStart(2,'0')},
+      // finish + payment
+      fin:{dest:tPlace.name, km:tPlace.km, min:tPlace.min, total:fmt(tq.total), end:clock(4+tPlace.min)}, goPayment:()=>this.go('payment',{payState:'idle'}),
+      pay, payMethods, payNow:()=>this.setState({payState:'processing', payAt:Date.now()}), payRetry:()=>this.setState({payState:'idle'}),
+      // rating
+      stars, starLabel:STAR_LABEL[st.stars], tags, hasStars:st.stars>0, tips, comment:st.comment, onComment:e=>this.setState({comment:e.target.value}),
+      rateBtn:{bg:st.stars?'#181C1A':'#C1C9C2', label:st.stars?'Enviar calificación':'Selecciona una calificación'},
+      submitRating:()=>{ if (st.stars) this.submitRating(false); }, skipRating:()=>this.submitRating(true),
+      reportProblem:()=>this.go('help',{toast:this.mkToast('Reporte iniciado','Cuéntanos qué pasó en el viaje '+trip.id+'.','flag')}),
+      // receipt + history
+      rc, downloadReceipt:()=>this.toast('Recibo enviado','Lo enviamos a '+(f.email||'maria.fernandez@gmail.com')+'.','mail'),
+      goHistory:()=>this.go('history'), repeatTrip:()=>this.go('routing',{dest:rt.placeId, trip:null}), backFromReceipt:()=>this.go(st.receiptFrom==='flow'?'home':'history'),
+      hist, histTabs, histEmpty:hist.length===0, histHas:hist.length>0, backFromHistory:()=>this.go('home'),
+      // account
+      goProfile:()=>this.go('profile'), goMethods:()=>this.go('methods'), goSettings:()=>this.go('settings'), goHelp:()=>this.go('help'), backToMenu:()=>this.go('menu'),
+      logout:()=>this.go('auth',{authMode:'login'}), editProfile:()=>this.toast('Perfil actualizado','Tus cambios se guardaron.','check_circle'),
+      addCard:()=>this.setState(s=>({methods:[s.methods[0], {id:'visa2', label:'Visa •••• 1187', sub:'Vence 11/29', icon:'credit_card'}, ...s.methods.slice(1).filter(m=>m.id!=='visa2')], toast:this.mkToast('Tarjeta agregada','Visa •••• 1187 verificada (simulado).','credit_card')})),
+      settings, supportChat:()=>this.toast('Soporte faxi','Un agente te responderá en menos de 2 min.','support_agent'),
+      toastV:st.toast || {title:'', body:'', icon:'notifications'},
+    };
+  }
+}
+</script>
+</body>
+</html>
