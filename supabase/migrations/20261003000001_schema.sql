@@ -159,7 +159,9 @@ create table public.commissions (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create unique index commissions_one_active on public.commissions((coalesce(category::text,'*'))) where is_active;
+-- Una activa por categoría y una por defecto (category null). Dos índices parciales: el cast enum::text no es IMMUTABLE.
+create unique index commissions_one_active on public.commissions(category) where is_active and category is not null;
+create unique index commissions_one_active_default on public.commissions((true)) where is_active and category is null;
 
 -- ───────── Viajes ─────────
 create table public.trip_status_transitions (
