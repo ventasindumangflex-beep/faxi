@@ -38,13 +38,13 @@ Todo se hace en **tu MacBook** y en **tu teléfono**. Cada comando se copia y se
 ## PASO 2 · Descargar el proyecto (10 min)
 
 Forma fácil (sin Git):
-1. Entra a `https://github.com/ventasindumangflex-beep/faxi/tree/claude/empty-session-8tsfph` con tu cuenta de GitHub.
+1. Entra a `https://github.com/ventasindumangflex-beep/faxi` con tu cuenta de GitHub.
 2. Pulsa el botón verde **Code → Download ZIP**.
-3. Abre el ZIP en **Descargas**; se crea una carpeta tipo `faxi-claude-empty-session-8tsfph`.
+3. Abre el ZIP en **Descargas**; se crea una carpeta tipo `faxi-main`.
 
 Instalar las piezas del proyecto (tarda unos minutos):
 ```
-cd ~/Downloads/faxi-claude-empty-session-8tsfph
+cd ~/Downloads/faxi-main
 npm install
 ```
 Al terminar no debe decir `error` en rojo (los avisos `warn` se ignoran).
@@ -71,7 +71,7 @@ Escribe tu correo/usuario y contraseña de Expo.
 
 ### 3.3 Crear el proyecto de la app del **pasajero**
 ```
-cd ~/Downloads/faxi-claude-empty-session-8tsfph/apps/passenger
+cd ~/Downloads/faxi-main/apps/passenger
 npx eas-cli@latest init
 ```
 - Responde **Yes** a crear el proyecto.
@@ -88,7 +88,7 @@ npx eas-cli@latest build --profile development --platform android
 
 ### 3.5 Repetir para el **conductor**
 ```
-cd ~/Downloads/faxi-claude-empty-session-8tsfph/apps/driver
+cd ~/Downloads/faxi-main/apps/driver
 npx eas-cli@latest init
 npx eas-cli@latest build --profile development --platform android
 ```
@@ -100,7 +100,7 @@ npx eas-cli@latest build --profile development --platform android
 2. Descarga el archivo e **instálalo**. Si Android dice "instalar apps desconocidas", permítelo para Chrome.
 3. En la Mac, arranca el servidor de desarrollo:
    ```
-   cd ~/Downloads/faxi-claude-empty-session-8tsfph
+   cd ~/Downloads/faxi-main
    npm run passenger
    ```
 4. Abre la app **faxi** en el teléfono; se conecta sola al servidor (misma Wi-Fi) o escanea el QR de la Terminal.
