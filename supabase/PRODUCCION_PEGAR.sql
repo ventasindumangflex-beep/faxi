@@ -2,9 +2,9 @@
 -- ║ SOLO PARA PRODUCCIÓN: faxi (ref opehqsltrzhtsqqlctdg).                     ║
 -- ║ Pegar completo en Supabase → faxi → SQL Editor → Run.  Se puede repetir.  ║
 -- ╚══════════════════════════════════════════════════════════════════════════╝
--- Hace: migración 005 (ubicación en vivo privada, zona real del Gran Santo Domingo, push automático),
--- deja lista la URL del push y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 9-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK.
+-- Hace: migraciones 005 (ubicación en vivo privada, zona real del Gran Santo Domingo, push automático) y
+-- 006 (solo efectivo), pone producción en modo solo efectivo, deja lista la URL del push y al final muestra la "huella" para comparar con faxi-pruebas.
+-- Probado en faxi-pruebas el 9-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK.
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -121,6 +121,37 @@ end $$;
 -- La URL depende del proyecto; crearla una vez por proyecto (ver supabase/PRODUCCION_PEGAR.sql):
 --   select vault.create_secret('https://<ref>.supabase.co/functions/v1/send-push', 'faxi_push_url');
 
+-- ═════════════ Migración 006 ═════════════
+-- FAXI · 006 · Modo "solo efectivo" para producción
+-- Con PAYMENT_PROVIDER = "CASH":
+--   · pay_trip (pago simulado desde el teléfono) queda bloqueado (ya lo hacía con cualquier valor distinto de MOCK);
+--   · no se pueden crear viajes con otro método que no sea efectivo, así el conductor siempre puede confirmar el cobro.
+-- faxi-pruebas sigue en MOCK para que las pruebas 001 y 002 corran igual. Producción se pone en CASH (PRODUCCION_PEGAR.sql).
+
+create or replace function public.enforce_cash_only() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.setting_text('PAYMENT_PROVIDER') = 'CASH' and new.payment_method is distinct from 'CASH' then
+    raise exception 'Por ahora faxi solo acepta pagos en efectivo' using errcode = '22023';
+  end if;
+  return new;
+end $$;
+revoke all on function public.enforce_cash_only() from public, anon, authenticated;
+
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'trips_cash_only' and tgrelid = 'public.trips'::regclass) then
+    create trigger trips_cash_only before insert or update of payment_method on public.trips
+      for each row execute function public.enforce_cash_only();
+  end if;
+end $$;
+
+update public.app_settings
+   set description = 'MOCK = pagos simulados (solo pruebas). CASH = solo efectivo, confirmado por el conductor (producción). Cambiar al integrar pasarela.'
+ where key = 'PAYMENT_PROVIDER';
+
+-- Producción: solo efectivo (el pasajero no puede marcarse pagos; el conductor confirma el cobro)
+update public.app_settings set value = '"CASH"' where key = 'PAYMENT_PROVIDER';
+
 -- ═════════════ URL del push en producción ═════════════
 do $$ begin
   if not exists (select 1 from vault.secrets where name = 'faxi_push_url') then
@@ -129,8 +160,8 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 9-oct-2026): tablas 20 · funciones 50 · politicas 43 · triggers 28 · indices 52 · cron 1
---   h_tablas f3ccc9 · h_funciones c30121 · h_politicas c306e3 · h_triggers dd9a37 · h_indices b2302d · vault 2
+-- Esperado (faxi-pruebas, 9-oct-2026): tablas 20 · funciones 51 · politicas 43 · triggers 29 · indices 52 · cron 1
+--   h_tablas f3ccc9 · h_funciones d0c010 · h_politicas c306e3 · h_triggers 179f6c · h_indices b2302d · vault 2 · proveedor CASH
 with
  t as (select string_agg(table_name, ',' order by table_name) s, count(*) n from information_schema.tables where table_schema='public' and table_type='BASE TABLE'),
  f as (select string_agg(p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', ',' order by p.proname, pg_get_function_identity_arguments(p.oid)) s, count(*) n from pg_proc p join pg_namespace ns on ns.oid=p.pronamespace where ns.nspname='public'),
@@ -140,5 +171,6 @@ with
  cr as (select count(*) n from cron.job)
 select t.n tablas, f.n funciones, pol.n politicas, tr.n triggers, ix.n indices, cr.n cron,
   left(md5(t.s),6) h_tablas, left(md5(f.s),6) h_funciones, left(md5(pol.s),6) h_politicas, left(md5(tr.s),6) h_triggers, left(md5(ix.s),6) h_indices,
-  (select count(*) from vault.secrets where name in ('faxi_push_url','faxi_push_secret')) vault
+  (select count(*) from vault.secrets where name in ('faxi_push_url','faxi_push_secret')) vault,
+  public.setting_text('PAYMENT_PROVIDER') proveedor
 from t,f,pol,tr,ix,cr;
