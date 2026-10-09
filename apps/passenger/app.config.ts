@@ -35,4 +35,9 @@ const config: ExpoConfig = {
   extra: { eas: { projectId: process.env.EAS_PROJECT_ID } },
 };
 
+// Sube los mapas de código a Sentry en los builds de EAS si están SENTRY_ORG, SENTRY_PROJECT y SENTRY_AUTH_TOKEN.
+if (process.env.SENTRY_ORG && process.env.SENTRY_PROJECT) {
+  config.plugins!.push(['@sentry/react-native/expo', { organization: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT }]);
+}
+
 export default config;
