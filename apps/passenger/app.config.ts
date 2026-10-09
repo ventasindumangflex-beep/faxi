@@ -8,8 +8,7 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   userInterfaceStyle: 'light',
   newArchEnabled: true,
-  // icon: './assets/icon.png',            // 1024×1024 — añadir antes de publicar
-  // splash: { image: './assets/splash.png', backgroundColor: '#1B7A57' },
+  icon: './assets/icon.png',                 // generado con scripts/make_icons.py
   ios: {
     bundleIdentifier: 'do.faxi.app',
     supportsTablet: false,
@@ -19,6 +18,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
+    adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: '#1B7A57' },
     package: 'do.faxi.app',
     permissions: ['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION'],
     blockedPermissions: ['android.permission.ACCESS_BACKGROUND_LOCATION'],
@@ -28,8 +28,8 @@ const config: ExpoConfig = {
     'expo-router',
     'expo-font',
     ['expo-location', { locationWhenInUsePermission: 'faxi usa tu ubicación para fijar el punto de recogida y mostrarte tu conductor en el mapa.' }],
-    ['expo-notifications', { color: '#1B7A57' }],
-    ['expo-splash-screen', { backgroundColor: '#1B7A57' }],
+    ['expo-notifications', { color: '#1B7A57', icon: './assets/notification-icon.png' }],
+    ['expo-splash-screen', { image: './assets/splash-icon.png', imageWidth: 220, resizeMode: 'contain', backgroundColor: '#1B7A57' }],
   ],
   experiments: { typedRoutes: false },
   extra: { eas: { projectId: process.env.EAS_PROJECT_ID } },
