@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block">
+<script src="./faxi-core.js"></script>
+<style>
+@keyframes fdUp{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fdFade{from{opacity:0}to{opacity:1}}
+@keyframes fdPop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes fdPulse{0%{transform:scale(.25);opacity:.5}100%{transform:scale(1);opacity:0}}
+@keyframes fdIndet{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+@keyframes fdSpin{to{transform:rotate(360deg)}}
+@keyframes fdToast{from{transform:translateY(-140%)}to{transform:none}}
+@keyframes fdRing{0%{box-shadow:0 0 0 0 rgba(95,211,160,.55)}100%{box-shadow:0 0 0 18px rgba(95,211,160,0)}}
+</style>
+</helmet>
+<main style="flex:1;display:flex;justify-content:center;align-items:flex-start;gap:40px;padding:4px 24px 56px;flex-wrap:wrap;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#181C1A">
+  <x-import component-from-global-scope="AndroidDevice" hint-size="424px,904px">
+    <div style="position:relative;width:100%;height:812px;overflow:hidden;background:#E3E7E0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#181C1A">
+      <sc-if value="{{ s.map }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0">{{ mapEl }}</div></sc-if>
+
+      <sc-if value="{{ s.statusBar }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;animation:fdFade .4s ease">
+          <button onClick="{{ goAccount }}" style="width:48px;height:48px;border-radius:50%;border:0;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><span style="width:40px;height:40px;border-radius:50%;background:#181C1A;color:#CFEFDD;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">RP</span></button>
+          <div style="display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:20px;background:{{ top.bg }};color:{{ top.color }};box-shadow:0 2px 10px rgba(24,28,26,.14);font-size:13.5px;font-weight:800;transition:background .3s"><span style="width:8px;height:8px;border-radius:50%;background:{{ top.dot }}"></span>{{ top.label }}</div>
+          <button onClick="{{ goEarnings }}" style="height:48px;padding:0 16px;border-radius:24px;border:0;background:#FFFFFF;box-shadow:0 2px 10px rgba(24,28,26,.16);cursor:pointer;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;line-height:1.1"><span style="font-size:10.5px;font-weight:700;color:#414943">Hoy</span><span style="font-size:15px;font-weight:800;font-variant-numeric:tabular-nums">{{ todayNet }}</span></button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.navBanner }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:12px;left:12px;right:12px;border-radius:24px;background:#0F3D2C;color:#FFFFFF;box-shadow:0 6px 20px rgba(0,0,0,.25);overflow:hidden;animation:fdFade .4s ease">
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px">
+            <span style="font-family:'Material Symbols Rounded';font-size:44px;line-height:1">{{ nav.icon }}</span>
+            <div style="flex:1;min-width:0"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ nav.dist }}</div><div style="font-size:14px;font-weight:600;color:#B8E6CF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ nav.text }} · {{ nav.street }}</div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0A2C20;font-size:12.5px;font-weight:700;color:#B8E6CF"><span>{{ nav.goal }}</span><span style="font-variant-numeric:tabular-nums">{{ nav.eta }}</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.offlineBanner }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:76px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:18px;background:#410002;color:#FFDAD6;font-size:13px;font-weight:700;z-index:80;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:fdFade .3s ease"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">wifi_off</span>Sin conexión · no recibirás solicitudes</div>
+      </sc-if>
+
+      <sc-if value="{{ s.offline }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;left:0;right:0;bottom:80px;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:fdUp .45s cubic-bezier(.2,.8,.2,1)">
+          <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 14px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div><div style="font-size:22px;font-weight:800;letter-spacing:-.02em">Estás desconectado</div><div style="font-size:13px;color:#414943;margin-top:2px">Conéctate para recibir solicitudes cerca de ti.</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin:14px 0;padding:12px 14px;border-radius:16px;background:#FFE7A8;color:#3D2E00"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">bolt</span><div style="font-size:13px;line-height:1.35"><b>Demanda alta en Piantini y Naco.</b> Tiempo de espera estimado: 2 min.</div></div>
+          <button onClick="{{ goOnline }}" style="width:100%;height:60px;border-radius:30px;border:0;background:#1B7A57;color:#FFFFFF;font-weight:800;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;animation:fdRing 1.8s ease-out infinite"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">power_settings_new</span>Conectarme</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.online }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:80px;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:fdUp .45s cubic-bezier(.2,.8,.2,1)">
+          <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 14px"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="position:relative;width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center"><span style="position:absolute;inset:0;border-radius:50%;background:#CFEFDD;animation:fdPulse 1.8s ease-out infinite"></span><span style="position:relative;width:28px;height:28px;border-radius:50%;background:#1B7A57;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#FFFFFF">radar</span></span></span>
+            <div style="flex:1"><div style="font-size:20px;font-weight:800;letter-spacing:-.02em">{{ onlineTitle }}</div><div style="font-size:13px;color:#414943">{{ onlineSub }}</div></div>
+          </div>
+          <div style="height:4px;border-radius:2px;background:#E6EBE4;overflow:hidden;margin:16px 0"><div style="width:40%;height:100%;border-radius:2px;background:#1B7A57;animation:fdIndet 1.4s cubic-bezier(.4,0,.2,1) infinite"></div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+            <div style="padding:10px 12px;border-radius:14px;background:#FFFFFF;border:1px solid #DDE3DD"><div style="font-size:11.5px;color:#414943;font-weight:600">Aceptación</div><div style="font-size:17px;font-weight:800">{{ accRate }}%</div></div>
+            <div style="padding:10px 12px;border-radius:14px;background:#FFFFFF;border:1px solid #DDE3DD"><div style="font-size:11.5px;color:#414943;font-weight:600">Viajes hoy</div><div style="font-size:17px;font-weight:800">{{ todayTrips }}</div></div>
+            <div style="padding:10px 12px;border-radius:14px;background:#FFFFFF;border:1px solid #DDE3DD"><div style="font-size:11.5px;color:#414943;font-weight:600">Calificación</div><div style="font-size:17px;font-weight:800">★ 4.92</div></div>
+          </div>
+          <button onClick="{{ goOffline }}" style="width:100%;height:52px;border-radius:26px;border:1px solid #727973;background:transparent;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">pause_circle</span>Desconectarme</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.request }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#181C1A;color:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.3);padding:12px 20px 20px;box-sizing:border-box;animation:fdUp .45s cubic-bezier(.2,.8,.2,1)">
+          <div style="width:32px;height:4px;border-radius:2px;background:#414943;margin:0 auto 14px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span style="display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:15px;background:#2E3430;font-size:12.5px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ rq.catIcon }}</span>{{ rq.cat }}</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#B8E6CF"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ rq.methodIcon }}</span>{{ rq.method }}</span>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:14px 0 4px">
+            <div><div style="font-size:12px;font-weight:700;color:#5FD3A0;text-transform:uppercase;letter-spacing:.1em">Nueva solicitud</div><div style="font-size:40px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1">{{ rq.net }}</div><div style="font-size:12.5px;color:#9DB0A6">Tu ganancia · tarifa {{ rq.total }}{{ rq.surgeNote }}</div></div>
+            <div style="text-align:right"><div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums">{{ rq.secs }}s</div><div style="font-size:11.5px;color:#9DB0A6">para responder</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:16px 1fr auto;column-gap:12px;row-gap:4px;align-items:center;margin:14px 0;padding:14px;border-radius:18px;background:#232826">
+            <span style="width:10px;height:10px;border-radius:50%;border:3px solid #F8FAF6;box-sizing:border-box;justify-self:center"></span><div style="min-width:0"><div style="font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rq.pickup }}</div><div style="font-size:12px;color:#9DB0A6">{{ rq.pickupArea }}</div></div><div style="font-size:12.5px;font-weight:700;color:#B8E6CF;text-align:right">{{ rq.toPickup }}</div>
+            <span style="width:2px;height:16px;background:#414943;justify-self:center"></span><span></span><span></span>
+            <span style="width:10px;height:10px;background:#F8FAF6;border-radius:2px;justify-self:center"></span><div style="min-width:0"><div style="font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rq.dest }}</div><div style="font-size:12px;color:#9DB0A6">{{ rq.destAddr }}</div></div><div style="font-size:12.5px;font-weight:700;color:#B8E6CF;text-align:right">{{ rq.tripLen }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <span style="width:40px;height:40px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none">{{ rq.ri }}</span>
+            <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:15px">{{ rq.rider }}</div><div style="font-size:12px;color:#9DB0A6">★ {{ rq.rating }} · {{ rq.trips }} viajes · verificado</div></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ decline }}" style="width:60px;height:60px;border-radius:50%;border:1px solid #414943;background:transparent;color:#F8FAF6;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1">close</span></button>
+            <button onClick="{{ accept }}" style="position:relative;flex:1;height:60px;border-radius:30px;border:0;background:#2E5A47;color:#00311F;cursor:pointer;overflow:hidden;font-weight:800;font-size:17px;padding:0">
+              <span style="position:absolute;left:0;top:0;bottom:0;width:{{ rq.pct }};background:#5FD3A0;transition:width .12s linear"></span>
+              <span style="position:relative;display:flex;align-items:center;justify-content:center;gap:8px;height:100%"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">check</span>Aceptar viaje</span>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.toPickup }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:fdUp .45s cubic-bezier(.2,.8,.2,1)">
+          <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 12px"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:48px;height:48px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex:none">{{ rq.ri }}</span>
+            <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:#1B7A57;text-transform:uppercase;letter-spacing:.08em">Recoger a</div><div style="font-size:19px;font-weight:800;letter-spacing:-.02em">{{ rq.rider }}</div><div style="font-size:12.5px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rq.pickup }} · {{ rq.pickupArea }}</div></div>
+            <button onClick="{{ callRider }}" style="width:48px;height:48px;border-radius:50%;border:0;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">call</span></button>
+            <button onClick="{{ msgRider }}" style="width:48px;height:48px;border-radius:50%;border:0;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">chat</span></button>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin:14px 0;padding:10px 14px;border-radius:14px;background:#EEF2EC;font-size:13px;color:#414943"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">sticky_note_2</span><span style="flex:1">“{{ rq.note }}”</span></div>
+          <button onClick="{{ arrive }}" style="width:100%;height:56px;border-radius:28px;border:0;background:{{ arriveBtn.bg }};color:#FFFFFF;font-weight:800;font-size:16px;cursor:{{ arriveBtn.cursor }};transition:background .3s">{{ arriveBtn.label }}</button>
+          <button onClick="{{ openCancel }}" style="width:100%;height:40px;margin-top:6px;border:0;background:transparent;font-weight:700;font-size:13.5px;color:#BA1A1A;cursor:pointer">Cancelar viaje</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.waiting }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);box-sizing:border-box;animation:fdUp .45s cubic-bezier(.2,.8,.2,1);overflow:hidden">
+          <div style="padding:10px 20px 14px;background:{{ wait.bg }};transition:background .4s">
+            <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 12px"></div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+              <div><div style="font-size:12px;font-weight:700;color:{{ wait.labelColor }};text-transform:uppercase;letter-spacing:.08em">{{ wait.label }}</div><div style="font-size:22px;font-weight:800;letter-spacing:-.02em">Esperando a {{ rq.first }}</div><div style="font-size:12.5px;color:#414943">{{ wait.sub }}</div></div>
+              <div style="font-size:30px;font-weight:800;font-variant-numeric:tabular-nums">{{ wait.clock }}</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px 20px">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+              <span style="width:44px;height:44px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none">{{ rq.ri }}</span>
+              <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:15px">{{ rq.rider }} · ★ {{ rq.rating }}</div><div style="font-size:12.5px;color:#414943">Verifica el nombre antes de iniciar</div></div>
+              <button onClick="{{ callRider }}" style="width:44px;height:44px;border-radius:50%;border:0;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">call</span></button>
+              <button onClick="{{ msgRider }}" style="width:44px;height:44px;border-radius:50%;border:0;background:#E6EBE4;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chat</span></button>
+            </div>
+            <button onClick="{{ startTrip }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#1B7A57;color:#FFFFFF;font-weight:800;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">navigation</span>Iniciar viaje</button>
+            <button onClick="{{ openCancel }}" style="width:100%;height:40px;margin-top:6px;border:0;background:transparent;font-weight:700;font-size:13.5px;color:#BA1A1A;cursor:pointer">{{ wait.cancelLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.onTrip }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;box-shadow:0 -6px 28px rgba(24,28,26,.14);padding:10px 20px 20px;box-sizing:border-box;animation:fdUp .45s cubic-bezier(.2,.8,.2,1)">
+          <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 12px"></div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+            <div style="min-width:0"><div style="font-size:12px;font-weight:700;color:#1B7A57;text-transform:uppercase;letter-spacing:.08em">En viaje con {{ rq.first }}</div><div style="font-size:21px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rq.dest }}</div><div style="font-size:12.5px;color:#414943;font-variant-numeric:tabular-nums">{{ trip.left }}</div></div>
+            <div style="text-align:right;flex:none"><div style="font-size:11.5px;color:#414943;font-weight:600">Ganancia</div><div style="font-size:20px;font-weight:800;font-variant-numeric:tabular-nums">{{ rq.net }}</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin:14px 0 16px"><span style="width:10px;height:10px;border-radius:50%;border:3px solid #181C1A;box-sizing:border-box"></span><div style="flex:1;height:6px;border-radius:3px;background:#DDE3DD;overflow:hidden"><div style="height:100%;width:{{ trip.pct }};background:#1B7A57;border-radius:3px;transition:width .12s linear"></div></div><span style="width:10px;height:10px;background:#181C1A;border-radius:2px"></span></div>
+          <button onClick="{{ endTrip }}" style="width:100%;height:56px;border-radius:28px;border:0;background:{{ endBtn.bg }};color:#FFFFFF;font-weight:800;font-size:16px;cursor:{{ endBtn.cursor }};transition:background .3s;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">sports_score</span>{{ endBtn.label }}</button>
+          <button onClick="{{ sos }}" style="width:100%;height:40px;margin-top:6px;border:0;background:transparent;font-weight:700;font-size:13.5px;color:#414943;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">shield</span>Seguridad</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.collect }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#F8FAF6;display:flex;flex-direction:column;padding:28px 24px 24px;box-sizing:border-box;z-index:30;animation:fdUp .35s cubic-bezier(.2,.8,.2,1)">
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px">
+            <span style="width:84px;height:84px;border-radius:28px;background:{{ col.iconBg }};display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:44px;line-height:1;color:{{ col.iconColor }}">{{ col.icon }}</span></span>
+            <div style="font-size:13px;font-weight:700;color:#1B7A57;text-transform:uppercase;letter-spacing:.1em">{{ col.kicker }}</div>
+            <div style="font-size:52px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1">{{ rq.total }}</div>
+            <div style="font-size:15px;color:#414943;line-height:1.5;max-width:300px;text-wrap:pretty">{{ col.body }}</div>
+          </div>
+          <sc-if value="{{ col.cash }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ confirmCash }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#181C1A;color:#FFFFFF;font-weight:800;font-size:16px;cursor:pointer">Confirmar cobro de {{ rq.total }}</button>
+            <button onClick="{{ cashIssue }}" style="width:100%;height:44px;margin-top:6px;border:0;background:transparent;font-weight:700;font-size:14px;color:#1B7A57;cursor:pointer">El pasajero pagó otro monto</button>
+          </sc-if>
+          <sc-if value="{{ col.processing }}" hint-placeholder-val="{{ false }}"><div style="height:56px;border-radius:28px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700"><span style="width:20px;height:20px;border-radius:50%;border:2.5px solid #1B7A57;border-top-color:transparent;animation:fdSpin .8s linear infinite;box-sizing:border-box"></span>Procesando cobro…</div></sc-if>
+          <sc-if value="{{ col.approved }}" hint-placeholder-val="{{ false }}"><div style="height:56px;border-radius:28px;background:#1B7A57;color:#FFFFFF;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;animation:fdPop .5s both"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">check_circle</span>Pago aprobado</div></sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.summary }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#181C1A;color:#F8FAF6;display:flex;flex-direction:column;padding:24px 20px 20px;box-sizing:border-box;z-index:30;animation:fdFade .4s ease;overflow:auto">
+          <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding-top:12px">
+            <div style="width:84px;height:84px;border-radius:50%;background:#5FD3A0;display:flex;align-items:center;justify-content:center;animation:fdPop .7s cubic-bezier(.2,.8,.2,1) both"><span style="font-family:'Material Symbols Rounded';font-size:46px;line-height:1;color:#00311F">savings</span></div>
+            <div style="font-size:13px;font-weight:700;color:#5FD3A0;text-transform:uppercase;letter-spacing:.1em">Ganancia registrada</div>
+            <div style="font-size:48px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;animation:fdUp .6s .15s both">+ {{ sum.net }}</div>
+            <div style="font-size:13.5px;color:#9DB0A6">{{ rq.rider }} · {{ rq.dest }} · {{ rq.tripLen }}</div>
+          </div>
+          <div style="margin-top:20px;padding:16px;border-radius:20px;background:#232826;animation:fdUp .6s .25s both">
+            <sc-for list="{{ sum.lines }}" as="l" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;font-size:14px;padding:5px 0"><span style="color:#9DB0A6">{{ l.label }}</span><span style="font-weight:700;font-variant-numeric:tabular-nums;color:{{ l.color }}">{{ l.value }}</span></div></sc-for>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #414943;margin-top:8px;padding-top:10px"><span style="font-weight:800">Hoy llevas</span><span style="font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;color:#5FD3A0">{{ todayNet }}</span></div>
+          </div>
+          <div style="text-align:center;margin-top:18px;font-size:14px;font-weight:700">Califica a {{ rq.first }}</div>
+          <div style="display:flex;justify-content:center;gap:2px;margin-top:6px"><sc-for list="{{ pStars }}" as="st" hint-placeholder-count="5"><button onClick="{{ st.set }}" style="width:48px;height:48px;border:0;background:transparent;cursor:pointer;padding:0"><span style="font-family:'Material Symbols Rounded';font-size:40px;line-height:1;color:{{ st.color }};font-variation-settings:{{ st.fv }}">star</span></button></sc-for></div>
+          <div style="flex:1;min-height:16px"></div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ finishOffline }}" style="flex:1;height:56px;border-radius:28px;border:1px solid #414943;background:transparent;color:#F8FAF6;font-weight:700;font-size:15px;cursor:pointer">Desconectarme</button>
+            <button onClick="{{ nextTrip }}" style="flex:1.4;height:56px;border-radius:28px;border:0;background:#5FD3A0;color:#00311F;font-weight:800;font-size:15px;cursor:pointer">Seguir conectado</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.earnings }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0 0 80px 0;background:#F8FAF6;overflow:auto;animation:fdFade .3s ease">
+          <div style="padding:20px 20px 8px"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Ganancias</div></div>
+          <div style="display:flex;gap:4px;margin:0 20px;padding:4px;border-radius:999px;background:#E6EBE4"><sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.set }}" style="flex:1;height:36px;border:0;border-radius:999px;background:{{ r.bg }};box-shadow:{{ r.shadow }};font-weight:700;font-size:13px;cursor:pointer">{{ r.label }}</button></sc-for></div>
+          <div style="padding:18px 20px 0"><div style="font-size:13px;color:#414943;font-weight:600">{{ earn.period }}</div><div style="font-size:40px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums">{{ earn.total }}</div></div>
+          <div style="display:flex;align-items:flex-end;gap:8px;height:150px;padding:12px 20px 0">
+            <sc-for list="{{ earn.bars }}" as="b" hint-placeholder-count="7"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><span style="font-size:10px;font-weight:700;color:#414943;font-variant-numeric:tabular-nums">{{ b.v }}</span><div style="width:100%;height:{{ b.h }};border-radius:8px 8px 4px 4px;background:{{ b.bg }};transition:height .5s cubic-bezier(.2,.8,.2,1)"></div><span style="font-size:11.5px;font-weight:{{ b.w }};color:#414943">{{ b.l }}</span></div></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:18px 20px 0">
+            <sc-for list="{{ earn.stats }}" as="x" hint-placeholder-count="4"><div style="padding:12px 14px;border-radius:16px;background:#FFFFFF;border:1px solid #DDE3DD"><div style="font-size:12px;color:#414943;font-weight:600">{{ x.l }}</div><div style="font-size:18px;font-weight:800;font-variant-numeric:tabular-nums">{{ x.v }}</div></div></sc-for>
+          </div>
+          <div style="margin:16px 20px 0;padding:16px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD">
+            <sc-for list="{{ earn.lines }}" as="l" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;font-size:14px;padding:5px 0"><span style="color:#414943">{{ l.label }}</span><span style="font-weight:700;font-variant-numeric:tabular-nums;color:{{ l.color }}">{{ l.value }}</span></div></sc-for>
+          </div>
+          <div style="margin:12px 20px 20px;padding:16px;border-radius:20px;background:#181C1A;color:#F8FAF6;display:flex;align-items:center;gap:12px">
+            <span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1;color:#5FD3A0">account_balance</span>
+            <div style="flex:1"><div style="font-size:12px;color:#9DB0A6">Próximo depósito · lunes 5 oct</div><div style="font-weight:800;font-size:15px">Banreservas •••• 2231</div></div>
+            <button onClick="{{ cashOut }}" style="height:40px;padding:0 16px;border-radius:20px;border:0;background:#5FD3A0;color:#00311F;font-weight:800;font-size:13px;cursor:pointer">Retirar</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.trips }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0 0 80px 0;background:#F8FAF6;overflow:auto;animation:fdFade .3s ease">
+          <div style="padding:20px 20px 4px"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Viajes de hoy</div><div style="font-size:13px;color:#414943">{{ todayTrips }} viajes · {{ todayNet }} netos</div></div>
+          <div style="padding:8px 8px 16px">
+            <sc-for list="{{ log }}" as="t" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:16px">
+                <span style="width:44px;height:44px;border-radius:14px;background:#E6EBE4;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:22px;line-height:1;flex:none">{{ t.icon }}</span>
+                <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.from }} → {{ t.to }}</div><div style="font-size:12.5px;color:#414943">{{ t.time }} · {{ t.method }}</div></div>
+                <div style="text-align:right;flex:none"><div style="font-weight:800;font-size:14.5px;font-variant-numeric:tabular-nums">{{ t.net }}</div><div style="font-size:11.5px;font-weight:700;color:#1B7A57">{{ t.tip }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.account }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0 0 80px 0;background:#F8FAF6;overflow:auto;animation:fdFade .3s ease">
+          <div style="background:#181C1A;color:#F8FAF6;padding:24px 20px 22px;display:flex;align-items:center;gap:14px">
+            <div style="width:64px;height:64px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px">RP</div>
+            <div style="flex:1"><div style="font-size:20px;font-weight:800">Rafael Peña</div><div style="font-size:13px;color:#9DB0A6">★ 4.92 · 2,184 viajes · desde 2022</div></div>
+            <span style="padding:4px 10px;border-radius:8px;background:#5FD3A0;color:#00311F;font-size:12px;font-weight:800">Oro</span>
+          </div>
+          <div style="padding:16px 20px">
+            <div style="padding:14px 16px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;display:flex;align-items:center;gap:14px"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1">directions_car</span><div style="flex:1"><div style="font-weight:800;font-size:15px">Toyota Corolla 2021</div><div style="font-size:12.5px;color:#414943">Gris plata · Económico, Confort</div></div><span style="padding:5px 9px;border-radius:7px;border:2px solid #181C1A;font-weight:800;font-size:13px;letter-spacing:.06em;font-family:ui-monospace,Menlo,monospace">A482915</span></div>
+            <div style="font-size:14px;font-weight:800;margin:18px 0 8px">Documentos</div>
+            <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden">
+              <sc-for list="{{ docs }}" as="d" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:{{ d.color }}">{{ d.icon }}</span><div style="flex:1"><div style="font-weight:700;font-size:14px">{{ d.label }}</div><div style="font-size:12px;color:{{ d.subColor }}">{{ d.sub }}</div></div></div></sc-for>
+            </div>
+            <div style="font-size:14px;font-weight:800;margin:18px 0 8px">Preferencias</div>
+            <div style="background:#FFFFFF;border:1px solid #DDE3DD;border-radius:20px;overflow:hidden">
+              <sc-for list="{{ prefs }}" as="o" hint-placeholder-count="3">
+                <button onClick="{{ o.toggle }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border:0;border-bottom:1px solid #EEF2EC;background:transparent;cursor:pointer;text-align:left">
+                  <span style="flex:1"><span style="display:block;font-weight:700;font-size:14px">{{ o.label }}</span><span style="display:block;font-size:12px;color:#414943">{{ o.sub }}</span></span>
+                  <span style="width:52px;height:32px;border-radius:16px;background:{{ o.track }};border:2px solid {{ o.border }};box-sizing:border-box;position:relative;flex:none;transition:background .2s"><span style="position:absolute;top:50%;left:{{ o.x }};width:{{ o.size }};height:{{ o.size }};border-radius:50%;background:{{ o.thumb }};transform:translateY(-50%);transition:all .2s"></span></span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.bottomNav }}" hint-placeholder-val="{{ true }}">
+        <nav style="position:absolute;left:0;right:0;bottom:0;height:80px;background:#EEF2EC;display:flex;align-items:center;justify-content:space-around;z-index:20">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+            <button onClick="{{ n.go }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:transparent;cursor:pointer;width:76px;padding:0">
+              <span style="width:64px;height:32px;border-radius:16px;background:{{ n.bg }};display:flex;align-items:center;justify-content:center;transition:background .2s"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;font-variation-settings:{{ n.fv }}">{{ n.icon }}</span></span>
+              <span style="font-size:12px;font-weight:{{ n.weight }}">{{ n.label }}</span>
+            </button>
+          </sc-for>
+        </nav>
+      </sc-if>
+
+      <sc-if value="{{ s.cancel }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeOverlay }}" style="position:absolute;inset:0;background:rgba(0,0,0,.36);z-index:60;animation:fdFade .2s ease"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#F8FAF6;border-radius:28px 28px 0 0;padding:10px 16px 20px;z-index:61;animation:fdUp .35s cubic-bezier(.2,.8,.2,1)">
+          <div style="width:32px;height:4px;border-radius:2px;background:#C1C9C2;margin:0 auto 14px"></div>
+          <div style="font-size:20px;font-weight:800;padding:0 4px">¿Por qué cancelas?</div>
+          <div style="font-size:13px;color:#414943;padding:2px 4px 12px">Las cancelaciones frecuentes afectan tu tasa de aceptación.</div>
+          <sc-for list="{{ reasons }}" as="r" hint-placeholder-count="4"><button onClick="{{ r.pick }}" style="width:100%;display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;border:0;border-radius:14px;background:transparent;cursor:pointer;text-align:left;font-size:14.5px;font-weight:600" style-hover="background:#EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#414943">{{ r.icon }}</span>{{ r.label }}</button></sc-for>
+          <button onClick="{{ closeOverlay }}" style="width:100%;height:52px;margin-top:8px;border-radius:26px;border:0;background:#181C1A;color:#FFFFFF;font-weight:700;font-size:15px;cursor:pointer">Continuar con el viaje</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s.toast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:8px;left:8px;right:8px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:#FFFFFF;box-shadow:0 8px 28px rgba(24,28,26,.22);z-index:90;animation:fdToast .45s cubic-bezier(.2,.8,.2,1)">
+          <span style="width:40px;height:40px;border-radius:12px;background:#CFEFDD;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#00311F">{{ toastV.icon }}</span></span>
+          <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14px">{{ toastV.title }}</div><div style="font-size:12.5px;color:#414943;line-height:1.35">{{ toastV.body }}</div></div>
+          <span style="font-size:11px;color:#727973;align-self:flex-start">ahora</span>
+        </div>
+      </sc-if>
+    </div>
+  </x-import>
+
+  <aside style="width:320px;max-width:100%;display:flex;flex-direction:column;gap:16px">
+    <div style="background:#F8FAF6;border:1px solid #DDE3DD;border-radius:24px;padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px"><div style="font-weight:800;font-size:17px;letter-spacing:-.01em">Flujo del conductor</div><span style="font-size:11px;font-weight:700;color:#00311F;background:#CFEFDD;padding:4px 8px;border-radius:6px;font-family:ui-monospace,Menlo,monospace">{{ stateCode }}</span></div>
+      <p style="margin:0 0 12px;font-size:12.5px;color:#414943;line-height:1.45">Tú eres el conductor: acepta, navega y cobra. Toca un paso para saltar a ese estado.</p>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ flow }}" as="f" hint-placeholder-count="11">
+          <button onClick="{{ f.go }}" style="display:flex;align-items:center;gap:10px;padding:5px 8px;border:0;border-radius:10px;background:{{ f.bg }};cursor:pointer;text-align:left;transition:background .25s">
+            <span style="width:22px;height:22px;border-radius:50%;background:{{ f.dotBg }};color:{{ f.dotColor }};font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none">{{ f.n }}</span>
+            <span style="font-size:13px;font-weight:600;color:{{ f.color }}">{{ f.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="background:#F8FAF6;border:1px solid #DDE3DD;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-weight:800;font-size:17px">Simulación</div>
+      <button onClick="{{ simOffline.toggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left"><span><span style="display:block;font-weight:700;font-size:14px">Sin conexión</span><span style="display:block;font-size:12px;color:#414943">Pausa las solicitudes entrantes</span></span><span style="width:52px;height:32px;border-radius:16px;background:{{ simOffline.track }};border:2px solid {{ simOffline.border }};box-sizing:border-box;position:relative;flex:none;transition:background .2s"><span style="position:absolute;top:50%;left:{{ simOffline.x }};width:{{ simOffline.size }};height:{{ simOffline.size }};border-radius:50%;background:{{ simOffline.thumb }};transform:translateY(-50%);transition:all .2s"></span></span></button>
+      <div style="font-size:12.5px;color:#414943;line-height:1.45;padding:10px 12px;border-radius:12px;background:#EEF2EC">Las tarifas y la comisión vienen del panel <b>Admin</b>. Cámbialas allí y la próxima solicitud lo refleja.</div>
+      <button onClick="{{ restart }}" style="height:40px;border-radius:20px;border:1px solid #727973;background:transparent;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">restart_alt</span>Reiniciar demo</button>
+    </div>
+  </aside>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;simSpeed&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1x&quot;,&quot;2x&quot;,&quot;4x&quot;],&quot;default&quot;:&quot;1x&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const W = 396, H = 812;
+const Core = () => window.FaxiCore;
+const START = {x:450, y:510};
+const REQS = [
+  {rider:'Ana Rodríguez', ri:'AR', rating:'4.87', trips:112, cat:'eco', method:'Efectivo', methodIcon:'payments', cash:true, pickup:{x:550,y:420,name:'C/ Roberto Pastoriza 210',area:'Naco'}, dest:{x:850,y:780,name:'Zona Colonial',addr:'Calle El Conde esq. Hostos'}, note:'Estoy frente a la farmacia Carol.'},
+  {rider:'Carlos Batista', ri:'CB', rating:'4.95', trips:23, cat:'comfort', method:'Mastercard', methodIcon:'credit_card', cash:false, pickup:{x:750,y:690,name:'Parque Independencia',area:'Gazcue'}, dest:{x:650,y:330,name:'Ágora Mall',addr:'Av. Abraham Lincoln esq. Kennedy'}, note:'Llevo una maleta pequeña.'},
+  {rider:'Lucía Santana', ri:'LS', rating:'5.0', trips:7, cat:'premium', method:'Google Pay', methodIcon:'account_balance_wallet', cash:false, pickup:{x:550,y:240,name:'Av. John F. Kennedy 15',area:'La Fe'}, dest:{x:150,y:780,name:'Parque Mirador Sur',addr:'Av. Anacaona, Bella Vista'}, note:'Puerta del edificio azul.'},
+];
+const SEED_LOG = [
+  {time:'6:48 p. m.', from:'Bella Vista', to:'Piantini', net:472, method:'Visa', icon:'credit_card', tip:0},
+  {time:'5:31 p. m.', from:'Naco', to:'Ágora Mall', net:517, method:'Efectivo', icon:'payments', tip:50},
+  {time:'3:02 p. m.', from:'Gazcue', to:'Blue Mall', net:296, method:'Mastercard', icon:'credit_card', tip:0},
+  {time:'12:40 p. m.', from:'Los Prados', to:'Zona Colonial', net:455, method:'Efectivo', icon:'payments', tip:0},
+  {time:'10:15 a. m.', from:'La Fe', to:'Piantini', net:388, method:'Google Pay', icon:'account_balance_wallet', tip:0},
+  {time:'8:12 a. m.', from:'Los Prados', to:'Piantini', net:212, method:'Visa', icon:'credit_card', tip:0},
+];
+const WEEK = [{l:'L',v:2980},{l:'M',v:3410},{l:'M',v:2650},{l:'J',v:3870},{l:'V',v:4120},{l:'S',v:0, today:true},{l:'D',v:0}];
+const FLOW = [['Desconectado','offline'],['Disponible','online'],['Nueva solicitud','request'],['Aceptar e ir al pasajero','toPickup'],['Llegar al punto','waiting'],['Iniciar viaje','onTrip'],['Conducir al destino','onTrip'],['Finalizar y cobrar','collect'],['Ganancia registrada','summary']];
+const CAT_NAMES = {eco:'Económico', comfort:'Confort', premium:'Premium', suv:'SUV', van:'Van'};
+const REASONS = [['person_off','El pasajero no se presentó'],['wrong_location','Dirección incorrecta'],['group','Demasiados pasajeros'],['car_crash','Problema con el vehículo']];
+
+class Component extends DCLogic {
+  state = { phase:'offline', phaseStart:Date.now(), now:Date.now(), tab:'home', pos:START, reqIdx:0, req:null, toast:null, overlay:null,
+    log:SEED_LOG, accRate:94, payState:'idle', payAt:0, pStars:0, simOffline:false, range:'week', prefs:{cash:true, voice:true, dest:false} };
+  componentDidMount() { this.timer = setInterval(() => this.tick(), 120); }
+  componentWillUnmount() { clearInterval(this.timer); }
+  speed() { return ({'1x':1,'2x':2,'4x':4})[this.props.simSpeed ?? '1x'] || 1; }
+  ph(p, extra) { return Object.assign({phase:p, phaseStart:Date.now(), overlay:null}, extra||{}); }
+  go(p, extra) { this.setState(this.ph(p, extra)); }
+  mkToast(title, body, icon) { return {title, body, icon:icon||'notifications', until:Date.now()+3600}; }
+  toast(t, b, i) { this.setState({toast:this.mkToast(t, b, i)}); }
+
+  buildReq(idx, pos) {
+    const G = Core().geo, r = REQS[idx % REQS.length];
+    const approach = G.lpath(pos, r.pickup), route = G.lpath(r.pickup, r.dest);
+    const aKm = G.pathLen(approach)*G.M_PER_UNIT/1000, km = +(G.pathLen(route)*G.M_PER_UNIT/1000).toFixed(1), min = Math.round(km*3)+2;
+    const q = Core().quote(r.cat, km, min, {});
+    return Object.assign({}, r, {approach, route, aKm:+aKm.toFixed(1), aMin:Math.max(2, Math.round(aKm*2.6)), km, min, q, id:'FX-'+(312900+Math.floor(Math.random()*90000))});
+  }
+  tick() {
+    const st = this.state, now = Date.now(), el = now - st.phaseStart, sp = this.speed(), u = {now};
+    if (st.toast && now > st.toast.until) u.toast = null;
+    if (Core() && st.phase !== this._lp) { this._lp = st.phase; Core().setLive('driver', {phase:st.phase, label:st.req ? 'Rafael Peña → '+st.req.rider : 'Rafael Peña', rider:st.req&&st.req.rider, dest:st.req&&st.req.dest.name, total:st.req?st.req.q.total:0}); }
+    const set = (p, extra) => Object.assign(u, this.ph(p), extra||{});
+    switch (st.phase) {
+      case 'online':
+        if (!st.simOffline && el > 4500/sp) { const req = this.buildReq(st.reqIdx, st.pos); set('request', {req, toast:null}); }
+        break;
+      case 'request':
+        if (el > 15000/sp) set('online', {reqIdx:st.reqIdx+1, req:null, accRate:Math.max(70, st.accRate-2), toast:this.mkToast('Solicitud expirada','No respondiste a tiempo. Tu aceptación bajó al '+Math.max(70, st.accRate-2)+'%.','timer_off')});
+        break;
+      case 'toPickup':
+        if (el/(13000/sp) >= 1 && !st.nearNotified) u.nearNotified = true, u.toast = this.mkToast('Llegaste al punto de recogida','Toca “Llegué” para avisar a '+st.req.rider.split(' ')[0]+'.','location_on');
+        break;
+      case 'collect':
+        if (st.payState === 'processing' && now - st.payAt > 1600) Object.assign(u, {payState:'approved', payAt:now});
+        if (st.payState === 'approved' && now - st.payAt > 1100) this.finish(u);
+        break;
+    }
+    this.setState(u);
+  }
+  finish(u) {
+    const st = this.state, r = st.req, tip = r.cash ? 0 : 50;
+    const entry = {time:Core().now(), from:r.pickup.area, to:r.dest.name, net:r.q.driverNet+tip, method:r.method, icon:r.methodIcon, tip, fare:r.q.total, comm:r.q.commission};
+    Core().logTrip({id:r.id, rider:r.rider, driver:'Rafael Peña', from:r.pickup.area, to:r.dest.name, cat:r.cat, total:r.q.total+tip, method:r.method, status:'Completado', source:'App conductor'});
+    Object.assign(u, this.ph('summary'), {log:[entry, ...st.log], lastEntry:entry, pStars:0, payState:'idle'});
+  }
+  jump(p) {
+    const st = this.state, u = this.ph(p, {payState:'idle', nearNotified:false, tab:'home'});
+    if (!['offline','online'].includes(p) && !st.req) u.req = this.buildReq(st.reqIdx, st.pos);
+    if (p === 'collect') u.payState = (u.req||st.req).cash ? 'idle' : 'processing', u.payAt = Date.now();
+    if (p === 'summary') { this.setState(Object.assign(u, {req:u.req||st.req})); setTimeout(() => { const x = {}; this.finish(x); this.setState(x); }, 0); return; }
+    this.setState(u);
+  }
+
+  buildMap() {
+    const h = React.createElement, st = this.state, P = st.phase, G = Core().geo, now = st.now, el = now - st.phaseStart, sp = this.speed(), r = st.req;
+    const tA = P==='toPickup' ? G.ease(el/(13000/sp)) : 0, tT = P==='onTrip' ? G.ease(el/(20000/sp)) : 0;
+    let car, pts, bottom = 300, top = 84;
+    if (P==='toPickup') car = G.pointAt(r.approach, tA);
+    else if (P==='waiting') car = G.pointAt(r.approach, 1);
+    else if (P==='onTrip') car = G.pointAt(r.route, tT);
+    else car = {x:st.pos.x, y:st.pos.y, ang:0};
+    if (P==='request') { pts = r.approach.concat(r.route); bottom = 520; }
+    else if (P==='toPickup') { pts = [[car.x,car.y],[r.pickup.x,r.pickup.y]]; bottom = 290; top = 150; }
+    else if (P==='waiting') { pts = [[r.pickup.x-60,r.pickup.y-60],[r.pickup.x+60,r.pickup.y+60]]; bottom = 330; }
+    else if (P==='onTrip') { pts = G.remaining(r.route, tT).concat([[car.x,car.y]]); bottom = 270; top = 150; }
+    else { pts = [[car.x-150,car.y-150],[car.x+150,car.y+150]]; bottom = 330; }
+    const cam = G.camera(pts, {W, H, top, bottom}), k = 1/cam.s, TR = 'transform 1.1s cubic-bezier(.2,.8,.2,1)';
+    const mk = (key, x, y, kids) => h('g',{key, transform:`translate(${x} ${y})`}, h('g',{style:{transform:`scale(${k})`, transition:TR}}, kids));
+    const chip = (key, text, wx) => { const w = text.length*6.7+26; const dx = wx*cam.s+cam.tx > W/2 ? -(w+16) : 16;
+      return h('g',{key, transform:`translate(${dx} -26)`, style:{animation:'fdFade .5s ease'}},[h('rect',{key:'r',x:0,y:-15,width:w,height:30,rx:15,fill:'#181C1A'}), h('text',{key:'t',x:13,y:4.5,fontSize:12,fontWeight:700,fill:'#FFFFFF',fontFamily:'Plus Jakarta Sans, sans-serif'},text)]); };
+    const dyn = [];
+    if (['offline','online'].includes(P)) [[505,560,90],[560,400,70],[700,250,60]].forEach(([x,y,rr],i) =>
+      dyn.push(h('circle',{key:'dz'+i, cx:x, cy:y, r:rr, fill:P==='online'?'rgba(224,161,0,.22)':'rgba(224,161,0,.12)', stroke:'rgba(224,161,0,.45)', strokeWidth:1.5, vectorEffect:'non-scaling-stroke', style:{transition:'fill .4s'}})));
+    if (P==='online') dyn.push(mk('radar', car.x, car.y, [0,1,2].map(i => h('circle',{key:i, r:120, fill:'rgba(27,122,87,.14)', stroke:'rgba(27,122,87,.3)', style:{transformBox:'fill-box', transformOrigin:'center', animation:`fdPulse 2.7s ${i*.9}s cubic-bezier(.2,.6,.3,1) infinite`, opacity:0}}))));
+    const line = (key, p, color, dash) => { dyn.push(h('path',{key:key+'u', d:G.dPath(p), fill:'none', stroke:'#FFFFFF', strokeWidth:11, strokeLinecap:'round', strokeLinejoin:'round', vectorEffect:'non-scaling-stroke'}));
+      dyn.push(h('path',{key:key+'l', d:G.dPath(p), fill:'none', stroke:color, strokeWidth:5, strokeDasharray:dash, strokeLinecap:'round', strokeLinejoin:'round', vectorEffect:'non-scaling-stroke'})); };
+    if (P==='request') { line('ap', r.approach, '#1B7A57', '1 9'); line('rt', r.route, '#181C1A'); }
+    if (P==='toPickup') line('ap', G.remaining(r.approach, tA), '#1B7A57');
+    if (P==='onTrip') line('rt', G.remaining(r.route, tT), '#181C1A');
+    if (['request','toPickup','waiting'].includes(P)) dyn.push(mk('pk', r.pickup.x, r.pickup.y, [
+      P==='waiting' ? h('circle',{key:'p',r:30,fill:'rgba(24,28,26,.14)',style:{transformBox:'fill-box',transformOrigin:'center',animation:'fdPulse 2s ease-out infinite'}}) : null,
+      h('circle',{key:'h',r:15,fill:'rgba(24,28,26,.12)'}), h('circle',{key:'o',r:9.5,fill:'#181C1A'}), h('circle',{key:'i',r:3.8,fill:'#FFFFFF'}),
+      P!=='request' ? chip('c', r.rider.split(' ')[0]+' · '+r.pickup.area, r.pickup.x) : null]));
+    if (['request','onTrip'].includes(P)) dyn.push(mk('ds', r.dest.x, r.dest.y, [h('rect',{key:'o',x:-9,y:-9,width:18,height:18,rx:3,fill:'#181C1A'}), h('rect',{key:'i',x:-3.2,y:-3.2,width:6.4,height:6.4,fill:'#FFFFFF'}), P==='onTrip' ? chip('c', r.dest.name, r.dest.x) : null]));
+    dyn.push(h('g',{key:'me', style:{transform:`translate(${car.x}px,${car.y}px)`, transition:'transform .12s linear'}},
+      h('g',{style:{transform:`scale(${k*1.2})`, transition:TR}}, [
+        h('circle',{key:'halo', r:22, fill:P==='offline'?'rgba(114,121,115,.2)':'rgba(27,122,87,.2)'}),
+        h('g',{key:'rot', style:{transform:`rotate(${car.ang}deg)`, transition:'transform .45s'}}, G.carShape(h, P==='offline'?'#727973':'#1B7A57','c'))])));
+    return h('svg',{width:'100%', height:'100%', viewBox:`0 0 ${W} ${H}`, style:{display:'block', filter:st.simOffline?'grayscale(.9)':'none', transition:'filter .4s'}},
+      h('g',{style:{transform:`translate(${cam.tx}px,${cam.ty}px) scale(${cam.s})`, transformOrigin:'0 0', transition:TR}}, [G.baseLayer(h), ...dyn]));
+  }
+
+  renderVals() {
+    const st = this.state, P = st.phase, now = st.now, el = now - st.phaseStart, sp = this.speed();
+    if (!Core()) return {s:{}, flow:[], navItems:[], log:[], docs:[], prefs:[], reasons:[], ranges:[], earn:{bars:[],stats:[],lines:[]}, sum:{lines:[]}, pStars:[], simOffline:{}, toastV:{}};
+    const G = Core().geo, fmt = Core().fmt, F = Core().config().fare, r = st.req;
+    const home = st.tab==='home', mapPh = ['offline','online','request','toPickup','waiting','onTrip'].includes(P);
+    const s = { map:home&&mapPh, statusBar:home&&['offline','online'].includes(P), navBanner:['toPickup','onTrip'].includes(P),
+      offline:home&&P==='offline', online:home&&P==='online', request:P==='request', toPickup:P==='toPickup', waiting:P==='waiting', onTrip:P==='onTrip',
+      collect:P==='collect', summary:P==='summary', earnings:st.tab==='earnings'&&['offline','online'].includes(P), trips:st.tab==='trips'&&['offline','online'].includes(P),
+      account:st.tab==='account'&&['offline','online'].includes(P), bottomNav:['offline','online'].includes(P), cancel:st.overlay==='cancel', toast:!!st.toast,
+      offlineBanner:st.simOffline&&home&&['offline','online'].includes(P) };
+    const todayNet = st.log.reduce((a,t)=>a+t.net,0), todayTips = st.log.reduce((a,t)=>a+(t.tip||0),0);
+    const sw = (on, toggle) => ({toggle, track:on?'#1B7A57':'#E6EBE4', border:on?'#1B7A57':'#727973', thumb:on?'#FFFFFF':'#727973', x:on?'22px':'4px', size:on?'24px':'16px'});
+    const curIdx = FLOW.findIndex(f => f[1]===P);
+    const flow = FLOW.map((f,i) => { const cur = f[1]===P;
+      return {n:i+1, label:f[0], go:()=>this.jump(f[1]), bg:cur?'#CFEFDD':'transparent', dotBg:cur?'#181C1A':i<curIdx?'#1B7A57':'#E6EBE4', dotColor:cur||i<curIdx?'#FFFFFF':'#727973', color:i<=curIdx||cur?'#181C1A':'#727973'}; });
+    const navItems = [['home','Inicio','home'],['earnings','Ganancias','account_balance_wallet'],['trips','Viajes','receipt_long'],['account','Cuenta','person']].map(([id,l,ic]) =>
+      ({label:l, icon:ic, go:()=>this.setState({tab:id}), bg:st.tab===id?'#CFEFDD':'transparent', fv:st.tab===id?"'FILL' 1":"'FILL' 0", weight:st.tab===id?'800':'600'}));
+    // request
+    let rq = {}, nav = {}, trip = {};
+    if (r) {
+      const left = Math.max(0, 1 - el/(15000/sp));
+      rq = {rider:r.rider, first:r.rider.split(' ')[0], ri:r.ri, rating:r.rating, trips:r.trips, cat:CAT_NAMES[r.cat], catIcon:Core().cat(r.cat).icon, method:r.method, methodIcon:r.methodIcon,
+        net:fmt(r.q.driverNet), total:fmt(r.q.total), surgeNote:Core().config().surge?' · hora pico':'', secs:Math.ceil(left*15/1), pct:(left*100).toFixed(1)+'%',
+        pickup:r.pickup.name, pickupArea:r.pickup.area, dest:r.dest.name, destAddr:r.dest.addr, toPickup:r.aMin+' min · '+r.aKm+' km', tripLen:r.min+' min · '+r.km+' km', note:r.note};
+      if (P==='toPickup' || P==='onTrip') {
+        const isA = P==='toPickup', path = isA ? r.approach : r.route, t = G.ease(el/((isA?13000:20000)/sp)), n = G.nav(path, t);
+        const remKm = (G.pathLen(path)*(1-t)*G.M_PER_UNIT/1000), remMin = Math.max(1, Math.ceil((isA?r.aMin:r.min)*(1-t)));
+        nav = {icon:t>=.995?'where_to_vote':n.icon, dist:t>=.995?'Llegaste':(n.dist>=1000?(n.dist/1000).toFixed(1)+' km':n.dist+' m'), text:t>=.995?(isA?'Punto de recogida':'Destino'):n.text, street:n.street,
+          goal:isA?'Recoger a '+rq.first+' · '+r.pickup.area:'Destino · '+r.dest.name, eta:t>=.995?'ahora':remMin+' min · '+remKm.toFixed(1)+' km'};
+        trip = {pct:(t*100).toFixed(1)+'%', left:remMin+' min · '+remKm.toFixed(1)+' km restantes', done:t>=.97};
+      }
+    }
+    const tA = P==='toPickup' ? el/(13000/sp) : 0, nearPickup = tA >= .97;
+    const waitS = P==='waiting' ? Math.floor(el*sp/1000) : 0, freeLeft = 120 - waitS;
+    const wait = freeLeft > 0
+      ? {label:'Espera gratuita', labelColor:'#1B7A57', sub:'Después de 2:00 se cobra '+fmt(F.waitPerMin)+'/min', clock:Math.floor(freeLeft/60)+':'+String(freeLeft%60).padStart(2,'0'), bg:'#CFEFDD', cancelLabel:'Cancelar viaje'}
+      : {label:'Cargo por espera activo', labelColor:'#7A5900', sub:'+'+fmt(Math.ceil(-freeLeft/60)*F.waitPerMin)+' acumulado', clock:'+'+Math.floor(-freeLeft/60)+':'+String((-freeLeft)%60).padStart(2,'0'), bg:'#FFE7A8', cancelLabel:'El pasajero no se presentó'};
+    const col = r ? (r.cash ? {cash:st.payState==='idle', processing:false, approved:false, icon:'payments', iconBg:'#FFE7A8', iconColor:'#3D2E00', kicker:'Cobra en efectivo', body:'Recibe el pago de '+rq.first+' y confirma. La comisión de faxi ('+Math.round(F.commission*100)+'%) se descuenta de tu saldo.'}
+      : {cash:false, processing:st.payState==='processing', approved:st.payState==='approved', icon:'credit_card', iconBg:'#CFEFDD', iconColor:'#00311F', kicker:'Pago con '+r.method, body:'Cobramos automáticamente a '+rq.first+'. No necesitas hacer nada.'}) : {};
+    const le = st.lastEntry;
+    const sum = le ? {net:fmt(le.net), lines:[{label:'Tarifa del viaje', value:fmt(le.fare), color:'#F8FAF6'}, {label:'Comisión faxi ('+Math.round(F.commission*100)+'%)', value:'− '+fmt(le.comm), color:'#FFB4AB'}].concat(le.tip?[{label:'Propina', value:'+ '+fmt(le.tip), color:'#5FD3A0'}]:[])} : {net:'', lines:[]};
+    // earnings
+    const week = WEEK.map(d => d.today ? Object.assign({}, d, {v:todayNet}) : d), max = Math.max(...week.map(d=>d.v), 1);
+    const isWeek = st.range==='week';
+    const earn = isWeek ? {period:'28 sep – 4 oct', total:fmt(week.reduce((a,d)=>a+d.v,0)),
+        bars:week.map(d => ({l:d.l, v:d.v?(d.v/1000).toFixed(1)+'k':'', h:(d.v/max*100).toFixed(0)+'%', bg:d.today?'#1B7A57':'#C9DDD1', w:d.today?'800':'600'})),
+        stats:[{l:'Viajes',v:String(31+st.log.length)},{l:'Horas en línea',v:'34 h 20 m'},{l:'Aceptación',v:st.accRate+'%'},{l:'Propinas',v:fmt(870+todayTips)}]}
+      : {period:'Hoy · sábado 3 oct', total:fmt(todayNet), bars:st.log.slice(0,7).reverse().map(t => ({l:t.time.split(':')[0], v:t.net, h:(t.net/600*100).toFixed(0)+'%', bg:'#1B7A57', w:'600'})),
+        stats:[{l:'Viajes',v:String(st.log.length)},{l:'Horas en línea',v:'6 h 05 m'},{l:'Aceptación',v:st.accRate+'%'},{l:'Propinas',v:fmt(todayTips)}]};
+    const gross = Math.round((isWeek ? week.reduce((a,d)=>a+d.v,0) : todayNet)/(1-F.commission));
+    earn.lines = [{label:'Tarifas cobradas', value:fmt(gross), color:'#181C1A'}, {label:'Comisión faxi ('+Math.round(F.commission*100)+'%)', value:'− '+fmt(gross*F.commission), color:'#BA1A1A'}, {label:'Ganancia neta', value:fmt(gross*(1-F.commission)), color:'#1B7A57'}];
+    const ranges = [['day','Hoy'],['week','Semana']].map(([id,l]) => ({label:l, set:()=>this.setState({range:id}), bg:st.range===id?'#FFFFFF':'transparent', shadow:st.range===id?'0 1px 3px rgba(0,0,0,.12)':'none'}));
+    const docs = [['badge','Licencia de conducir','Vigente hasta 03/2029','ok'],['shield','Seguro del vehículo','Vence en 12 días · renueva ahora','warn'],['description','Matrícula','Verificada','ok'],['verified_user','Certificado de no antecedentes','Verificado · 01/2026','ok']]
+      .map(([ic,l,sub,k]) => ({icon:k==='ok'?'check_circle':'warning', label:l, sub, color:k==='ok'?'#1B7A57':'#B07D00', subColor:k==='ok'?'#414943':'#7A5900'}));
+    const prefs = [['cash','Aceptar pagos en efectivo','Recibirás más solicitudes'],['voice','Navegación por voz','Indicaciones habladas en español'],['dest','Filtro de destino','Solo viajes hacia tu casa']]
+      .map(([id,l,sub]) => Object.assign({label:l, sub}, sw(st.prefs[id], ()=>this.setState(x => ({prefs:Object.assign({}, x.prefs, {[id]:!x.prefs[id]})})))));
+    const top = P==='online' ? {label:st.simOffline?'Sin conexión':'En línea', bg:st.simOffline?'#410002':'#1B7A57', color:'#FFFFFF', dot:st.simOffline?'#FFB4AB':'#B8F5D8'} : {label:'Desconectado', bg:'#FFFFFF', color:'#181C1A', dot:'#727973'};
+    return {
+      s, mapEl:s.map ? this.buildMap() : null, top, todayNet:fmt(todayNet), todayTrips:st.log.length, accRate:st.accRate, flow, navItems,
+      stateCode:P.toUpperCase()+(st.simOffline?' · OFFLINE':''),
+      onlineTitle:st.simOffline?'Esperando conexión…':'Buscando viajes…', onlineSub:st.simOffline?'Volverás a recibir solicitudes al reconectar.':'Quédate cerca de las zonas de alta demanda.',
+      goOnline:()=>this.go('online', {toast:this.mkToast('Estás en línea','Te avisaremos cuando llegue una solicitud.','wifi_tethering')}),
+      goOffline:()=>this.go('offline', {toast:this.mkToast('Te desconectaste','No recibirás solicitudes.','pause_circle')}),
+      goAccount:()=>this.setState({tab:'account'}), goEarnings:()=>this.setState({tab:'earnings'}),
+      rq, nav, trip, wait, col, sum,
+      accept:()=>this.go('toPickup', {nearNotified:false, toast:this.mkToast('Viaje aceptado', 'Ve a recoger a '+rq.first+' · '+rq.toPickup, 'check_circle')}),
+      decline:()=>this.go('online', {req:null, reqIdx:st.reqIdx+1, accRate:Math.max(70, st.accRate-1), toast:this.mkToast('Solicitud rechazada','Buscamos otro viaje para ti.','close')}),
+      arriveBtn:{bg:nearPickup?'#1B7A57':'#C1C9C2', cursor:nearPickup?'pointer':'not-allowed', label:nearPickup?'Llegué al punto':'Llegas en '+(r?Math.max(1, Math.ceil(r.aMin*(1-G.ease(tA)))):0)+' min'},
+      arrive:()=>{ if (nearPickup) this.go('waiting', {toast:this.mkToast('Avisamos a '+rq.first, 'Tiene 2 minutos de espera gratuita.', 'hail')}); },
+      startTrip:()=>this.go('onTrip', {toast:this.mkToast('Viaje iniciado','Destino: '+(r?r.dest.name:''),'navigation')}),
+      endBtn:{bg:trip.done?'#181C1A':'#C1C9C2', cursor:trip.done?'pointer':'not-allowed', label:trip.done?'Finalizar viaje':'Finaliza al llegar al destino'},
+      endTrip:()=>{ if (trip.done) this.go('collect', {payState:r.cash?'idle':'processing', payAt:Date.now()}); },
+      confirmCash:()=>this.setState({payState:'approved', payAt:Date.now()}), cashIssue:()=>this.toast('Soporte notificado','Registramos la diferencia; un agente revisará el cobro.','support_agent'),
+      pStars:[1,2,3,4,5].map(n => ({set:()=>this.setState({pStars:n}), fv:n<=st.pStars?"'FILL' 1":"'FILL' 0", color:n<=st.pStars?'#E0A100':'#414943'})),
+      nextTrip:()=>this.go('online', {pos:r?r.dest:st.pos, req:null, reqIdx:st.reqIdx+1, tab:'home'}),
+      finishOffline:()=>this.go('offline', {pos:r?r.dest:st.pos, req:null, reqIdx:st.reqIdx+1, tab:'home'}),
+      openCancel:()=>this.setState({overlay:'cancel'}), closeOverlay:()=>this.setState({overlay:null}),
+      reasons:REASONS.map(([ic,l]) => ({icon:ic, label:l, pick:()=>{ if (r) Core().logTrip({id:r.id, rider:r.rider, driver:'Rafael Peña', from:r.pickup.area, to:r.dest.name, cat:r.cat, total:0, method:r.method, status:'Cancelado', source:'App conductor'});
+        this.go('online', {req:null, reqIdx:st.reqIdx+1, toast:this.mkToast('Viaje cancelado', l+'. Avisamos al pasajero.', 'cancel')}); }})),
+      callRider:()=>this.toast('Llamando a '+(rq.first||''),'Llamada enmascarada: ninguno ve el número del otro.','call'),
+      msgRider:()=>this.toast('Mensaje enviado','“Ya voy llegando, '+(rq.first||'')+'.”','chat'),
+      sos:()=>this.toast('Centro de seguridad','Comparte tu ubicación con faxi o llama al 911.','shield'),
+      log:st.log.map(t => ({from:t.from, to:t.to, time:t.time, method:t.method, icon:t.icon, net:fmt(t.net), tip:t.tip?'+'+fmt(t.tip)+' propina':''})),
+      earn, ranges, docs, prefs, cashOut:()=>this.toast('Retiro solicitado', fmt(todayNet)+' llegará a tu cuenta en 1 día hábil.', 'account_balance'),
+      simOffline:sw(st.simOffline, ()=>this.setState(x => ({simOffline:!x.simOffline, toast:x.simOffline?this.mkToast('Conexión restablecida','Vuelves a recibir solicitudes.','wifi'):null}))),
+      restart:()=>this.setState(Object.assign(this.ph('offline'), {tab:'home', pos:START, reqIdx:0, req:null, log:SEED_LOG, accRate:94, payState:'idle', simOffline:false})),
+      toastV:st.toast || {title:'', body:'', icon:'notifications'},
+    };
+  }
+}
+</script>
+</body>
+</html>

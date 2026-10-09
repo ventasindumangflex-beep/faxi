@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block">
+<script src="./faxi-core.js"></script>
+<style>
+@keyframes faFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes faPulse{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.2);opacity:0}}
+</style>
+</helmet>
+<div style="flex:1;display:flex;gap:0;margin:4px 24px 40px;min-height:820px;border-radius:28px;overflow:hidden;border:1px solid #DDE3DD;background:#F8FAF6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#181C1A;flex-wrap:wrap">
+  <aside style="width:232px;flex:none;background:#181C1A;color:#F8FAF6;padding:22px 14px;display:flex;flex-direction:column;gap:4px;box-sizing:border-box">
+    <div style="display:flex;align-items:baseline;gap:6px;padding:0 10px 18px"><span style="font-weight:800;font-size:24px;letter-spacing:-.05em">faxi</span><span style="width:7px;height:7px;border-radius:50%;background:#5FD3A0;display:block"></span><span style="font-size:12px;font-weight:700;color:#9DB0A6;margin-left:4px">Admin</span></div>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="8">
+      <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border:0;border-radius:14px;background:{{ n.bg }};color:{{ n.color }};cursor:pointer;text-align:left;font-size:14px;font-weight:700;transition:background .2s">
+        <span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">{{ n.icon }}</span><span style="flex:1">{{ n.label }}</span>
+        <sc-if value="{{ n.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#5FD3A0;color:#00311F;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;box-sizing:border-box">{{ n.badge }}</span></sc-if>
+      </button>
+    </sc-for>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid #2E3430"><span style="width:34px;height:34px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">OP</span><div><div style="font-size:13px;font-weight:700">Operaciones SD</div><div style="font-size:11.5px;color:#9DB0A6">Administrador</div></div></div>
+  </aside>
+
+  <section style="flex:1;min-width:0;padding:24px 28px 32px;box-sizing:border-box;overflow:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <div><div style="font-size:12px;font-weight:700;color:#1B7A57;text-transform:uppercase;letter-spacing:.1em">{{ header.kicker }}</div><h1 style="margin:2px 0 0;font-size:28px;font-weight:800;letter-spacing:-.03em">{{ header.title }}</h1></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:18px;background:#FFFFFF;border:1px solid #DDE3DD;font-size:12.5px;font-weight:700"><span style="position:relative;width:8px;height:8px"><span style="position:absolute;inset:0;border-radius:50%;background:#1B7A57;animation:faPulse 1.6s ease-out infinite"></span><span style="position:absolute;inset:0;border-radius:50%;background:#1B7A57"></span></span>En vivo · {{ clock }}</span>
+        <button onClick="{{ surge.toggle }}" style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ surge.border }};background:{{ surge.bg }};color:{{ surge.color }};font-size:12.5px;font-weight:800;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">bolt</span>{{ surge.label }}</button>
+      </div>
+    </div>
+
+    <sc-if value="{{ v.dash }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+          <div style="padding:16px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;animation:faFade .4s both">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:12.5px;font-weight:700;color:#414943">{{ k.label }}</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">{{ k.icon }}</span></div>
+            <div style="font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums">{{ k.value }}</div>
+            <div style="font-size:12px;font-weight:700;color:{{ k.deltaColor }};margin-top:2px">{{ k.delta }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;margin-bottom:16px">
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;overflow:hidden;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 18px 12px;flex-wrap:wrap"><div style="font-weight:800;font-size:16px">Mapa en tiempo real</div><div style="display:flex;gap:14px;font-size:12px;font-weight:600;color:#414943"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#1B7A57"></span>Disponible</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#181C1A"></span>En viaje</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#E0A100"></span>Demanda alta</span></div></div>
+          <div style="height:380px;background:#E3E7E0">{{ mapEl }}</div>
+        </div>
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:16px 18px;display:flex;flex-direction:column;min-height:0">
+          <div style="font-weight:800;font-size:16px;margin-bottom:10px">Actividad en vivo</div>
+          <div style="display:flex;flex-direction:column;gap:2px;overflow:auto;max-height:400px">
+            <sc-for list="{{ events }}" as="e" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:12px;padding:8px 4px;border-bottom:1px solid #EEF2EC;animation:faFade .35s both">
+                <span style="width:34px;height:34px;border-radius:11px;background:#EEF2EC;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#1B7A57">{{ e.icon }}</span></span>
+                <span style="flex:1;font-size:13px;font-weight:600;line-height:1.35">{{ e.text }}</span><span style="font-size:11.5px;color:#727973;flex:none">{{ e.time }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px">
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:16px 18px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><div style="font-weight:800;font-size:16px">Viajes por hora</div><div style="font-size:12px;color:#414943">Hoy vs. promedio</div></div>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:160px;margin-top:14px">
+            <sc-for list="{{ hours }}" as="b" hint-placeholder-count="24"><div style="flex:1;height:{{ b.h }};border-radius:4px 4px 2px 2px;background:{{ b.bg }};position:relative" title="{{ b.t }}"></div></sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#727973;margin-top:6px"><span>12 a. m.</span><span>6 a. m.</span><span>12 p. m.</span><span>6 p. m.</span><span>11 p. m.</span></div>
+        </div>
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:16px 18px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><div style="font-weight:800;font-size:16px">Viajes activos</div><button onClick="{{ goTrips }}" style="height:32px;padding:0 12px;border-radius:16px;border:1px solid #C1C9C2;background:transparent;font-size:12.5px;font-weight:700;cursor:pointer">Ver todos</button></div>
+          <sc-for list="{{ active }}" as="a" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EEF2EC">
+              <span style="width:36px;height:36px;border-radius:12px;background:{{ a.iconBg }};display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:{{ a.iconColor }}">{{ a.icon }}</span></span>
+              <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.title }}</div><div style="font-size:12px;color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.sub }}</div></div>
+              <span style="padding:4px 9px;border-radius:8px;background:{{ a.chipBg }};color:{{ a.chipColor }};font-size:11.5px;font-weight:800;flex:none">{{ a.status }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ v.trips }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+        <sc-for list="{{ tripFilters }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.set }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid {{ f.border }};background:{{ f.bg }};font-size:13px;font-weight:700;cursor:pointer">{{ f.label }}</button></sc-for>
+        <div style="flex:1"></div>
+        <div style="display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;min-width:220px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#727973">search</span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar ID, pasajero o conductor" style="flex:1;min-width:0;border:0;background:transparent;font-size:13.5px;outline:none"></div>
+      </div>
+      <div style="border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;overflow:auto">
+        <div style="min-width:900px">
+          <div style="display:grid;grid-template-columns:110px 90px 1.2fr 1.2fr 1.5fr 100px 100px 120px 110px;gap:12px;padding:12px 18px;font-size:11.5px;font-weight:800;color:#414943;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #DDE3DD"><span>ID</span><span>Hora</span><span>Pasajero</span><span>Conductor</span><span>Ruta</span><span>Tipo</span><span style="text-align:right">Total</span><span>Método</span><span>Estado</span></div>
+          <sc-for list="{{ tripRows }}" as="t" hint-placeholder-count="7">
+            <div style="display:grid;grid-template-columns:110px 90px 1.2fr 1.2fr 1.5fr 100px 100px 120px 110px;gap:12px;padding:12px 18px;font-size:13px;border-bottom:1px solid #EEF2EC;align-items:center;background:{{ t.rowBg }}">
+              <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700">{{ t.id }}</span><span style="color:#414943">{{ t.time }}</span><span style="font-weight:700">{{ t.rider }}</span><span>{{ t.driver }}</span><span style="color:#414943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.route }}</span><span>{{ t.cat }}</span><span style="text-align:right;font-weight:800;font-variant-numeric:tabular-nums">{{ t.total }}</span><span style="color:#414943">{{ t.method }}</span>
+              <span style="justify-self:start;padding:4px 9px;border-radius:8px;background:{{ t.chipBg }};color:{{ t.chipColor }};font-size:11.5px;font-weight:800">{{ t.status }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ tripsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px;text-align:center;color:#414943;font-size:14px">No hay viajes que coincidan con “{{ q }}”.</div></sc-if>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#727973;margin-top:10px">Los viajes que completes en las apps de Pasajero y Conductor aparecen aquí en tiempo real (resaltados).</div>
+    </sc-if>
+
+    <sc-if value="{{ v.drivers }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:4px;padding:4px;border-radius:999px;background:#E6EBE4;width:fit-content;margin-bottom:16px">
+        <sc-for list="{{ driverTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.set }}" style="height:38px;padding:0 18px;border:0;border-radius:999px;background:{{ t.bg }};box-shadow:{{ t.shadow }};font-weight:700;font-size:13.5px;cursor:pointer">{{ t.label }}</button></sc-for>
+      </div>
+      <sc-if value="{{ driverActiveTab }}" hint-placeholder-val="{{ true }}">
+        <div style="border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;overflow:auto">
+          <div style="min-width:860px">
+            <div style="display:grid;grid-template-columns:1.6fr 1.8fr 90px 80px 120px 130px 120px;gap:12px;padding:12px 18px;font-size:11.5px;font-weight:800;color:#414943;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #DDE3DD"><span>Conductor</span><span>Vehículo</span><span>Rating</span><span>Viajes</span><span>Estado</span><span>Documentos</span><span></span></div>
+            <sc-for list="{{ driverRows }}" as="d" hint-placeholder-count="7">
+              <div style="display:grid;grid-template-columns:1.6fr 1.8fr 90px 80px 120px 130px 120px;gap:12px;padding:10px 18px;font-size:13px;border-bottom:1px solid #EEF2EC;align-items:center">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="width:36px;height:36px;border-radius:50%;background:#181C1A;color:#CFEFDD;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex:none">{{ d.ini }}</span><div style="min-width:0"><div style="font-weight:700">{{ d.name }}</div><div style="font-size:11.5px;color:#727973">{{ d.id }} · {{ d.phone }}</div></div></div>
+                <div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.car }}</div><div style="font-size:11.5px;color:#727973">{{ d.cat }}</div></div>
+                <span style="font-weight:700">★ {{ d.rating }}</span><span style="font-variant-numeric:tabular-nums">{{ d.trips }}</span>
+                <span style="justify-self:start;padding:4px 9px;border-radius:8px;background:{{ d.chipBg }};color:{{ d.chipColor }};font-size:11.5px;font-weight:800">{{ d.status }}</span>
+                <span style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:{{ d.docColor }}"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ d.docIcon }}</span>{{ d.docLabel }}</span>
+                <button onClick="{{ d.action }}" style="height:32px;padding:0 12px;border-radius:16px;border:1px solid {{ d.actBorder }};background:transparent;color:{{ d.actColor }};font-size:12.5px;font-weight:700;cursor:pointer">{{ d.actLabel }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ driverPendingTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+          <sc-for list="{{ pendingRows }}" as="p" hint-placeholder-count="3">
+            <div style="border-radius:22px;background:#FFFFFF;border:1px solid #DDE3DD;padding:18px;display:flex;flex-direction:column;gap:12px;animation:faFade .35s both">
+              <div style="display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800">{{ p.ini }}</span><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:15px">{{ p.name }}</div><div style="font-size:12px;color:#414943">{{ p.id }} · solicitó {{ p.joined }}</div></div></div>
+              <div style="font-size:13px;padding:10px 12px;border-radius:12px;background:#EEF2EC"><b>{{ p.car }}</b><br>Categoría: {{ p.cat }}</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <sc-for list="{{ p.docs }}" as="d" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;font-size:13px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:{{ d.color }}">{{ d.icon }}</span>{{ d.label }}</div></sc-for>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:4px">
+                <button onClick="{{ p.reject }}" style="flex:1;height:42px;border-radius:21px;border:1px solid #727973;background:transparent;font-weight:700;font-size:13.5px;cursor:pointer">Rechazar</button>
+                <button onClick="{{ p.approve }}" style="flex:1;height:42px;border-radius:21px;border:0;background:{{ p.approveBg }};color:#FFFFFF;font-weight:700;font-size:13.5px;cursor:{{ p.approveCursor }}">Aprobar</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ pendingEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:48px;text-align:center;border-radius:22px;border:1px dashed #C1C9C2;color:#414943;font-size:14px">No hay solicitudes pendientes. Buen trabajo.</div></sc-if>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ v.riders }}" hint-placeholder-val="{{ false }}">
+      <div style="border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;overflow:auto">
+        <div style="min-width:760px">
+          <div style="display:grid;grid-template-columns:1.6fr 130px 80px 90px 130px 110px 120px;gap:12px;padding:12px 18px;font-size:11.5px;font-weight:800;color:#414943;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #DDE3DD"><span>Pasajero</span><span>Teléfono</span><span>Viajes</span><span>Rating</span><span>Gasto total</span><span>Estado</span><span></span></div>
+          <sc-for list="{{ riderRows }}" as="r" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:1.6fr 130px 80px 90px 130px 110px 120px;gap:12px;padding:10px 18px;font-size:13px;border-bottom:1px solid #EEF2EC;align-items:center">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:50%;background:#CFEFDD;color:#00311F;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex:none">{{ r.ini }}</span><div><div style="font-weight:700">{{ r.name }}</div><div style="font-size:11.5px;color:#727973">{{ r.id }} · desde {{ r.since }}</div></div></div>
+              <span style="color:#414943">{{ r.phone }}</span><span>{{ r.trips }}</span><span style="font-weight:700">★ {{ r.rating }}</span><span style="font-weight:700;font-variant-numeric:tabular-nums">{{ r.spent }}</span>
+              <span style="justify-self:start;padding:4px 9px;border-radius:8px;background:{{ r.chipBg }};color:{{ r.chipColor }};font-size:11.5px;font-weight:800">{{ r.status }}</span>
+              <button onClick="{{ r.action }}" style="height:32px;padding:0 12px;border-radius:16px;border:1px solid #C1C9C2;background:transparent;font-size:12.5px;font-weight:700;cursor:pointer">{{ r.actLabel }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ v.fares }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;background:#CFEFDD;color:#00311F;margin-bottom:16px;font-size:13.5px;line-height:1.4"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">sync</span><span style="flex:1">Los cambios se aplican al instante en las apps de <b>Pasajero</b> y <b>Conductor</b>. Fórmula: base + distancia + tiempo + recargos − descuentos, con mínimo por categoría.</span><button onClick="{{ resetFares }}" style="height:34px;padding:0 14px;border-radius:17px;border:1px solid #00311F;background:transparent;color:#00311F;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer</button></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;align-items:start">
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:18px">
+          <div style="font-weight:800;font-size:16px;margin-bottom:4px">Tarifa base (Económico)</div>
+          <div style="font-size:12.5px;color:#414943;margin-bottom:10px">Las demás categorías aplican su multiplicador.</div>
+          <sc-for list="{{ fareFields }}" as="f" hint-placeholder-count="8">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EEF2EC">
+              <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">{{ f.label }}</div><div style="font-size:12px;color:#727973">{{ f.help }}</div></div>
+              <div style="display:flex;align-items:center;border:1px solid #C1C9C2;border-radius:12px;overflow:hidden;flex:none">
+                <button onClick="{{ f.dec }}" style="width:36px;height:38px;border:0;background:#F8FAF6;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">remove</span></button>
+                <span style="min-width:84px;text-align:center;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums">{{ f.display }}</span>
+                <button onClick="{{ f.inc }}" style="width:36px;height:38px;border:0;background:#F8FAF6;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">add</span></button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:18px">
+            <div style="font-weight:800;font-size:16px;margin-bottom:4px">Categorías</div>
+            <div style="font-size:12.5px;color:#414943;margin-bottom:8px">Ejemplo: Piantini → Zona Colonial · {{ sample.km }} km · {{ sample.min }} min</div>
+            <sc-for list="{{ catRows }}" as="c" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EEF2EC;opacity:{{ c.opacity }}">
+                <button onClick="{{ c.toggle }}" style="width:44px;height:28px;border-radius:14px;background:{{ c.track }};border:2px solid {{ c.border }};box-sizing:border-box;position:relative;flex:none;cursor:pointer;padding:0;transition:background .2s"><span style="position:absolute;top:50%;left:{{ c.x }};width:{{ c.size }};height:{{ c.size }};border-radius:50%;background:{{ c.thumb }};transform:translateY(-50%);transition:all .2s"></span></button>
+                <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ c.icon }}</span>
+                <span style="flex:1;font-weight:700;font-size:14px">{{ c.name }}</span>
+                <div style="display:flex;align-items:center;border:1px solid #C1C9C2;border-radius:10px;overflow:hidden">
+                  <button onClick="{{ c.dec }}" style="width:28px;height:32px;border:0;background:#F8FAF6;cursor:pointer;font-weight:800">−</button>
+                  <span style="min-width:48px;text-align:center;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums">×{{ c.mult }}</span>
+                  <button onClick="{{ c.inc }}" style="width:28px;height:32px;border:0;background:#F8FAF6;cursor:pointer;font-weight:800">+</button>
+                </div>
+                <span style="width:86px;text-align:right;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums">{{ c.price }}</span>
+              </div>
+            </sc-for>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+              <div style="padding:10px 12px;border-radius:12px;background:#EEF2EC"><div style="font-size:11.5px;color:#414943;font-weight:600">Conductor recibe (Económico)</div><div style="font-size:16px;font-weight:800">{{ sample.net }}</div></div>
+              <div style="padding:10px 12px;border-radius:12px;background:#EEF2EC"><div style="font-size:11.5px;color:#414943;font-weight:600">Comisión faxi</div><div style="font-size:16px;font-weight:800">{{ sample.comm }}</div></div>
+            </div>
+          </div>
+          <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px"><div style="font-weight:800;font-size:16px">Promoción activa</div>
+              <button onClick="{{ promo.toggle }}" style="width:52px;height:32px;border-radius:16px;background:{{ promo.track }};border:2px solid {{ promo.border }};box-sizing:border-box;position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:50%;left:{{ promo.x }};width:{{ promo.size }};height:{{ promo.size }};border-radius:50%;background:{{ promo.thumb }};transform:translateY(-50%);transition:all .2s"></span></button></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <label style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;color:#414943">Código</span><input value="{{ promo.code }}" onChange="{{ promo.onCode }}" style="height:42px;padding:0 12px;border-radius:12px;border:1px solid #C1C9C2;font-size:14px;font-weight:800;text-transform:uppercase;outline:none;min-width:0;box-sizing:border-box"></label>
+              <label style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;color:#414943">Descuento %</span><input type="number" value="{{ promo.pct }}" onChange="{{ promo.onPct }}" style="height:42px;padding:0 12px;border-radius:12px;border:1px solid #C1C9C2;font-size:14px;font-weight:800;outline:none;min-width:0;box-sizing:border-box"></label>
+              <label style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:700;color:#414943">Tope RD$</span><input type="number" value="{{ promo.cap }}" onChange="{{ promo.onCap }}" style="height:42px;padding:0 12px;border-radius:12px;border:1px solid #C1C9C2;font-size:14px;font-weight:800;outline:none;min-width:0;box-sizing:border-box"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ v.payments }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px">
+        <sc-for list="{{ payKpis }}" as="k" hint-placeholder-count="4"><div style="padding:16px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD"><div style="font-size:12.5px;font-weight:700;color:#414943">{{ k.label }}</div><div style="font-size:24px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums">{{ k.value }}</div><div style="font-size:12px;color:#727973;margin-top:2px">{{ k.sub }}</div></div></sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px">
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:18px">
+          <div style="font-weight:800;font-size:16px;margin-bottom:14px">Métodos de pago · hoy</div>
+          <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;margin-bottom:14px"><sc-for list="{{ methodMix }}" as="m" hint-placeholder-count="4"><div style="width:{{ m.w }};background:{{ m.color }}"></div></sc-for></div>
+          <sc-for list="{{ methodMix }}" as="m" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px"><span style="width:10px;height:10px;border-radius:3px;background:{{ m.color }}"></span><span style="flex:1;font-weight:600">{{ m.label }}</span><span style="font-weight:800">{{ m.w }}</span></div></sc-for>
+        </div>
+        <div style="border-radius:24px;background:#FFFFFF;border:1px solid #DDE3DD;padding:18px">
+          <div style="font-weight:800;font-size:16px;margin-bottom:8px">Liquidaciones a conductores</div>
+          <sc-for list="{{ payouts }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EEF2EC">
+              <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700">{{ p.name }}</div><div style="font-size:12px;color:#727973">{{ p.bank }}</div></div>
+              <span style="font-weight:800;font-variant-numeric:tabular-nums">{{ p.amount }}</span>
+              <button onClick="{{ p.pay }}" style="height:32px;padding:0 12px;border-radius:16px;border:0;background:{{ p.bg }};color:{{ p.color }};font-size:12.5px;font-weight:700;cursor:pointer">{{ p.label }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ v.claims }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ claimRows }}" as="c" hint-placeholder-count="4">
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border-radius:20px;background:#FFFFFF;border:1px solid #DDE3DD;flex-wrap:wrap">
+            <span style="width:40px;height:40px;border-radius:13px;background:{{ c.iconBg }};display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:{{ c.iconColor }}">{{ c.icon }}</span></span>
+            <div style="flex:1;min-width:220px">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-weight:800;font-size:14.5px">{{ c.type }} · {{ c.who }}</span><span style="font-size:11.5px;font-family:ui-monospace,Menlo,monospace;color:#727973">{{ c.id }} · {{ c.trip }}</span></div>
+              <div style="font-size:13.5px;color:#414943;margin-top:4px;line-height:1.45">{{ c.text }}</div>
+              <div style="font-size:12px;color:#727973;margin-top:6px">{{ c.time }} · prioridad {{ c.prio }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex:none">
+              <span style="padding:4px 9px;border-radius:8px;background:{{ c.chipBg }};color:{{ c.chipColor }};font-size:11.5px;font-weight:800">{{ c.status }}</span>
+              <sc-if value="{{ c.canAct }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.act }}" style="height:34px;padding:0 14px;border-radius:17px;border:0;background:#181C1A;color:#FFFFFF;font-size:12.5px;font-weight:700;cursor:pointer">{{ c.actLabel }}</button></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const Core = () => window.FaxiCore;
+const CAT_NAMES = {eco:'Económico', comfort:'Confort', premium:'Premium', suv:'SUV', van:'Van'};
+const HOURS = [12,7,4,3,5,14,38,72,96,64,52,58,71,66,54,60,78,104,121,97,74,58,41,25];
+const ini = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const STATUS_CHIP = {'Completado':['#CFEFDD','#00311F'], 'En curso':['#D6E4FF','#0B2E6B'], 'Cancelado':['#FFDAD6','#93000A'], 'Disponible':['#CFEFDD','#00311F'], 'En viaje':['#D6E4FF','#0B2E6B'],
+  'Desconectado':['#E6EBE4','#414943'], 'Suspendido':['#FFDAD6','#93000A'], 'Pendiente':['#FFE7A8','#3D2E00'], 'Rechazado':['#FFDAD6','#93000A'], 'Activa':['#CFEFDD','#00311F'], 'Bloqueada':['#FFDAD6','#93000A'],
+  'Abierta':['#FFDAD6','#93000A'], 'En revisión':['#FFE7A8','#3D2E00'], 'Resuelta':['#CFEFDD','#00311F']};
+const chip = s => STATUS_CHIP[s] || ['#E6EBE4','#414943'];
+const FLEET = Array.from({length:26}, (_,i) => ({ax:i%2?'x':'y', line:[50,150,250,350,450,550,650,750,850,950][i%10], other:[60,150,240,330,420,510,600,690,780,870][(i*3)%10], amp:60+(i*17)%90, sp:.00025+((i*7)%10)/40000, ph:i*1.3, busy:i%3===0}));
+const LIVE_PH = {passenger:['searching','assigned','enroute','arrived','started','ontrip','atDest'], driver:['request','toPickup','waiting','onTrip','collect']};
+
+class Component extends DCLogic {
+  state = { section:'dash', tripFilter:'all', q:'', driverTab:'active', now:Date.now(), paid:{} };
+  componentDidMount() {
+    this.unsub = Core() ? Core().subscribe(() => this.forceUpdate()) : null;
+    this.timer = setInterval(() => { if (!this.unsub && Core()) this.unsub = Core().subscribe(() => this.forceUpdate()); if (this.state.section==='dash') this.setState({now:Date.now()}); }, 200);
+  }
+  componentWillUnmount() { clearInterval(this.timer); this.unsub && this.unsub(); }
+
+  buildMap() {
+    const h = React.createElement, G = Core().geo, now = this.state.now, Wv = 640, Hv = 380;
+    const cam = G.camera([[40,40],[960,880]], {W:Wv, H:Hv, top:10, bottom:10, maxS:1, minS:.2});
+    const k = 1/cam.s, dyn = [];
+    [[505,560,90],[560,400,70],[700,250,60]].forEach(([x,y,r],i) => dyn.push(h('circle',{key:'z'+i, cx:x, cy:y, r, fill:'rgba(224,161,0,.2)', stroke:'rgba(224,161,0,.5)', strokeWidth:1.5, vectorEffect:'non-scaling-stroke'})));
+    FLEET.forEach((f,i) => { const o = Math.sin(now*f.sp+f.ph)*f.amp, x = f.ax==='x' ? f.other+o : f.line, y = f.ax==='x' ? f.line===950?f.other:[60,150,240,330,420,510,600,690,780,870][i%10] : f.other+o;
+      dyn.push(h('circle',{key:'f'+i, cx:f.ax==='x'?x:f.line, cy:f.ax==='x'?[60,150,240,330,420,510,600,690,780,870][i%10]:Math.min(860,y), r:7*k, fill:f.busy?'#181C1A':'#1B7A57', stroke:'#FFFFFF', strokeWidth:2, vectorEffect:'non-scaling-stroke'})); });
+    const L = Core().live, label = (key, x, y, text) => h('g',{key, transform:`translate(${x} ${y}) scale(${k})`},[
+      h('circle',{key:'p', r:18, fill:'rgba(27,122,87,.25)', style:{transformBox:'fill-box', transformOrigin:'center', animation:'faPulse 1.8s ease-out infinite'}}),
+      h('circle',{key:'d', r:8, fill:'#5FD3A0', stroke:'#00311F', strokeWidth:3}),
+      h('rect',{key:'r', x:14, y:-14, width:text.length*6.6+22, height:28, rx:14, fill:'#181C1A'}), h('text',{key:'t', x:25, y:4.5, fontSize:12, fontWeight:700, fill:'#FFFFFF', fontFamily:'Plus Jakarta Sans, sans-serif'}, text)]);
+    if (L.passenger && LIVE_PH.passenger.includes(L.passenger.phase)) dyn.push(label('lp', 450, 600, 'App pasajero · '+L.passenger.phase));
+    if (L.driver && LIVE_PH.driver.includes(L.driver.phase)) dyn.push(label('ld', 550, 420, 'App conductor · '+L.driver.phase));
+    return h('svg',{width:'100%', height:'100%', viewBox:`0 0 ${Wv} ${Hv}`, preserveAspectRatio:'xMidYMid slice', style:{display:'block'}},
+      h('g',{transform:`translate(${cam.tx} ${cam.ty}) scale(${cam.s})`}, [G.baseLayer(h), ...dyn]));
+  }
+
+  renderVals() {
+    const st = this.state, C = Core();
+    if (!C) return {v:{}, nav:[], kpis:[], events:[], hours:[], active:[], tripFilters:[], tripRows:[], driverTabs:[], driverRows:[], pendingRows:[], riderRows:[], fareFields:[], catRows:[], payKpis:[], methodMix:[], payouts:[], claimRows:[], header:{}, surge:{}, promo:{}, sample:{}};
+    const fmt = C.fmt, cfg = C.config(), F = cfg.fare, trips = C.trips(), drivers = C.drivers(), claims = C.claims();
+    const sec = st.section, go = id => () => this.setState({section:id});
+    const pending = drivers.filter(d => d.status==='Pendiente'), openClaims = claims.filter(c => c.status!=='Resuelta');
+    const NAV = [['dash','Resumen','space_dashboard'],['trips','Viajes','route'],['drivers','Conductores','badge',pending.length],['riders','Pasajeros','group'],['fares','Tarifas y promos','sell'],['payments','Pagos','payments'],['claims','Reclamaciones','support_agent',openClaims.length]];
+    const TITLES = {dash:['Operaciones · Santo Domingo','Resumen del día'], trips:['Operaciones','Viajes'], drivers:['Flota','Conductores'], riders:['Usuarios','Pasajeros'], fares:['Configuración','Tarifas y promociones'], payments:['Finanzas','Pagos y comisiones'], claims:['Soporte','Reclamaciones']};
+    const sw = (on, toggle) => ({toggle, track:on?'#1B7A57':'#E6EBE4', border:on?'#1B7A57':'#727973', thumb:on?'#FFFFFF':'#727973', x:on?'20px':'4px', size:on?'20px':'14px'});
+    const swL = (on, toggle) => ({toggle, track:on?'#1B7A57':'#E6EBE4', border:on?'#1B7A57':'#727973', thumb:on?'#FFFFFF':'#727973', x:on?'22px':'4px', size:on?'24px':'16px'});
+    const logged = trips.filter(t => t.source && t.source!=='Sistema');
+    const done = trips.filter(t => t.status==='Completado'), loggedGross = logged.filter(t=>t.status==='Completado').reduce((a,t)=>a+t.total,0);
+    const gross = 486920 + loggedGross, tripsToday = 1284 + logged.length;
+    const online = drivers.filter(d => ['Disponible','En viaje'].includes(d.status)).length + 305;
+    const kpis = [
+      {label:'Viajes hoy', icon:'route', value:tripsToday.toLocaleString('en-US'), delta:'▲ 8.2% vs. sábado pasado', deltaColor:'#1B7A57'},
+      {label:'Ingresos brutos', icon:'payments', value:fmt(gross), delta:'▲ 5.4%', deltaColor:'#1B7A57'},
+      {label:'Comisión faxi ('+Math.round(F.commission*100)+'%)', icon:'account_balance', value:fmt(gross*F.commission), delta:'Según tarifa vigente', deltaColor:'#414943'},
+      {label:'Conductores en línea', icon:'directions_car', value:online+' / 540', delta:Math.round(online/540*100)+'% de la flota', deltaColor:'#414943'},
+      {label:'Asignación promedio', icon:'timer', value:cfg.surge?'1 m 48 s':'2 m 14 s', delta:cfg.surge?'▼ mejora por hora pico':'▲ 6 s vs. ayer', deltaColor:cfg.surge?'#1B7A57':'#BA1A1A'},
+      {label:'Tasa de cancelación', icon:'cancel', value:'4.1%', delta:'▼ 0.3 pts', deltaColor:'#1B7A57'}];
+    const curH = new Date().getHours(), hmax = Math.max(...HOURS);
+    const hours = HOURS.map((v,i) => ({h:(v/hmax*100).toFixed(0)+'%', bg:i===curH?'#1B7A57':i<curH?'#9FC7B2':'#DDE3DD', t:i+':00 · '+v*12+' viajes'}));
+    const L = C.live, PH_LABEL = {searching:'Buscando conductor', assigned:'Asignado', enroute:'Conductor en camino', arrived:'Conductor llegó', started:'Iniciado', ontrip:'En viaje', atDest:'Llegando',
+      request:'Solicitud enviada', toPickup:'Yendo al pasajero', waiting:'Esperando pasajero', onTrip:'En viaje', collect:'Cobrando'};
+    const active = [];
+    if (L.passenger && LIVE_PH.passenger.includes(L.passenger.phase)) active.push({icon:'smartphone', iconBg:'#CFEFDD', iconColor:'#00311F', title:L.passenger.rider+' → '+L.passenger.dest, sub:'App pasajero · '+CAT_NAMES[L.passenger.cat]+(L.passenger.total?' · '+fmt(L.passenger.total):''), status:PH_LABEL[L.passenger.phase], chipBg:'#D6E4FF', chipColor:'#0B2E6B'});
+    if (L.driver && LIVE_PH.driver.includes(L.driver.phase)) active.push({icon:'directions_car', iconBg:'#CFEFDD', iconColor:'#00311F', title:'Rafael Peña · '+L.driver.rider+' → '+L.driver.dest, sub:'App conductor · '+fmt(L.driver.total), status:PH_LABEL[L.driver.phase], chipBg:'#D6E4FF', chipColor:'#0B2E6B'});
+    trips.filter(t => t.status==='En curso').forEach(t => active.push({icon:'route', iconBg:'#EEF2EC', iconColor:'#414943', title:t.rider+' → '+t.to, sub:t.driver+' · '+CAT_NAMES[t.cat]+' · '+fmt(t.total), status:'En curso', chipBg:'#D6E4FF', chipColor:'#0B2E6B'}));
+    // trips table
+    const q = st.q.trim().toLowerCase(), tf = st.tripFilter;
+    const tripRows = trips.filter(t => (tf==='all' || (tf==='live'&&t.status==='En curso') || (tf==='done'&&t.status==='Completado') || (tf==='cancel'&&t.status==='Cancelado')) && (!q || (t.id+' '+t.rider+' '+t.driver).toLowerCase().includes(q)))
+      .map(t => ({id:t.id, time:t.time, rider:t.rider, driver:t.driver, route:t.from+' → '+t.to, cat:CAT_NAMES[t.cat]||t.cat, total:t.total?fmt(t.total):'—', method:t.method, status:t.status, chipBg:chip(t.status)[0], chipColor:chip(t.status)[1], rowBg:t.source&&t.source!=='Sistema'?'#F1FAF5':'transparent'}));
+    const tripFilters = [['all','Todos'],['live','En curso'],['done','Completados'],['cancel','Cancelados']].map(([id,l]) => ({label:l, set:()=>this.setState({tripFilter:id}), bg:tf===id?'#CFEFDD':'#FFFFFF', border:tf===id?'#1B7A57':'#C1C9C2'}));
+    // drivers
+    const driverRows = drivers.filter(d => d.status!=='Pendiente' && d.status!=='Rechazado').map(d => { const susp = d.status==='Suspendido';
+      const doc = {ok:['check_circle','Al día','#1B7A57'], expiring:['warning','Seguro vence','#B07D00'], expired:['error','Vencidos','#BA1A1A']}[d.docs] || ['help','—','#727973'];
+      return {ini:ini(d.name), name:d.name, id:d.id, phone:d.phone, car:d.car, cat:CAT_NAMES[d.cat], rating:d.rating.toFixed(2), trips:d.trips.toLocaleString('en-US'), status:d.status, chipBg:chip(d.status)[0], chipColor:chip(d.status)[1],
+        docIcon:doc[0], docLabel:doc[1], docColor:doc[2], actLabel:susp?'Reactivar':'Suspender', actColor:susp?'#1B7A57':'#BA1A1A', actBorder:susp?'#1B7A57':'#FFB4AB',
+        action:()=>C.setDriver(d.id, {status:susp?'Disponible':'Suspendido'})}; });
+    const pendingRows = pending.map(d => { const docsOk = d.docs!=='missing';
+      return {ini:ini(d.name), name:d.name, id:d.id, joined:d.joined.toLowerCase(), car:d.car, cat:CAT_NAMES[d.cat],
+        docs:[['Licencia de conducir',true],['Seguro del vehículo',true],['Matrícula',docsOk],['Certificado de no antecedentes',docsOk]].map(([l,ok]) => ({label:l+(ok?'':' · falta'), icon:ok?'check_circle':'cancel', color:ok?'#1B7A57':'#BA1A1A'})),
+        approveBg:docsOk?'#1B7A57':'#C1C9C2', approveCursor:docsOk?'pointer':'not-allowed',
+        approve:()=>{ if (docsOk) C.setDriver(d.id, {status:'Disponible', docs:'ok', joined:'Hoy'}); }, reject:()=>C.setDriver(d.id, {status:'Rechazado'})}; });
+    const driverTabs = [['active','Activos'],['pending','Pendientes ('+pending.length+')']].map(([id,l]) => ({label:l, set:()=>this.setState({driverTab:id}), bg:st.driverTab===id?'#FFFFFF':'transparent', shadow:st.driverTab===id?'0 1px 3px rgba(0,0,0,.12)':'none'}));
+    const riderRows = C.passengers().map(p => ({ini:ini(p.name), name:p.name, id:p.id, since:p.since, phone:p.phone, trips:p.trips, rating:p.rating.toFixed(2), spent:fmt(p.spent), status:p.status, chipBg:chip(p.status)[0], chipColor:chip(p.status)[1],
+      actLabel:p.status==='Bloqueada'?'Desbloquear':'Bloquear', action:()=>C.setPassenger(p.id, {status:p.status==='Bloqueada'?'Activa':'Bloqueada'})}));
+    // fares
+    const FIELDS = [['base','Tarifa base','Cargo fijo al iniciar',5,'rd'],['perKm','Por kilómetro','Distancia recorrida',1,'rd'],['perMin','Por minuto','Tiempo en viaje',.5,'rd'],['minimum','Tarifa mínima','Precio mínimo por viaje',10,'rd'],
+      ['surgePct','Recargo hora pico','Se aplica cuando está activo',.05,'pct'],['commission','Comisión faxi','Se descuenta al conductor',.01,'pct'],['cancelFee','Cargo por cancelación','Después de que el conductor sale',5,'rd'],['waitPerMin','Espera por minuto','Tras 2 min gratis',1,'rd']];
+    const fareFields = FIELDS.map(([k,l,help,step,kind]) => { const v = F[k], clamp = x => Math.max(0, Math.round(x*100)/100);
+      return {label:l, help, display:kind==='pct'?Math.round(v*100)+'%':'RD$ '+(Number.isInteger(v)?v:v.toFixed(1)), dec:()=>C.setFare(k, clamp(v-step)), inc:()=>C.setFare(k, kind==='pct'?Math.min(.9, clamp(v+step)):clamp(v+step))}; });
+    const sample = {km:7.4, min:22};
+    const catRows = cfg.cats.map(c => { const qq = C.quote(c.id, sample.km, sample.min, {});
+      return Object.assign({icon:c.icon, name:c.name, mult:c.mult.toFixed(2), price:fmt(qq.total), opacity:c.enabled?1:.5,
+        dec:()=>C.setCat(c.id,'mult', Math.max(.5, Math.round((c.mult-.05)*100)/100)), inc:()=>C.setCat(c.id,'mult', Math.round((c.mult+.05)*100)/100)},
+        sw(c.enabled, ()=>{ if (c.enabled && cfg.cats.filter(x=>x.enabled).length===1) return; C.setCat(c.id,'enabled',!c.enabled); })); });
+    const eq = C.quote('eco', sample.km, sample.min, {});
+    sample.net = fmt(eq.driverNet); sample.comm = fmt(eq.commission);
+    const P = F.promo;
+    const promo = Object.assign({code:P.code, pct:Math.round(P.pct*100), cap:P.cap,
+      onCode:e=>C.setPromo('code', e.target.value.toUpperCase().replace(/\s/g,'').slice(0,12)), onPct:e=>C.setPromo('pct', Math.min(90, Math.max(0, +e.target.value||0))/100), onCap:e=>C.setPromo('cap', Math.max(0, +e.target.value||0))},
+      swL(P.active!==false, ()=>C.setPromo('active', P.active===false)));
+    // payments
+    const payKpis = [{label:'Cobrado hoy', value:fmt(gross), sub:'Todos los métodos'}, {label:'Comisión retenida', value:fmt(gross*F.commission), sub:Math.round(F.commission*100)+'% vigente'},
+      {label:'Por liquidar a conductores', value:fmt(gross*(1-F.commission)*.18), sub:'Próximo corte: lunes'}, {label:'Pagos rechazados', value:'23', sub:'1.8% de intentos con tarjeta'}];
+    const methodMix = [['Tarjeta',54,'#1B7A57'],['Efectivo',31,'#E0A100'],['Transferencia',9,'#5B7FBF'],['Billetera digital',6,'#9DB0A6']].map(([l,w,c]) => ({label:l, w:w+'%', color:c}));
+    const payouts = [['D-1043','Carolina Méndez','Banreservas •••• 4410',18340],['D-1042','Rafael Peña','Banreservas •••• 2231',14860],['D-1090','Yokasta Ureña','Popular •••• 0928',11275],['D-1051','Luis Almonte','BHD •••• 7713',9420]]
+      .map(([id,n,b,a]) => { const paid = st.paid[id]; return {name:n, bank:b, amount:fmt(a), label:paid?'Pagado':'Liquidar', bg:paid?'#CFEFDD':'#181C1A', color:paid?'#00311F':'#FFFFFF',
+        pay:()=>{ if (!paid) { this.setState(s => ({paid:Object.assign({}, s.paid, {[id]:true})})); C.event('account_balance', 'Liquidación enviada a '+n+' · '+fmt(a)); } }}; });
+    // claims
+    const CL_ICON = {Cobro:['payments','#FFE7A8','#3D2E00'], Pasajero:['backpack','#D6E4FF','#0B2E6B'], Ruta:['alt_route','#EEF2EC','#414943'], Seguridad:['shield','#FFDAD6','#93000A']};
+    const claimRows = claims.map(c => { const ic = CL_ICON[c.type] || CL_ICON.Ruta, next = c.status==='Abierta' ? ['Tomar caso','En revisión'] : c.status==='En revisión' ? ['Resolver','Resuelta'] : null;
+      return Object.assign({}, c, {icon:ic[0], iconBg:ic[1], iconColor:ic[2], chipBg:chip(c.status)[0], chipColor:chip(c.status)[1], canAct:!!next, actLabel:next?next[0]:'', act:()=>next && C.setClaim(c.id, {status:next[1]})}); });
+    const d = new Date();
+    return {
+      v:{dash:sec==='dash', trips:sec==='trips', drivers:sec==='drivers', riders:sec==='riders', fares:sec==='fares', payments:sec==='payments', claims:sec==='claims'},
+      nav:NAV.map(([id,l,ic,b]) => ({label:l, icon:ic, go:go(id), badge:b, hasBadge:!!b, bg:sec===id?'#2E3430':'transparent', color:sec===id?'#FFFFFF':'#C1C9C2'})),
+      header:{kicker:TITLES[sec][0], title:TITLES[sec][1]}, clock:d.getHours()%12+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0'),
+      surge:{toggle:()=>C.setSurge(!cfg.surge), label:cfg.surge?'Hora pico activa · +'+Math.round(F.surgePct*100)+'%':'Activar hora pico', bg:cfg.surge?'#FFE7A8':'#FFFFFF', border:cfg.surge?'#E0A100':'#DDE3DD', color:cfg.surge?'#3D2E00':'#181C1A'},
+      kpis, mapEl:sec==='dash' ? this.buildMap() : null, events:C.events().slice(0,12), hours, active:active.slice(0,6), goTrips:go('trips'),
+      tripFilters, tripRows, tripsEmpty:tripRows.length===0, q:st.q, onQ:e=>this.setState({q:e.target.value}),
+      driverTabs, driverActiveTab:st.driverTab==='active', driverPendingTab:st.driverTab==='pending', driverRows, pendingRows, pendingEmpty:pendingRows.length===0,
+      riderRows, fareFields, catRows, sample, promo, resetFares:()=>C.reset(),
+      payKpis, methodMix, payouts, claimRows,
+    };
+  }
+}
+</script>
+</body>
+</html>
