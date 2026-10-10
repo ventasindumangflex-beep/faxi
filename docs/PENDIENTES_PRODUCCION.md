@@ -23,7 +23,7 @@ Estado a 8-oct-2026. Solo es una lista; nada de esto está implementado todavía
 
 ## Operación
 - [ ] Twilio Verify configurado en Supabase Auth (Phone) y límites de SMS.
-- [ ] Función `send-push` desplegada, con su secreto y el webhook sobre `notifications`.
+- [ ] Función `send-push`: **desplegada en faxi-pruebas** (10-oct-2026, v2, `verify_jwt=false` porque se autentica con `x-faxi-secret`). Falta el secreto `PUSH_WEBHOOK_SECRET` y el webhook sobre `notifications` (ver `docs/LO_QUE_TE_TOCA.md`, sección C); nada de esto está en faxi (producción).
 - [ ] Primer admin creado con SQL (`role = 'SUPER_ADMIN'`).
 - [ ] Piloto cerrado con 10–20 conductores y 30–50 pasajeros; proceso de aprobación de conductores definido.
 - [ ] `seed.sql` **nunca** en producción.
