@@ -12,6 +12,7 @@ export function toFaxiError(err: any): FaxiError {
   if (code === '42501') text = /[a-záéíóúñ]/i.test(msg) && !/permission denied/i.test(msg) ? msg : 'No tienes permiso para esta acción.';
   else if (['FX409', '23505', '22023', '23514', 'P0002'].includes(code)) text = msg || text;
   else if (/fetch|network|timeout/i.test(msg)) text = 'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
+  else if (code === 'sms_send_failed' || /error sending|to provider/i.test(msg)) text = 'No pudimos enviar el SMS a ese número. Inténtalo de nuevo en unos minutos.';
   else if (/otp|token has expired|invalid.*token/i.test(msg)) text = 'Código incorrecto o vencido.';
   else if (/rate limit|security purposes/i.test(msg)) text = 'Demasiados intentos. Espera un minuto e inténtalo otra vez.';
   else if (/sms|phone/i.test(msg)) text = 'No pudimos enviar el SMS a ese número.';
