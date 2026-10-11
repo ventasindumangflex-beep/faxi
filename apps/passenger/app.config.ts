@@ -19,7 +19,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: 'do.faxi.app',
+    package: 'com.faxi.app',
     permissions: ['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION'],
     blockedPermissions: ['android.permission.ACCESS_BACKGROUND_LOCATION'],
     config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },

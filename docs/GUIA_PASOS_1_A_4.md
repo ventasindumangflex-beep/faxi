@@ -123,7 +123,7 @@ npx eas-cli@latest build --profile development --platform android
 | No salen sugerencias de direcciones | La clave `faxi-places` no está o no tiene habilitada **Places API (New)**. |
 
 ## Después de este paso (otro día)
-1. Restringir la clave del mapa a la app (paquete `do.faxi.app` + huella SHA-1 que da `eas credentials`).
+1. Restringir la clave del mapa a la app (paquete `com.faxi.app` + huella SHA-1 que da `eas credentials`).
 2. Notificaciones push (`send-push`).
 3. Usuario admin y panel web.
 4. Prueba completa con 2 teléfonos.

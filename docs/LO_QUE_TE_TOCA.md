@@ -29,7 +29,7 @@ La función `send-push` **ya está desplegada** en faxi-pruebas. Falta lo que so
 
 ## D. Seguridad (5 min, importante)
 - **Rota la clave `sb_secret_…`** que se pegó en el chat: Supabase → faxi-pruebas → Settings → API Keys.
-- **Google Cloud**: borra la clave de API sin restricción que se vio en una foto y crea otra restringida (Maps: app Android `do.faxi.app`; Places: solo Places API).
+- **Google Cloud**: borra la clave de API sin restricción que se vio en una foto y crea otra restringida (Maps: app Android `com.faxi.app`; Places: solo Places API).
 
 ## E. Producción (faxi, `opehqsltrzhtsqqlctdg`) — solo con tu visto bueno
 - Comparar la huella con faxi-pruebas ejecutando en el **SQL Editor de faxi** (solo lectura) la consulta de huella: debe dar 20 tablas, 45 funciones, 41 políticas, 27 triggers, 52 índices, 1 job de cron.

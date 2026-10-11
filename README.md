@@ -4,8 +4,8 @@ Apps reales de faxi para Santo Domingo:
 
 | Carpeta | Qué es | Tecnología |
 |---|---|---|
-| `apps/passenger` | App del pasajero (`do.faxi.app`) | Expo SDK 54 · React Native · Expo Router |
-| `apps/driver` | App del conductor (`do.faxi.conductor`), con ubicación en segundo plano | Expo SDK 54 |
+| `apps/passenger` | App del pasajero (Android `com.faxi.app`, iOS `do.faxi.app`) | Expo SDK 54 · React Native · Expo Router |
+| `apps/driver` | App del conductor (Android `com.faxi.conductor`, iOS `do.faxi.conductor`), con ubicación en segundo plano | Expo SDK 54 |
 | `apps/admin` | Panel web de operaciones | Next.js 15 |
 | `packages/core` | Tipos, cliente Supabase, RPC, formato RD$, estados del viaje, Realtime | TypeScript |
 | `packages/ui` | Diseño (tokens del prototipo), componentes, login OTP, push, mapas | React Native |

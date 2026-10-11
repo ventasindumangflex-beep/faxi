@@ -32,3 +32,4 @@ Estado a 8-oct-2026. Solo es una lista; nada de esto está implementado todavía
 - **Corregido:** migración 001, índice `commissions_one_active` usaba `category::text` (no inmutable) y fallaba. Ahora son dos índices parciales con la misma garantía.
 - **Limitación de la herramienta:** `apply_migration`/`execute_sql` agotan 60 s con SQL que contiene `DELETE`. Aplicar esas piezas desde el SQL Editor o con CLI/API con acceso de red.
 - **Pendiente de revisar:** el test `002_mobile.sql` depende de `delete_my_account` y de un `SUPER_ADMIN` del seed; solo puede correr en faxi-pruebas.
+- **Corregido (11-oct-2026):** el primer build de Android fallaba con `Namespace 'do.faxi.app' is not a valid Java package name as 'do' is a Java keyword`. El paquete de Android ahora es `com.faxi.app` / `com.faxi.conductor` (iOS conserva `do.faxi.*`, que es válido). **El paquete de Android es permanente una vez publicado en Google Play**: confirmarlo antes de la primera publicación.
