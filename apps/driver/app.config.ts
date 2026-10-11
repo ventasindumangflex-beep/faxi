@@ -32,6 +32,7 @@ const config: ExpoConfig = {
     config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },
   },
   plugins: [
+    './plugins/with-gradle-memory',
     'expo-router',
     'expo-font',
     ['expo-location', {

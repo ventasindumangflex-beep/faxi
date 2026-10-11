@@ -25,6 +25,7 @@ const config: ExpoConfig = {
     config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },
   },
   plugins: [
+    './plugins/with-gradle-memory',
     'expo-router',
     'expo-font',
     ['expo-location', { locationWhenInUsePermission: 'faxi usa tu ubicación para fijar el punto de recogida y mostrarte tu conductor en el mapa.' }],
