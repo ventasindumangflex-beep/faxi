@@ -52,3 +52,8 @@ No se registran cuentas de producción a nombre personal. Primero se crea la ent
 - **Supabase de producción** (organización y facturación), **Google Cloud** (facturación de Maps/Places) y **Expo/EAS** (cuenta/equipo del negocio).
 - Términos y política de privacidad con razón social y datos de contacto reales.
 Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
+
+## iPhone / iOS (decisión 11-oct-2026)
+- **Expo Go no sirve en iPhone para este proyecto**: la App Store solo ofrece Expo Go de SDK 57 y faxi usa SDK 54 (el error aparece al abrir el QR). Subir a SDK 57 se descartó por riesgo y esfuerzo.
+- **Camino elegido:** probar y arrancar el piloto en Android; para iPhone, hacer un build de desarrollo/TestFlight con cuenta **Apple Developer de organización** (99 USD/año, requiere D-U-N-S y datos de la empresa de faxi). iOS usa Apple Maps (`PROVIDER_DEFAULT`), así que no depende de la clave de Google Maps.
+- La app **no se ha probado en iOS**: esperar posibles errores propios de la plataforma en el primer build.
