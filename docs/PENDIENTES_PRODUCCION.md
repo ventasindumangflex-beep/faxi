@@ -44,3 +44,11 @@ Estado a 8-oct-2026. Solo es una lista; nada de esto está implementado todavía
 - **El proyecto de producción `faxi` (ref `opehqsltrzhtsqqlctdg`) NO aparece** en la cuenta de Supabase `ventasindumangflex@gmail.com` (login GitHub `ventasindumangflex-beep`): su única organización `faxi` solo contiene `faxi-pruebas`. Puede estar en otra cuenta, pausado o eliminado. Aún no hay usuarios ni viajes reales, así que no se pierde nada.
 - **Decisión pendiente del dueño:** (a) localizarlo en otra cuenta, o (b) crear un proyecto de producción nuevo en plan de pago antes del piloto y aplicarle las migraciones 001–004 + cron (primero verificado en pruebas, con visto bueno explícito). Hasta decidir, no se toca ningún proyecto de producción.
 - Mientras tanto `supabase/HUELLA_ESQUEMA.sql` sirve para verificar cualquier proyecto nuevo contra la referencia de faxi-pruebas.
+
+## Dependencia: constituir la empresa de faxi (decisión del dueño, 12-oct-2026)
+No se registran cuentas de producción a nombre personal. Primero se crea la entidad y su RNC; después se usan sus datos en:
+- **Twilio**: Primary Business Profile en Trust Hub (necesario para enviar SMS a números no verificados).
+- **Google Play** (cuenta de organización, D-U-N-S) y **Apple Developer** (organización).
+- **Supabase de producción** (organización y facturación), **Google Cloud** (facturación de Maps/Places) y **Expo/EAS** (cuenta/equipo del negocio).
+- Términos y política de privacidad con razón social y datos de contacto reales.
+Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
