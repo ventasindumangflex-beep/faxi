@@ -33,3 +33,9 @@ Estado a 8-oct-2026. Solo es una lista; nada de esto está implementado todavía
 - **Limitación de la herramienta:** `apply_migration`/`execute_sql` agotan 60 s con SQL que contiene `DELETE`. Aplicar esas piezas desde el SQL Editor o con CLI/API con acceso de red.
 - **Pendiente de revisar:** el test `002_mobile.sql` depende de `delete_my_account` y de un `SUPER_ADMIN` del seed; solo puede correr en faxi-pruebas.
 - **Corregido (11-oct-2026):** el primer build de Android fallaba con `Namespace 'do.faxi.app' is not a valid Java package name as 'do' is a Java keyword`. El paquete de Android ahora es `com.faxi.app` / `com.faxi.conductor` (iOS conserva `do.faxi.*`, que es válido). **El paquete de Android es permanente una vez publicado en Google Play**: confirmarlo antes de la primera publicación.
+
+## Estado de la prueba en teléfono (11-oct-2026)
+- **Funciona:** build de desarrollo del pasajero (Android `com.faxi.app`), login por SMS con número verificado en Twilio, sugerencias de direcciones (Places API New activada).
+- **Pendiente: mapa en blanco** en la pantalla principal. El código usa `PROVIDER_GOOGLE` correctamente; Google no entrega los mapas. Revisar, en orden: (1) que `faxi-maps-android` tenga guardado el paquete `com.faxi.app` en minúsculas y la SHA-1 del keystore de `faxi.app/projects/faxi` (idéntica a la de Expo → Credentials → Android); (2) métricas de *Maps SDK for Android* (¿403? ¿0 solicitudes?); (3) que `GOOGLE_MAPS_ANDROID_KEY` en Expo tenga el valor de esa clave y que el build instalado sea posterior al cambio. La restricción de la clave se dejó en "Apps para Android" tras una prueba temporal con "Ninguno"; confirmar que quedó guardada.
+- **Twilio:** el SMS solo llega a números verificados como Caller ID (error 21608). Para pasajeros reales hace falta el Perfil de Cumplimiento Primario aprobado.
+- **Seguridad:** la clave de Maps se pegó por error en un cuadro de chat; regenerarla antes de producción.
