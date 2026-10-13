@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createLocationBroadcaster, driver, DRIVER_CAN_CANCEL, DRIVER_NEXT, rd, trips, type TripStatus } from '@faxi/core';
 import {
-  Avatar, Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, T, c, coord, f, mapProvider, region, useTripDetails,
+  Avatar, Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, T, c, coord, f, region, useTripDetails, FaxiMap,
 } from '@faxi/ui';
 
 const LIVE: TripStatus[] = ['ASSIGNED', 'ENROUTE', 'ARRIVED', 'STARTED', 'ONTRIP'];
@@ -87,10 +87,10 @@ export default function TripScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <MapView ref={map} style={StyleSheet.absoluteFill} provider={mapProvider} initialRegion={region({ lat: t.origin_lat, lng: t.origin_lng }, 0.03)} showsUserLocation toolbarEnabled={false}>
+      <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region({ lat: t.origin_lat, lng: t.origin_lng }, 0.03)} showsUserLocation toolbarEnabled={false}>
         <Marker coordinate={{ latitude: t.origin_lat, longitude: t.origin_lng }} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
         <Marker coordinate={{ latitude: t.dest_lat, longitude: t.dest_lng }} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
-      </MapView>
+      </FaxiMap>
       {live ? (
         <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, right: 16 }}>
           <IconButton icon="sos" label="Emergencia 911" onPress={() => Linking.openURL('tel:911')} />

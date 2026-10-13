@@ -3,6 +3,14 @@ import type { ExpoConfig } from 'expo/config';
 const DEV = process.env.APP_VARIANT === 'development';
 const LOC = 'faxi usa tu ubicación solo mientras usas la app, para fijar el punto de recogida y mostrarte tu conductor en el mapa.';
 
+// Clave de Google Maps para Android. Se quitan espacios y comillas pegados por error, y en los builds de EAS para
+// Android se exige una clave con forma válida: mejor un build fallido con un mensaje claro que un mapa en blanco.
+const MAPS_KEY = process.env.GOOGLE_MAPS_ANDROID_KEY?.trim().replace(/^['"]+|['"]+$/g, '') || undefined;
+if (process.env.EAS_BUILD && process.env.EAS_BUILD_PLATFORM === 'android' && !/^AIza[\w-]{35}$/.test(MAPS_KEY ?? '')) {
+  throw new Error('GOOGLE_MAPS_ANDROID_KEY falta o no es una clave de Google (empieza por "AIza" y tiene 39 caracteres). '
+    + 'Revísala en expo.dev → Environment variables, en el entorno de este build (ver docs/MAPA_ANDROID.md).');
+}
+
 const config: ExpoConfig = {
   name: 'faxi',
   owner: 'faxi.app',
@@ -30,7 +38,7 @@ const config: ExpoConfig = {
       'android.permission.ACCESS_BACKGROUND_LOCATION', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE',
       ...(DEV ? [] : ['android.permission.SYSTEM_ALERT_WINDOW']),
     ],
-    config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },
+    config: { googleMaps: { apiKey: MAPS_KEY } },
   },
   plugins: [
     './plugins/with-gradle-memory',

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
-import { PROVIDER_DEFAULT, PROVIDER_GOOGLE, type Region } from 'react-native-maps';
+import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE, type MapViewProps, type Region } from 'react-native-maps';
 import type { LatLng } from '@faxi/core';
-import { Icon } from './components';
+import { Banner, Icon } from './components';
 import { c } from './tokens';
 
 export const SD_CENTER: LatLng = { lat: 18.4719, lng: -69.9406 }; // Piantini
@@ -24,3 +24,30 @@ export const CarPin = () => (
 );
 
 export const MAP_PADDING = { top: 80, right: 48, bottom: 360, left: 48 };
+
+const MAP_LOAD_TIMEOUT_MS = 15000;
+
+/** MapView con el proveedor de faxi. En Android avisa si Google no entrega el mapa (sin internet o clave rechazada). */
+export const FaxiMap = forwardRef<MapView, MapViewProps>(function FaxiMap({ onMapLoaded, children, ...props }, ref) {
+  const [loaded, setLoaded] = useState(false);
+  const [late, setLate] = useState(false);
+  useEffect(() => {
+    if (Platform.OS !== 'android' || loaded) return;
+    const h = setTimeout(() => setLate(true), MAP_LOAD_TIMEOUT_MS);
+    return () => clearTimeout(h);
+  }, [loaded]);
+  return (
+    <>
+      <MapView ref={ref} provider={mapProvider} {...props} onMapLoaded={(e) => { setLoaded(true); onMapLoaded?.(e); }}>
+        {children}
+      </MapView>
+      {late && !loaded ? (
+        <View pointerEvents="box-none" style={{ position: 'absolute', top: '30%', left: 16, right: 16 }}>
+          <Banner tone="warn" text={__DEV__
+            ? 'El mapa no cargó. Si hay internet, Google está rechazando la clave GOOGLE_MAPS_ANDROID_KEY (ver docs/MAPA_ANDROID.md).'
+            : 'No pudimos cargar el mapa. Revisa tu conexión a internet.'} />
+        </View>
+      ) : null}
+    </>
+  );
+});

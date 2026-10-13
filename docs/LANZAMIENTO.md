@@ -7,7 +7,7 @@ Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace C
 | Parte | Estado |
 |---|---|
 | Base de datos (faxi-pruebas) | ✅ Las 5 pruebas pasan (`FAXI OK`, `FAXI MÓVIL OK`, 005, 006, 007) y no dejan datos. Huella idéntica a la referencia. |
-| App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco (pendiente). |
+| App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
 | App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
 | Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |
 | Página web faxi.com | ✅ Lista en `sitio/` (inicio, soporte y 4 páginas legales). Falta publicarla (👤, 15 min). |
@@ -32,7 +32,7 @@ Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace C
 
 ## Etapa 1 · Prueba interna con 2 teléfonos (faxi-pruebas, sin gastar)
 
-1. 👤🤖 **Mapa en blanco.** Con el teléfono: Google Cloud → *Maps SDK for Android* → Métricas (¿errores 403 o 0 solicitudes?) y comparar la SHA-1 de Expo (`faxi.app/projects/faxi` → Credentials → Android) con la de la clave `faxi-maps-android`. Mándame fotos y lo cierro.
+1. 👤 **Mapa en blanco:** clave nueva de Maps paso a paso en `docs/MAPA_ANDROID.md` (la app ya limpia la clave, el build falla con mensaje claro si falta y avisa si Google la rechaza).
 2. 👤 **Números de prueba sin SMS** (sirve para el segundo teléfono, sin otro número de Twilio):
    Supabase → **faxi-pruebas** → Authentication → Sign In / Providers → **Phone** → *Test Phone Numbers and OTPs*:
    ```
@@ -100,7 +100,7 @@ Cada vez que cambien los textos: `node scripts/build_sitio.mjs`, commit y push �
 
 ## Actualizar el código en la Mac
 La carpeta `~/Downloads/faxi-main` es una copia vieja (no tiene estos arreglos). Para la etapa 1:
-1. GitHub → repositorio **faxi** → botón **Code → Download ZIP** (rama `main`). Descomprime en Descargas como `faxi-nuevo`.
+1. GitHub → repositorio **faxi** → arriba a la izquierda, el selector de rama: elige **`claude/empty-session-8tsfph`** (o `main` cuando ya esté unida) → botón **Code → Download ZIP**. Descomprime en Descargas y renombra la carpeta como `faxi-nuevo`.
 2. Copia tus archivos de claves de la carpeta vieja a la nueva (son ocultos; en Terminal):
    ```
    cp ~/Downloads/faxi-main/apps/passenger/.env ~/Downloads/faxi-nuevo/apps/passenger/.env
