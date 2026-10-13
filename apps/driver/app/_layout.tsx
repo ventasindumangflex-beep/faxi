@@ -1,4 +1,4 @@
-import '../src/faxi';
+import { Sentry } from '../src/faxi';
 import '../src/tracking';
 import React, { useEffect, useRef } from 'react';
 import { Stack, router, useSegments } from 'expo-router';
@@ -12,7 +12,9 @@ import { DriverProvider, useDriver } from '../src/driverCtx';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-export default function Root() {
+export default Sentry.wrap(Root);
+
+function Root() {
   const [fonts] = useFonts({ PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
   useEffect(() => { if (fonts) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
   if (!fonts) return null;
@@ -28,6 +30,7 @@ export default function Root() {
 
 function Gate() {
   const { session, me, loading } = useSession();
+  useEffect(() => { Sentry.setUser(me ? { id: me.id } : null); }, [me?.id]);
   const { profile, missingDocs, loading: loadingDriver } = useDriver();
   const seg = useSegments() as string[];
   const pushed = useRef<string | null>(null);

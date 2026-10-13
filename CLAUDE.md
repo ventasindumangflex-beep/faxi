@@ -20,12 +20,13 @@ Lee `README.md` y `docs/PLAN_TECNICO.md` antes de cambiar algo.
 - Tests SQL: con el MCP de Supabase, ejecuta `supabase/tests/*.sql`
 
 ## Estado (octubre 2026)
-Hecho: migraciones 001–004, login OTP, alta de conductor con documentos, despacho, viaje completo, cobro en efectivo, calificación, push, borrado de cuenta, panel admin (aprobaciones, viajes, tarifas, soporte).
-Siguiente: probar en teléfonos reales con un piloto cerrado, iconos y textos de tienda, Sentry, polígono de zona de servicio real.
+Hecho: migraciones 001–008 (005 ubicación privada + zona real + push automático, 006 solo efectivo, 007 datos del conductor solo durante el viaje, 008 endurecimiento), login OTP, alta de conductor con documentos, despacho, viaje completo, cobro en efectivo, calificación, push, borrado de cuenta, panel admin, Sentry, íconos, borradores legales (`apps/admin/src/legal/`, servidos en /privacidad, /terminos, /terminos-conductores, /eliminar-cuenta), fichas de tienda (`docs/tiendas/FICHAS.md`).
+Producción (faxi) va por detrás: se pone al día pegando `supabase/PRODUCCION_PEGAR.sql` (ver `docs/PASOS_DEL_DUENO.md`).
+Siguiente: probar en teléfonos reales con un piloto cerrado. Lista completa: `docs/PENDIENTES_PRODUCCION.md`.
 
 ## Reglas fijas de base de datos (no negociables)
 Proyectos Supabase: **faxi** = producción (ref `opehqsltrzhtsqqlctdg`) · **faxi-pruebas** = solo pruebas (ref en `.env` → `SUPABASE_TEST_PROJECT_REF`).
-1. `supabase/seed.sql`, `supabase/tests/001_trip_flow.sql` y `supabase/tests/002_mobile.sql` corren SOLO en faxi-pruebas. Nunca en faxi.
+1. `supabase/seed.sql` y todos los `supabase/tests/*.sql` corren SOLO en faxi-pruebas. Nunca en faxi.
 2. Antes de cualquier comando contra la base de datos, confirmar en voz alta a qué proyecto (ref) se está conectado.
 3. Todo cambio de esquema va primero en faxi-pruebas. Solo cuando las dos pruebas den `FAXI OK` y `FAXI MÓVIL OK` se aplica en faxi, y solo con el visto bueno explícito del dueño.
 4. Credenciales (refs de prueba, contraseñas, tokens) solo en `.env`; nunca en un commit.

@@ -9,7 +9,7 @@
     "passenger": "npm --workspace apps/passenger run start",
     "driver": "npm --workspace apps/driver run start",
     "admin": "npm --workspace apps/admin run dev",
-    "db:test": "psql \"$DB_URL\" -f supabase/tests/001_trip_flow.sql && psql \"$DB_URL\" -f supabase/tests/002_mobile.sql"
+    "db:test": "for f in supabase/tests/*.sql; do psql \"$DB_URL\" -v ON_ERROR_STOP=1 -f \"$f\" || exit 1; done"
   },
   "devDependencies": {
     "expo-router": "~6.0.0"
