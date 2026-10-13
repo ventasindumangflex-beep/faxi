@@ -1,5 +1,7 @@
 # faxi · Lo que te toca a ti (cuando tengas un rato)
 
+> La lista completa y ordenada para lanzar está en `docs/LANZAMIENTO.md`.
+
 Estado a 10-oct-2026. Lo de Claude ya está hecho; esto solo lo puedes hacer tú porque necesita tu Mac, tu teléfono o tus cuentas.
 
 ## A. Primer build del pasajero (Mac, ~30 min, casi todo esperando)
@@ -18,21 +20,16 @@ Estado a 10-oct-2026. Lo de Claude ya está hecho; esto solo lo puedes hacer tú
 - Usa **tu número verificado en Twilio**.
 - Desde la raíz: `npm run passenger` y abre la app en el teléfono.
 
-## C. Notificaciones push (Supabase, faxi-pruebas) — 10 min
-La función `send-push` **ya está desplegada** en faxi-pruebas. Falta lo que solo tú puedes poner:
-1. Supabase → faxi-pruebas → **Edge Functions → Secrets** → crea `PUSH_WEBHOOK_SECRET` con una cadena larga aleatoria (guárdala en tu bloc de notas, no en el chat).
-2. Supabase → **Database → Webhooks → Create**:
-   - Tabla `notifications`, evento **Insert**.
-   - Tipo **Supabase Edge Functions** → `send-push`.
-   - Cabecera HTTP: `x-faxi-secret` = el mismo valor del paso 1.
-3. Aún no se puede probar de punta a punta: hace falta el teléfono con la app instalada (sección A).
+## C. Notificaciones push (faxi-pruebas) — ya no hace falta nada
+Revisado el 13-oct-2026: el aviso automático de la migración 005 (trigger + Vault `faxi_push_url` / `faxi_push_secret`) ya funciona en faxi-pruebas (respuesta 200).
+**No crees un Database Webhook ni el secreto `PUSH_WEBHOOK_SECRET`**: el webhook duplicaría cada notificación.
 
 ## D. Seguridad (5 min, importante)
 - **Rota la clave `sb_secret_…`** que se pegó en el chat: Supabase → faxi-pruebas → Settings → API Keys.
 - **Google Cloud**: borra la clave de API sin restricción que se vio en una foto y crea otra restringida (Maps: app Android `com.faxi.app`; Places: solo Places API).
 
 ## E. Producción (faxi, `opehqsltrzhtsqqlctdg`) — solo con tu visto bueno
-- Comparar la huella con faxi-pruebas ejecutando en el **SQL Editor de faxi** (solo lectura) la consulta de huella: debe dar 20 tablas, 45 funciones, 41 políticas, 27 triggers, 52 índices, 1 job de cron.
+- Comparar la huella con faxi-pruebas ejecutando en el **SQL Editor de faxi** (solo lectura) `supabase/HUELLA_ESQUEMA.sql`: debe dar 20 tablas, 51 funciones, 41 políticas, 29 triggers, 52 índices, 1 job de cron, `false`.
 - `seed.sql` y los tests **nunca** en faxi.
 
 ## F. Conductor

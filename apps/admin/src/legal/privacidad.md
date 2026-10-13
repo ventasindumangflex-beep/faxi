@@ -10,7 +10,7 @@ Esta política explica qué datos personales recopilamos cuando usas las aplicac
 
 El responsable del tratamiento de tus datos es **[RAZÓN SOCIAL]**, RNC **[RNC]**, con domicilio en **[DIRECCIÓN]**, Santo Domingo, República Dominicana ("faxi", "nosotros").
 
-Contacto para privacidad: **[CORREO DE PRIVACIDAD]** · WhatsApp de soporte: **[NÚMERO]**.
+Contacto para privacidad: **soporte@faxi.com** · WhatsApp de soporte: **[NÚMERO]**.
 
 ## 2. Qué datos recopilamos
 
@@ -83,7 +83,7 @@ Según la Ley 172-13 puedes, de forma gratuita:
 - **Oponerte** a un tratamiento concreto.
 - **Retirar tu consentimiento** en cualquier momento, eliminando tu cuenta.
 
-Para ejercerlos escríbenos a **[CORREO DE PRIVACIDAD]** desde el teléfono o correo asociado a tu cuenta. Te responderemos en un plazo máximo de **[PLAZO, p. ej. 10 días hábiles]**. También puedes acudir a la acción de hábeas data ante los tribunales.
+Para ejercerlos escríbenos a **soporte@faxi.com** desde el teléfono o correo asociado a tu cuenta. Te responderemos en un plazo máximo de **[PLAZO, p. ej. 10 días hábiles]**. También puedes acudir a la acción de hábeas data ante los tribunales.
 
 ## 8. Seguridad
 
@@ -95,4 +95,4 @@ faxi es para mayores de 18 años. No creamos cuentas a menores a sabiendas. Un m
 
 ## 10. Cambios a esta política
 
-Si cambiamos esta política te avisaremos en la app antes de que el cambio entre en vigor. La versión vigente siempre estará en **[URL DE LA POLÍTICA]**.
+Si cambiamos esta política te avisaremos en la app antes de que el cambio entre en vigor. La versión vigente siempre estará en [faxi.com/privacidad](https://faxi.com/privacidad).

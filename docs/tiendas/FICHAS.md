@@ -3,11 +3,11 @@
 Textos listos para copiar en Google Play Console y App Store Connect. Lo que está entre **[corchetes]** lo completa el dueño.
 Revisar que lo dicho aquí coincida con la [política de privacidad](../../apps/admin/src/legal/privacidad.md): las tiendas rechazan fichas que contradicen la política.
 
-URLs que piden las tiendas (se sirven desde el panel web, `apps/admin`, una vez publicado en Vercel o en el dominio):
-- Política de privacidad: `https://[DOMINIO]/privacidad`
-- Términos pasajeros: `https://[DOMINIO]/terminos` · Términos conductores: `https://[DOMINIO]/terminos-conductores`
-- Eliminar cuenta (Google lo exige como enlace web): `https://[DOMINIO]/eliminar-cuenta`
-- Soporte: `https://wa.me/[NÚMERO]` o `mailto:[CORREO DE SOPORTE]`
+URLs que piden las tiendas (sitio estático `sitio/`, publicado en `faxi.com`; ver `docs/LANZAMIENTO.md`):
+- Política de privacidad: `https://faxi.com/privacidad`
+- Términos pasajeros: `https://faxi.com/terminos` · Términos conductores: `https://faxi.com/terminos-conductores`
+- Eliminar cuenta (Google lo exige como enlace web): `https://faxi.com/eliminar-cuenta`
+- Soporte (Apple lo pide como URL): `https://faxi.com/soporte` · correo `soporte@faxi.com`
 
 Recursos gráficos (generados con `scripts/make_icons.py`):
 - Ícono 512×512 para Play: exportar `apps/passenger/assets/icon.png` / `apps/driver/assets/icon.png` a 512 px (o subir el de 1024; Play lo acepta y lo reduce).
@@ -16,7 +16,7 @@ Recursos gráficos (generados con `scripts/make_icons.py`):
 
 ---
 
-## 1. faxi (pasajeros) · `do.faxi.app`
+## 1. faxi (pasajeros) · Android `com.faxi.app` · iOS `do.faxi.app`
 
 **Nombre (30):** `faxi: viajes en Santo Domingo`
 
@@ -61,7 +61,7 @@ Distrito Nacional y provincia Santo Domingo: Santo Domingo Este, Norte y Oeste, 
 
 ---
 
-## 2. faxi Conductor · `do.faxi.conductor`
+## 2. faxi Conductor · Android `com.faxi.conductor` · iOS `do.faxi.conductor`
 
 **Nombre (30):** `faxi Conductor`
 
@@ -117,6 +117,9 @@ Los conductores de faxi reciben solicitudes de viaje según su cercanía al pasa
 5. En otro teléfono (pasajero) mostrar el carro moviéndose en el mapa.
 6. Volver a faxi Conductor → **Desconectarse** → la notificación desaparece.
 
+### Declaración de servicio en primer plano (Google Play → Contenido de la app → Permisos de servicio en primer plano)
+Tipo: **Ubicación** (`FOREGROUND_SERVICE_LOCATION`). Descripción: el mismo texto de la ubicación en segundo plano. Video: el mismo (pasos 1–6); se ve la notificación permanente "faxi Conductor · Conectado" mientras el servicio está activo.
+
 ### Notas para la revisión de Apple (App Review Information)
 ```
 faxi Conductor is a driver app for a ride-hailing service in Santo Domingo, Dominican Republic.
@@ -148,7 +151,7 @@ Mismas respuestas para ambas apps, salvo donde dice *solo conductor*.
 \* Los proveedores que procesan datos por cuenta de faxi (Supabase, Twilio, Google Maps, Expo, Sentry) **no** cuentan como "compartir" en la definición de Google ni de Apple.
 
 - ¿Los datos se cifran en tránsito? **Sí**.
-- ¿El usuario puede pedir que se borren sus datos? **Sí**: en la app (Cuenta → Eliminar cuenta) y en `https://[DOMINIO]/eliminar-cuenta`.
+- ¿El usuario puede pedir que se borren sus datos? **Sí**: en la app (Cuenta → Eliminar cuenta) y en `https://faxi.com/eliminar-cuenta`.
 - ¿Se usan para publicidad o seguimiento (Apple "Tracking")? **No**.
 - Apple: marcar todos los datos como **vinculados al usuario**, **no** usados para tracking.
 

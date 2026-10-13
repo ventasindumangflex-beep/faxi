@@ -1,5 +1,7 @@
 # Pendientes antes de publicar faxi
 
+> Lista ordenada por etapas (prueba interna → piloto → público) en `docs/LANZAMIENTO.md`.
+
 Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pendiente.
 
 ## Hecho la noche del 8 al 9 de octubre
@@ -25,7 +27,7 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] **Probar en el teléfono** con la guía `docs/GUIA_PASOS_1_A_4.md`.
 - [ ] Twilio Verify en Supabase Auth (Phone) y límite de SMS; número de prueba para los revisores de Apple/Google.
 - [ ] Crear el proyecto en Sentry y poner el DSN en EAS.
-- [ ] Publicar el panel (Vercel) para que las páginas legales tengan URL, y poner esas URL en `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL`.
+- [ ] Publicar `sitio/` en faxi.com con Netlify (pasos en `docs/LANZAMIENTO.md`). Las apps ya abren `https://faxi.com/...` por defecto; el panel se queda en la Mac durante el piloto.
 - [ ] Completar los datos entre corchetes de los textos legales y **revisión de un abogado** (Ley 172-13, Ley 358-05, INTRANT).
 
 ## Producto
@@ -40,7 +42,7 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] **Apple:** cuenta de organización; notas de revisión listas.
 
 ## Operación
-- [ ] Función `send-push`: **desplegada en faxi-pruebas** (10-oct-2026, v2, `verify_jwt=false` porque se autentica con `x-faxi-secret`). Falta el secreto `PUSH_WEBHOOK_SECRET` y el webhook sobre `notifications` (ver `docs/LO_QUE_TE_TOCA.md`, sección C); nada de esto está en faxi (producción).
+- [x] Función `send-push` en faxi-pruebas: desplegada (v2, `verify_jwt=false`, se autentica con `x-faxi-secret`) y llamada por el trigger de la migración 005 con el Vault (`faxi_push_url`, `faxi_push_secret`); respuesta 200. **No** hace falta webhook ni `PUSH_WEBHOOK_SECRET` (un webhook duplicaría los avisos). En producción falta desplegarla (paso 3 de `PASOS_DEL_DUENO.md`).
 - [ ] Piloto cerrado con 10–20 conductores y 30–50 pasajeros; proceso de aprobación de conductores definido.
 - [ ] `seed.sql` y los tests **nunca** en producción.
 
@@ -81,3 +83,10 @@ Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
 ## Dominio (decisión del dueño, 13-oct-2026)
 - **Dominio definitivo: `faxi.com`.** Las apps abren `https://faxi.com/terminos`, `/terminos-conductores` y `/privacidad` por defecto (cambiables con `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL`).
 - Falta: confirmar en la Consola del administrador de Google Workspace que `faxi.com` esté **verificado** y con registros MX; crear `soporte@faxi.com`; publicar las 4 páginas legales (`/privacidad`, `/terminos`, `/terminos-conductores`, `/eliminar-cuenta`) en esa dirección; rellenar los campos entre corchetes de los borradores (razón social, RNC, dirección, correos, WhatsApp, fechas) y pasarlos por revisión legal.
+
+## Revisión de lanzamiento (13-oct-2026)
+- Pruebas 001–005 pasan en faxi-pruebas sin dejar datos; huella 20 · 51 · 41 · 29 · 52 · 1 · false.
+- Asesor de seguridad: solo avisos esperados (RPC de las apps; las de admin verifican `is_admin`) y "contraseñas filtradas" (panel; activar en producción).
+- **Corregido:** permisos de más en las apps (micrófono en conductor; almacenamiento y superposición en pasajero; textos de permiso de iOS en inglés). Comprobado con `expo config --type introspect` en modo producción y desarrollo.
+- **Agregado:** perfiles de EAS con su grupo de variables y `.aab` en producción; `owner` y ID de proyecto fijos en la app de pasajeros; sitio estático `sitio/` para faxi.com (`scripts/build_sitio.mjs` + `netlify.toml`); `docs/LANZAMIENTO.md`.
+- **Pendiente nuevo:** tras la primera subida a Google Play, añadir la SHA-1 de la clave de firma de Play a la clave de Maps; declaración de servicio en primer plano (conductor); geo-permisos de Twilio solo RD.

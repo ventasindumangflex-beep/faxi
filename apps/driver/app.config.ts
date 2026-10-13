@@ -1,9 +1,11 @@
 import type { ExpoConfig } from 'expo/config';
 
+const DEV = process.env.APP_VARIANT === 'development';
 const LOC = 'faxi Conductor usa tu ubicación para enviarte solicitudes de viaje cercanas y mostrar al pasajero dónde estás, también cuando la app está en segundo plano mientras estás conectado.';
 
 const config: ExpoConfig = {
   name: 'faxi Conductor',
+  owner: 'faxi.app',
   slug: 'faxi-conductor',
   scheme: 'faxi-conductor',
   version: '1.0.0',
@@ -17,6 +19,7 @@ const config: ExpoConfig = {
     infoPlist: {
       NSLocationWhenInUseUsageDescription: LOC,
       NSLocationAlwaysAndWhenInUseUsageDescription: LOC,
+      NSLocationAlwaysUsageDescription: LOC,
       NSCameraUsageDescription: 'faxi Conductor usa la cámara para fotografiar tu licencia, cédula y documentos del vehículo.',
       NSPhotoLibraryUsageDescription: 'faxi Conductor necesita acceso a tus fotos para subir tus documentos.',
       UIBackgroundModes: ['location', 'fetch', 'remote-notification'],
@@ -30,6 +33,8 @@ const config: ExpoConfig = {
       'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'ACCESS_BACKGROUND_LOCATION',
       'FOREGROUND_SERVICE', 'FOREGROUND_SERVICE_LOCATION', 'CAMERA', 'VIBRATE',
     ],
+    // expo-image-picker añade el micrófono (para video), que la app no usa; "mostrar sobre otras apps" solo hace falta en desarrollo.
+    blockedPermissions: ['android.permission.RECORD_AUDIO', ...(DEV ? [] : ['android.permission.SYSTEM_ALERT_WINDOW'])],
     config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },
   },
   plugins: [
@@ -39,6 +44,7 @@ const config: ExpoConfig = {
     ['expo-location', {
       locationAlwaysAndWhenInUsePermission: LOC,
       locationWhenInUsePermission: LOC,
+      locationAlwaysPermission: LOC,
       isAndroidBackgroundLocationEnabled: true,
       isAndroidForegroundServiceEnabled: true,
       isIosBackgroundLocationEnabled: true,
@@ -46,6 +52,8 @@ const config: ExpoConfig = {
     ['expo-image-picker', {
       cameraPermission: 'faxi Conductor usa la cámara para fotografiar tus documentos.',
       photosPermission: 'faxi Conductor necesita acceso a tus fotos para subir tus documentos.',
+      // iOS exige el texto aunque la app solo tome fotos; en Android el permiso queda bloqueado arriba.
+      microphonePermission: 'faxi Conductor no usa el micrófono: solo toma fotos de tus documentos.',
     }],
     ['expo-notifications', { color: '#1B7A57', icon: './assets/notification-icon.png' }],
     ['expo-splash-screen', { image: './assets/splash-icon.png', imageWidth: 220, resizeMode: 'contain', backgroundColor: '#181C1A' }],

@@ -68,4 +68,4 @@ Podemos modificar estos términos. Te avisaremos en la app antes de que los camb
 
 Estos términos se rigen por las leyes de la República Dominicana. Cualquier controversia se someterá a los tribunales de Santo Domingo, sin perjuicio de tu derecho a acudir a Pro Consumidor.
 
-Contacto: **[CORREO DE SOPORTE]** · **[DIRECCIÓN]**
+Contacto: **soporte@faxi.com** · **[DIRECCIÓN]**
