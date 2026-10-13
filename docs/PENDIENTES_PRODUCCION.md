@@ -77,3 +77,7 @@ Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
 ## Notas técnicas
 - `apply_migration`/`execute_sql` de la herramienta de Supabase piden confirmación con `DROP`/`DELETE`; las migraciones nuevas usan bloques `if not exists` para evitarlos.
 - `delete_my_account` deja la bandera `faxi.self_delete` activa hasta el final de la transacción. En la app cada llamada es su propia transacción; en tests, no hacer otras comprobaciones del guard después de llamarla.
+
+## Dominio (decisión del dueño, 13-oct-2026)
+- **Dominio definitivo: `faxi.com`.** Las apps abren `https://faxi.com/terminos`, `/terminos-conductores` y `/privacidad` por defecto (cambiables con `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL`).
+- Falta: confirmar en la Consola del administrador de Google Workspace que `faxi.com` esté **verificado** y con registros MX; crear `soporte@faxi.com`; publicar las 4 páginas legales (`/privacidad`, `/terminos`, `/terminos-conductores`, `/eliminar-cuenta`) en esa dirección; rellenar los campos entre corchetes de los borradores (razón social, RNC, dirección, correos, WhatsApp, fechas) y pasarlos por revisión legal.
