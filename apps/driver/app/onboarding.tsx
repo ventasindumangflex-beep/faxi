@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Linking, Pressable, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { CATEGORY_CAPACITY, CATEGORY_LABEL, DOC_LABEL, driver, type Category, type DriverDocType, type VehicleDocType } from '@faxi/core';
 import { Banner, Button, Card, Chip, Field, Icon, Row, Screen, StatusPill, T, c, useSession } from '@faxi/ui';
 import { REQUIRED_DRIVER_DOCS, REQUIRED_VEHICLE_DOCS, useDriver } from '../src/driverCtx';
+import { cfg } from '../src/faxi';
 
 const CATEGORIES: Category[] = ['ECONOMICO', 'CONFORT', 'PREMIUM', 'SUV', 'VAN'];
 
@@ -20,6 +21,7 @@ export default function Onboarding() {
   });
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [accepted, setAccepted] = useState(false); // casilla sin marcar: la aceptación debe ser expresa
   const set = (k: keyof typeof form) => (val: string) => setForm((f) => ({ ...f, [k]: val }));
 
   async function submit() {
@@ -27,8 +29,10 @@ export default function Onboarding() {
     const year = parseInt(form.year, 10);
     if (!/^[A-Za-z]{1,2}\s?\d{6}$/.test(form.plate.trim())) { setErr('La placa debe tener el formato A123456.'); return; }
     if (!year || year < 1990) { setErr('Escribe el año del vehículo.'); return; }
+    if (!accepted) { setErr('Para continuar debes aceptar los términos para conductores.'); return; }
     setBusy('form');
     try {
+      await driver.acceptTerms(cfg.termsVersion);
       await driver.submitApplication({ ...form, year, capacity: CATEGORY_CAPACITY[form.category] });
       await refresh();
       setEditing(false);
@@ -102,9 +106,18 @@ export default function Onboarding() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {CATEGORIES.map((k) => <Chip key={k} label={CATEGORY_LABEL[k]} selected={form.category === k} onPress={() => set('category')(k)} />)}
           </View>
+          <Pressable onPress={() => setAccepted((a) => !a)} accessibilityRole="checkbox" accessibilityState={{ checked: accepted }}
+            style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, minHeight: 44, paddingVertical: 6 }}>
+            <Icon name={accepted ? 'check-box' : 'check-box-outline-blank'} color={accepted ? c.primaryDark : c.ink} />
+            <T v="caption" style={{ flex: 1 }}>
+              Acepto los <T v="caption" color={c.primaryDark} onPress={() => Linking.openURL(cfg.termsUrl)}>términos para conductores</T> y la{' '}
+              <T v="caption" color={c.primaryDark} onPress={() => Linking.openURL(cfg.privacyUrl)}>política de privacidad</T>, y autorizo a faxi a revisar
+              mi prueba antidoping y mis antecedentes penales solo para verificar los requisitos del INTRANT.
+            </T>
+          </Pressable>
           {err ? <Banner text={err} /> : null}
           <Button title="Guardar y continuar" onPress={submit} loading={busy === 'form'}
-            disabled={form.fullName.trim().length < 3 || form.licenseNumber.trim().length < 5 || !form.make || !form.model || !form.color} />
+            disabled={!accepted || form.fullName.trim().length < 3 || form.licenseNumber.trim().length < 5 || !form.make || !form.model || !form.color} />
         </View>
       ) : (
         <View style={{ gap: 14 }}>

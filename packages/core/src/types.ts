@@ -6,7 +6,7 @@ export type Category = 'ECONOMICO' | 'CONFORT' | 'PREMIUM' | 'SUV' | 'VAN';
 export type Approval = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
 export type Availability = 'OFFLINE' | 'ONLINE' | 'BUSY';
 export type PaymentMethod = 'CASH' | 'CARD' | 'TRANSFER' | 'WALLET';
-export type DriverDocType = 'LICENCIA' | 'CEDULA' | 'BUENA_CONDUCTA' | 'FOTO_PERFIL';
+export type DriverDocType = 'LICENCIA' | 'CEDULA' | 'BUENA_CONDUCTA' | 'FOTO_PERFIL' | 'CARNET_INTRANT' | 'ANTIDOPING';
 export type VehicleDocType = 'MATRICULA' | 'SEGURO' | 'INSPECCION' | 'FOTO_EXTERIOR' | 'FOTO_INTERIOR';
 export type TicketCategory = 'COBRO' | 'RUTA' | 'SEGURIDAD' | 'OBJETO_PERDIDO' | 'CONDUCTOR' | 'PASAJERO' | 'OTRO';
 

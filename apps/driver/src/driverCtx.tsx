@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { driver, watchDriverRow, type DocRow, type DriverDocType, type DriverProfile, type VehicleDocType } from '@faxi/core';
 import { useSession } from '@faxi/ui';
 
-export const REQUIRED_DRIVER_DOCS: DriverDocType[] = ['FOTO_PERFIL', 'LICENCIA', 'CEDULA', 'BUENA_CONDUCTA'];
+export const REQUIRED_DRIVER_DOCS: DriverDocType[] = ['FOTO_PERFIL', 'LICENCIA', 'CEDULA', 'BUENA_CONDUCTA', 'CARNET_INTRANT', 'ANTIDOPING'];
 export const REQUIRED_VEHICLE_DOCS: VehicleDocType[] = ['MATRICULA', 'SEGURO', 'FOTO_EXTERIOR'];
 
 interface Ctx {

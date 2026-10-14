@@ -125,6 +125,8 @@ export const driver = {
       await q(sb().from('vehicle_documents').insert({ vehicle_id: vehicleId, type, file_path: path }));
     }
   },
+  /** Guarda que el conductor aceptó esta versión de los términos (casilla del registro). */
+  acceptTerms: (version: string) => rpc('accept_driver_terms', { p_version: version }),
   setOnline: (online: boolean, pos?: LatLng | null) =>
     rpc('set_driver_availability', { p_online: online, p_lat: pos?.lat ?? null, p_lng: pos?.lng ?? null }),
   pending: () => rpc<PendingRequest[]>('driver_pending_requests'),

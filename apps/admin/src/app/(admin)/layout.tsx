@@ -10,6 +10,7 @@ const NAV = [
   { href: '/drivers', label: 'Conductores' },
   { href: '/trips', label: 'Viajes' },
   { href: '/commissions', label: 'Comisiones' },
+  { href: '/zones', label: 'Zonas' },
   { href: '/pricing', label: 'Tarifas y ajustes' },
   { href: '/tickets', label: 'Soporte' },
 ];
