@@ -18,7 +18,7 @@ const TABS: { k: Approval; label: string }[] = [
   { k: 'PENDING', label: 'Por revisar' }, { k: 'APPROVED', label: 'Aprobados' }, { k: 'REJECTED', label: 'Rechazados' }, { k: 'SUSPENDED', label: 'Suspendidos' },
 ];
 const APPROVAL_LABEL: Record<Approval, string> = { PENDING: 'Pendiente', APPROVED: 'Aprobado', REJECTED: 'Rechazado', SUSPENDED: 'Suspendido' };
-const EXPIRING = ['LICENCIA', 'SEGURO', 'MATRICULA', 'BUENA_CONDUCTA', 'INSPECCION'];
+const EXPIRING = ['LICENCIA', 'SEGURO', 'MATRICULA', 'BUENA_CONDUCTA', 'INSPECCION', 'CARNET_INTRANT', 'ANTIDOPING'];
 
 async function uid() { return (await sb().auth.getSession()).data.session?.user.id ?? null; }
 

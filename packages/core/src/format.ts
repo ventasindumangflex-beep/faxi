@@ -64,7 +64,8 @@ export const TICKET_LABEL: Record<TicketCategory, string> = {
 };
 
 export const DOC_LABEL: Record<string, string> = {
-  LICENCIA: 'Licencia de conducir', CEDULA: 'Cédula', BUENA_CONDUCTA: 'Certificado de buena conducta', FOTO_PERFIL: 'Foto de perfil',
+  LICENCIA: 'Licencia de conducir', CEDULA: 'Cédula', BUENA_CONDUCTA: 'Certificado de no antecedentes penales', FOTO_PERFIL: 'Foto de perfil',
+  CARNET_INTRANT: 'Carnet del INTRANT (taxi por plataforma)', ANTIDOPING: 'Prueba antidoping',
   MATRICULA: 'Matrícula del vehículo', SEGURO: 'Seguro vigente', INSPECCION: 'Inspección técnica',
   FOTO_EXTERIOR: 'Foto del vehículo (exterior)', FOTO_INTERIOR: 'Foto del vehículo (interior)',
 };

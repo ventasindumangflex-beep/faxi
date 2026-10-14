@@ -4,9 +4,10 @@
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 -- Hace: migraciones 005 (ubicación en vivo privada, zona real del Gran Santo Domingo, push automático) y
 -- 006 (solo efectivo), 007 (datos del conductor solo durante el viaje), 008 (endurecimiento), 009 (comisión en efectivo: pago semanal
--- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados), pone producción en modo solo efectivo y vehículos de 2008 en adelante, deja lista la URL del push
+-- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados),
+-- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK.
+-- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK.
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -432,10 +433,82 @@ end $$;
 revoke all on function public.my_commission_status() from public, anon;
 grant execute on function public.my_commission_status() to authenticated;
 
+-- ═════════════ Migración 011 ═════════════
+-- FAXI · 011 · Requisitos del INTRANT (Normativa Técnica de taxis por plataforma) y aceptación de términos
+-- 1. Vehículo con no más de MAX_VEHICLE_AGE_YEARS años de fabricación (INTRANT: 15). El año mínimo sube solo cada año.
+--    0 = sin límite: faxi-pruebas queda así para que FAXI OK siga probando el mínimo fijo (MIN_VEHICLE_YEAR).
+--    Producción lo pone en 15 (PRODUCCION_PEGAR.sql).
+-- 2. Documentos nuevos del conductor: carnet de taxi por plataforma del INTRANT y prueba antidoping.
+-- 3. El conductor acepta los términos con una casilla; se guarda la versión y la fecha.
+-- Se puede correr más de una vez.
+
+-- ───────── 1. Antigüedad máxima del vehículo ─────────
+insert into public.app_settings(key, value, description) values
+  ('MAX_VEHICLE_AGE_YEARS', '0', 'Antigüedad máxima del vehículo en años (INTRANT: 15). 0 = sin límite. El año mínimo efectivo es el mayor entre MIN_VEHICLE_YEAR y (año actual − este valor).')
+on conflict (key) do nothing;
+
+create or replace function public.min_vehicle_year() returns int
+language sql stable security definer set search_path = public as $$
+  select greatest(
+    coalesce(public.setting_num('MIN_VEHICLE_YEAR'), 2000)::int,
+    case when coalesce(public.setting_num('MAX_VEHICLE_AGE_YEARS'), 0) > 0
+         then extract(year from now() at time zone 'America/Santo_Domingo')::int - public.setting_num('MAX_VEHICLE_AGE_YEARS')::int end)
+$$;
+
+-- Igual que en 002, con el año mínimo de min_vehicle_year() y un mensaje más claro
+create or replace function public.validate_vehicle() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_min int := public.min_vehicle_year();
+        v_docs boolean := coalesce(public.setting_text('REQUIRE_VEHICLE_DOCUMENTS')::boolean, true);
+begin
+  new.plate := upper(replace(new.plate, ' ', ''));
+  if new.year > extract(year from now())::int + 1 then
+    raise exception 'Año de vehículo inválido (%)', new.year using errcode = '23514';
+  end if;
+  if new.year < v_min and (tg_op = 'INSERT' or new.year is distinct from old.year or new.status = 'APPROVED') then
+    raise exception 'El vehículo debe ser del año % o más nuevo (el tuyo es %).', v_min, new.year using errcode = '23514';
+  end if;
+  if new.status = 'APPROVED' and (tg_op = 'INSERT' or old.status is distinct from 'APPROVED') and not public.is_system_call() then
+    if not public.is_admin() then raise exception 'No autorizado' using errcode = '42501'; end if;
+    if v_docs and (select count(distinct type) from public.vehicle_documents
+                   where vehicle_id = new.id and status = 'APPROVED' and type in ('MATRICULA','SEGURO')
+                     and (expires_at is null or expires_at >= current_date)) < 2 then
+      raise exception 'No se puede aprobar: faltan matrícula y seguro aprobados y vigentes' using errcode = '23514';
+    end if;
+  end if;
+  if tg_op = 'UPDATE' and new.status is distinct from old.status and not public.is_system_call() then
+    new.reviewed_by := auth.uid(); new.reviewed_at := now();
+  end if;
+  return new;
+end $$;
+
+-- ───────── 2. Documentos del conductor exigidos por el INTRANT ─────────
+alter type public.driver_document_type add value if not exists 'CARNET_INTRANT';
+alter type public.driver_document_type add value if not exists 'ANTIDOPING';
+
+-- ───────── 3. Aceptación de los términos para conductores ─────────
+alter table public.drivers add column if not exists terms_version text check (terms_version ~ '^[0-9]+\.[0-9]+$');
+alter table public.drivers add column if not exists terms_accepted_at timestamptz;
+
+create or replace function public.accept_driver_terms(p_version text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.auth_role() is distinct from 'DRIVER' then raise exception 'Solo conductores' using errcode = '42501'; end if;
+  if p_version is null or p_version !~ '^[0-9]+\.[0-9]+$' then raise exception 'Versión de términos inválida' using errcode = '22023'; end if;
+  update public.drivers set terms_version = p_version, terms_accepted_at = now() where id = auth.uid();
+  if not found then raise exception 'Conductor no encontrado' using errcode = 'P0002'; end if;
+  perform public.log_action('DRIVER_TERMS_ACCEPTED', 'drivers', auth.uid()::text, jsonb_build_object('version', p_version));
+end $$;
+
+-- ───────── 4. Permisos ─────────
+revoke all on function public.min_vehicle_year(), public.accept_driver_terms(text) from public, anon;
+grant execute on function public.min_vehicle_year(), public.accept_driver_terms(text) to authenticated;
+revoke all on function public.validate_vehicle() from public, anon, authenticated;
+
 -- Producción: solo efectivo (el pasajero no puede marcarse pagos; el conductor confirma el cobro)
 update public.app_settings set value = '"CASH"' where key = 'PAYMENT_PROVIDER';
--- Producción: vehículos de 2008 en adelante (faxi-pruebas sigue en 2000 para que FAXI OK corra igual)
-update public.app_settings set value = '2008' where key = 'MIN_VEHICLE_YEAR';
+-- Producción: vehículo con no más de 15 años de fabricación (INTRANT). faxi-pruebas queda en 0 (sin límite) para que FAXI OK corra igual.
+update public.app_settings set value = '15' where key = 'MAX_VEHICLE_AGE_YEARS';
 
 -- ═════════════ URL del push en producción ═════════════
 do $$ begin
@@ -445,8 +518,8 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 15-oct-2026, con 009 y 010): tablas 21 · funciones 59 · politicas 44 · triggers 32 · indices 54 · cron 1
---   h_tablas 0d7f36 · h_funciones 9b0b05 · h_politicas c5c2d4 · h_triggers c5c0fe · h_indices e9402f · vault 2 · proveedor CASH · año 2008
+-- Esperado (faxi-pruebas, 15-oct-2026, con 009–011): tablas 21 · funciones 61 · politicas 44 · triggers 32 · indices 54 · cron 1
+--   h_tablas 0d7f36 · h_funciones bf73eb · h_politicas c5c2d4 · h_triggers c5c0fe · h_indices e9402f · vault 2 · proveedor CASH · año_minimo = año actual − 15
 with
  t as (select string_agg(table_name, ',' order by table_name) s, count(*) n from information_schema.tables where table_schema='public' and table_type='BASE TABLE'),
  f as (select string_agg(p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', ',' order by p.proname, pg_get_function_identity_arguments(p.oid)) s, count(*) n from pg_proc p join pg_namespace ns on ns.oid=p.pronamespace where ns.nspname='public'),
@@ -458,5 +531,5 @@ select t.n tablas, f.n funciones, pol.n politicas, tr.n triggers, ix.n indices, 
   left(md5(t.s),6) h_tablas, left(md5(f.s),6) h_funciones, left(md5(pol.s),6) h_politicas, left(md5(tr.s),6) h_triggers, left(md5(ix.s),6) h_indices,
   (select count(*) from vault.secrets where name in ('faxi_push_url','faxi_push_secret')) vault,
   public.setting_text('PAYMENT_PROVIDER') proveedor,
-  public.setting_text('MIN_VEHICLE_YEAR') año
+  public.min_vehicle_year() año_minimo
 from t,f,pol,tr,ix,cr;

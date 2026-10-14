@@ -31,7 +31,7 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] Completar los datos entre corchetes de los textos legales y **revisión de un abogado** (Ley 172-13, Ley 358-05, INTRANT).
 
 ## Producto
-- [ ] **INTRANT:** confirmar requisitos vigentes para plataformas (registro, seguro de responsabilidad civil, carnet de conductores, antigüedad máxima del vehículo; en 2021 se anunciaron 15 años). Decidido (15-oct): **2008 en adelante** en producción (`PRODUCCION_PEGAR.sql`); si el INTRANT exige algo más reciente, se cambia en el admin → Tarifas y ajustes → `MIN_VEHICLE_YEAR`.
+- [ ] **INTRANT:** confirmar requisitos vigentes para plataformas (registro, seguro de responsabilidad civil, carnet de conductores, antigüedad máxima del vehículo; en 2021 se anunciaron 15 años). Decidido (15-oct): **máximo 15 años** (`MAX_VEHICLE_AGE_YEARS = 15` en producción, migración 011). Carnet INTRANT y antidoping ya se piden en el registro. Lo demás en `docs/REVISION_LEGAL.md`.
 - [ ] **Comisión en efectivo:** definir cómo y cuándo el conductor paga a faxi el 20 % de los viajes en efectivo (los términos de conductores lo dejan en blanco).
 - [x] Haina: **fuera de la zona** durante el piloto (decidido 15-oct). Si hay demanda, se amplía el polígono (`app_settings.SERVICE_AREA`).
 - [x] Comisión en efectivo (decidido 15-oct): el conductor paga **cada lunes**; si debe más de **RD$2,000** no puede conectarse. Migración 009 + pantalla *Comisiones* del admin. Durante el piloto se paga a la cuenta personal del dueño (decidido 15-oct): escribirla en `COMMISSION_PAY_INFO` (admin → Tarifas y ajustes), **nunca en el código**. Desde la migración 010 solo la ven admins y conductores aprobados. Cambiarla a la cuenta de la empresa cuando exista el RNC.
