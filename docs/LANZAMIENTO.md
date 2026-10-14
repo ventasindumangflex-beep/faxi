@@ -10,7 +10,7 @@ Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace C
 | App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
 | App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
 | Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |
-| Página web faxi.com | ✅ Lista en `sitio/` (inicio, soporte y 4 páginas legales). Falta publicarla (👤, 15 min). |
+| Página web | ✅ Publicada en **faxi.netlify.app** (inicio, soporte y 4 páginas legales). ❌ Falta un dominio propio: `faxi.com` **no es nuestro** (ver abajo). |
 | Producción (Supabase faxi) | ⛔ El proyecto no aparece en tu cuenta. Se crea o se localiza cuando exista la empresa. |
 | Tiendas | ⛔ Cuentas de organización (Google Play y Apple) esperan RNC y D-U-N-S. |
 
@@ -24,8 +24,7 @@ Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace C
 - [x] **Android 16 (API 36):** cumple el requisito de Google Play de 2026.
 - [x] **Seguridad del pasajero:** botón de 911, compartir viaje, eliminar cuenta (en la app y en la web), reportar un problema.
 - [x] **EAS:** cada perfil usa su grupo de variables (`development`, `preview`, `production`) y el de producción genera el `.aab` para Google Play. La app de pasajeros ya no necesita `EAS_PROJECT_ID=…` delante del comando.
-- [x] **Sitio faxi.com** generado desde los mismos textos legales del panel (`node scripts/build_sitio.mjs`).
-- [x] Correo de soporte en textos legales y fichas: **soporte@faxi.com**.
+- [x] **Sitio web** generado desde los mismos textos legales del panel (`node scripts/build_sitio.mjs`) y publicado en Netlify (14-oct).
 - [x] Notificaciones push en faxi-pruebas: **completas** (Vault + trigger, respuesta 200). **No crees un webhook** en Supabase: duplicaría cada notificación.
 
 ---
@@ -72,7 +71,7 @@ Todo esto necesita la empresa:
 - ⛔👤 **Supabase de producción** en plan **Pro** (copias de seguridad diarias, no se pausa). Luego, con tu visto bueno y en orden: migraciones 001–004 + cron → `PRODUCCION_PEGAR.sql` (cambiando el ref si el proyecto es nuevo) → `send-push` → Realtime sin acceso público → tu admin (`docs/PASOS_DEL_DUENO.md`). Comprobar con `supabase/HUELLA_ESQUEMA.sql`.
 - 👤 **Variables de EAS en "Production"** con los valores del Supabase de producción (misma tabla de arriba).
 - 👤 **Clave de Maps nueva** (la actual se pegó en un chat): crearla, restringirla a `com.faxi.app` y `com.faxi.conductor` con sus SHA-1, y borrar la vieja.
-- 👤 **Publicar faxi.com** (abajo) y crear **soporte@faxi.com** en Google Workspace (sin tocar los registros MX).
+- 👤 **Dominio propio** y correo de soporte (abajo). Después cambio las direcciones en las apps, los textos legales y las fichas.
 - 👤 **Textos legales:** rellenar lo que sigue entre [corchetes] (razón social, RNC, dirección, WhatsApp, fechas, plazos, comisión en efectivo, seguro) y revisión de un **abogado dominicano**. Después: `node scripts/build_sitio.mjs` (o pídemelo).
 - 👤 **Decisiones de negocio:** cómo paga el conductor la comisión del 20 % en efectivo; requisitos del INTRANT y año mínimo del vehículo (`MIN_VEHICLE_YEAR`, hoy 2000); ¿Haina dentro de la zona?
 - ⛔👤 **Google Play** (cuenta de organización): prueba cerrada, ficha (`docs/tiendas/FICHAS.md`), seguridad de los datos, declaración de ubicación en segundo plano y de **servicio en primer plano** (mismo texto y video de la ubicación en segundo plano).
@@ -86,17 +85,16 @@ Todo esto necesita la empresa:
 
 ---
 
-## Publicar faxi.com (gratis, ~15 min + espera del DNS)
-Los cambios de esta rama tienen que estar unidos a `main` (te preparo el PR si me lo pides).
-1. Entra a **app.netlify.com** → *Sign up* → **con GitHub** (cuenta `ventasindumangflex-beep`). Plan **Free**.
-2. **Add new project** → *Import an existing project* → **GitHub** → autoriza → elige el repositorio **faxi**.
-3. Rama: **main**. No cambies nada más (Netlify lee `netlify.toml`) → **Deploy**.
-4. En 1 minuto te da una dirección `…netlify.app`. Ábrela: debe salir la portada de faxi.
-5. **Domain management → Add a domain** → `faxi.com` → *Verify* → *Add domain*. Netlify te dice qué registros DNS poner (normalmente un **A** de `faxi.com` y un **CNAME** de `www`). Copia exactamente lo que diga Netlify.
-6. Donde compraste faxi.com → **DNS** → añade esos registros. **No borres los MX ni los TXT** de Google Workspace: son del correo.
-7. Espera (minutos u horas). Netlify activa HTTPS solo. Prueba `https://faxi.com/privacidad` en el teléfono.
+## Página web y dominio
+- **Publicada (14-oct-2026)** en **https://faxi.netlify.app** desde `main` (Netlify, cuenta del equipo *indumangflex*, plan gratis). Cada push a `main` la vuelve a publicar.
+- **`faxi.com` no es nuestro:** registrado desde el 2-mar-2000 por *Koreacenter co., Ltd* y estacionado en Dan.com (a la venta). No se compró ningún dominio.
+- Mientras tanto las apps, los textos legales y las fichas usan `faxi.netlify.app`, y el correo de soporte queda como **[CORREO DE SOPORTE]**.
 
-Cada vez que cambien los textos: `node scripts/build_sitio.mjs`, commit y push → Netlify publica solo.
+**Cuando compres un dominio** (unos 10–12 USD al año):
+1. Dime cuál es: cambio `SITIO` y `SOPORTE` en `scripts/build_sitio.mjs`, las URL de `apps/*/src/faxi.ts`, los textos legales y las fichas.
+2. Netlify → **faxi** → **Domain management** → **Add a domain you already own** → tu dominio → **Verify** → **Add domain**. **No uses "Set up Netlify DNS"** si el correo está en Google Workspace.
+3. En el DNS de donde lo compraste: registro **A** del dominio raíz a `75.2.60.5` y **CNAME** de `www` a `faxi.netlify.app`. **No borres los MX ni los TXT** del correo.
+4. Espera (minutos u horas). Netlify activa HTTPS solo.
 
 ## Actualizar el código en la Mac
 La carpeta `~/Downloads/faxi-main` es una copia vieja (no tiene estos arreglos). Para la etapa 1:

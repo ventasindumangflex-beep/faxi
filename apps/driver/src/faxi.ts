@@ -23,7 +23,7 @@ initFaxi({
 });
 
 export const cfg = {
-  termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? 'https://faxi.com/terminos-conductores',
-  privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://faxi.com/privacidad',
+  termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? 'https://faxi.netlify.app/terminos-conductores',
+  privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://faxi.netlify.app/privacidad',
   supportWhatsApp: process.env.EXPO_PUBLIC_SUPPORT_WHATSAPP ?? '',
 };

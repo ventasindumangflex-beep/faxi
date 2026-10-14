@@ -24,7 +24,7 @@ initFaxi({
 
 export const cfg = {
   placesKey: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY ?? '',
-  termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? 'https://faxi.com/terminos',
-  privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://faxi.com/privacidad',
+  termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? 'https://faxi.netlify.app/terminos',
+  privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://faxi.netlify.app/privacidad',
   supportWhatsApp: process.env.EXPO_PUBLIC_SUPPORT_WHATSAPP ?? '',
 };
