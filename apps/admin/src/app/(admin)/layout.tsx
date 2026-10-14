@@ -9,6 +9,7 @@ const NAV = [
   { href: '/', label: 'Panel' },
   { href: '/drivers', label: 'Conductores' },
   { href: '/trips', label: 'Viajes' },
+  { href: '/commissions', label: 'Comisiones' },
   { href: '/pricing', label: 'Tarifas y ajustes' },
   { href: '/tickets', label: 'Soporte' },
 ];

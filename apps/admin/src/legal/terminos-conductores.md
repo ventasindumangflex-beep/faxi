@@ -21,7 +21,7 @@ faxi es una plataforma tecnológica que te conecta con pasajeros que solicitan t
 Para ser aprobado y mantenerte activo debes:
 - Tener **18 años o más** (o la edad que exija la ley para transporte de pasajeros), cédula dominicana vigente y **licencia de conducir vigente** de la categoría correspondiente.
 - Presentar **certificado de buena conducta** reciente.
-- Usar un vehículo con **matrícula, seguro vigente e inspección** al día, en buen estado mecánico y de limpieza, y que cumpla el año mínimo que exija faxi o el INTRANT (**[AÑO MÍNIMO / ANTIGÜEDAD MÁXIMA]**).
+- Usar un vehículo con **matrícula, seguro vigente e inspección** al día, en buen estado mecánico y de limpieza, y **del año 2008 o más nuevo** (o el año mínimo que exija el INTRANT, si es más reciente).
 - Cumplir los requisitos que el **INTRANT** establezca para conductores de plataformas (por ejemplo, carnet o registro), y las restricciones de operación que dicte (como distancias mínimas a hoteles o zonas de taxis turísticos).
 - Mantener tus documentos actualizados en la app. faxi puede pedirte nuevamente cualquier documento.
 
@@ -42,8 +42,10 @@ Mientras estés **conectado**, faxi recopila tu ubicación, también con la app 
 
 - La tarifa la calcula faxi y la ves en la app. No puedes cobrar montos adicionales al pasajero.
 - Por ahora todos los viajes son **en efectivo**: cobras al pasajero al terminar y **confirmas el cobro en la app**.
-- faxi cobra una comisión de **[20 %]** de la tarifa de cada viaje completado. La app te muestra, viaje por viaje, la tarifa, la comisión y tu ganancia.
-- La forma y los plazos en que liquidas la comisión de los viajes en efectivo son: **[FORMA DE PAGO DE LA COMISIÓN Y PLAZO]**. Si no la pagas a tiempo, faxi puede suspender tu cuenta hasta regularizarla.
+- faxi cobra una comisión del **20 %** de la tarifa de cada viaje completado. La app te muestra, viaje por viaje, la tarifa, la comisión y tu ganancia.
+- Como el pasajero te paga todo en efectivo, tú le debes a faxi la comisión de esos viajes. La app te muestra en todo momento cuánto debes.
+- Pagas la comisión **cada lunes**, por la semana anterior, por transferencia o depósito a la cuenta que te indique faxi. faxi registra tu pago y la app se actualiza.
+- Si lo que debes pasa de **RD$2,000**, no podrás conectarte para recibir viajes hasta que pagues. Si estás conectado, la app te desconecta al terminar el viaje con el que pasas ese límite. Al registrarse tu pago puedes volver a conectarte.
 
 ## 7. Conducta y seguridad
 

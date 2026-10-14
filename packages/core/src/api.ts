@@ -2,7 +2,7 @@ import { currentUid, sb } from './client';
 import { FaxiError, toFaxiError } from './errors';
 import { DRIVER_ACTIVE, PASSENGER_ACTIVE } from './format';
 import type {
-  AppUser, Category, DocRow, DriverApplication, DriverDocType, DriverProfile, LatLng, PendingRequest, Place, Quote,
+  AppUser, Category, CommissionStatus, DocRow, DriverApplication, DriverDocType, DriverProfile, LatLng, PendingRequest, Place, Quote,
   TicketCategory, Trip, TripDetails, TripStatus, VehicleDocType,
 } from './types';
 
@@ -141,6 +141,10 @@ export const driver = {
     const rows = await q<Trip[]>(sb().from('trips').select('*').eq('driver_id', await currentUid())
       .in('status', DRIVER_ACTIVE).order('assigned_at', { ascending: false }).limit(1));
     return rows[0] ?? null;
+  },
+  async commission(): Promise<CommissionStatus> {
+    const s = await rpc<CommissionStatus>('my_commission_status');
+    return { ...s, owed: Number(s.owed), limit: Number(s.limit), last_payment_amount: s.last_payment_amount == null ? null : Number(s.last_payment_amount) };
   },
   async earnings(sinceISO: string): Promise<Trip[]> {
     return q<Trip[]>(sb().from('trips').select('*').eq('driver_id', await currentUid())

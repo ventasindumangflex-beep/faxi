@@ -70,3 +70,9 @@ export interface DriverApplication {
   fullName: string; licenseNumber: string; make: string; model: string; year: number; color: string;
   plate: string; category: Category; capacity: number;
 }
+
+/** Comisión que el conductor le debe a faxi por sus viajes en efectivo (my_commission_status). */
+export interface CommissionStatus {
+  owed: number; limit: number; blocked: boolean; pay_day: string; pay_info: string | null;
+  last_payment_amount: number | null; last_payment_at: string | null;
+}

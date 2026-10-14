@@ -31,9 +31,10 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] Completar los datos entre corchetes de los textos legales y **revisión de un abogado** (Ley 172-13, Ley 358-05, INTRANT).
 
 ## Producto
-- [ ] **INTRANT:** confirmar requisitos vigentes para plataformas (registro, seguro de responsabilidad civil, carnet de conductores, antigüedad máxima del vehículo; en 2021 se anunciaron 15 años). Hoy `MIN_VEHICLE_YEAR = 2000`: ajustar en `app_settings` cuando se confirme.
+- [ ] **INTRANT:** confirmar requisitos vigentes para plataformas (registro, seguro de responsabilidad civil, carnet de conductores, antigüedad máxima del vehículo; en 2021 se anunciaron 15 años). Decidido (15-oct): **2008 en adelante** en producción (`PRODUCCION_PEGAR.sql`); si el INTRANT exige algo más reciente, se cambia en el admin → Tarifas y ajustes → `MIN_VEHICLE_YEAR`.
 - [ ] **Comisión en efectivo:** definir cómo y cuándo el conductor paga a faxi el 20 % de los viajes en efectivo (los términos de conductores lo dejan en blanco).
-- [ ] Haina y otros destinos cercanos fuera de la zona: decidir si se amplía el polígono (`app_settings.SERVICE_AREA`).
+- [x] Haina: **fuera de la zona** durante el piloto (decidido 15-oct). Si hay demanda, se amplía el polígono (`app_settings.SERVICE_AREA`).
+- [x] Comisión en efectivo (decidido 15-oct): el conductor paga **cada lunes**; si debe más de **RD$2,000** no puede conectarse. Migración 009 + pantalla *Comisiones* del admin. Falta: poner la cuenta bancaria de la empresa en `COMMISSION_PAY_INFO` (admin → Tarifas y ajustes) cuando exista.
 - [ ] Capturas de pantalla para las tiendas (lista en `docs/tiendas/FICHAS.md`).
 
 ## Tiendas

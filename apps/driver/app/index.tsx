@@ -4,7 +4,7 @@ import MapView from 'react-native-maps';
 import * as Haptics from 'expo-haptics';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { driver, km, mins, rd, watchDriverRequests, type PendingRequest } from '@faxi/core';
+import { driver, km, mins, rd, watchDriverRequests, type CommissionStatus, type PendingRequest } from '@faxi/core';
 import { Banner, Button, Icon, IconButton, Row, Sheet, StatusPill, T, c, f, region, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { currentPos, ensureLocationPermission, startTracking, stopTracking } from '../src/tracking';
@@ -21,12 +21,19 @@ export default function Home() {
   const [warn, setWarn] = useState<string | null>(null);
   const [offer, setOffer] = useState<PendingRequest | null>(null);
   const [today, setToday] = useState({ total: 0, count: 0 });
+  const [debt, setDebt] = useState<CommissionStatus | null>(null);
   const seen = useRef(new Set<string>());
 
   useFocusEffect(useCallback(() => {
     driver.activeTrip().then((t) => { if (t) router.replace({ pathname: '/trip', params: { id: t.id } }); }).catch(() => {});
     driver.earnings(startOfToday()).then((rows) => setToday({ total: rows.reduce((s, r) => s + (r.driver_earnings ?? 0), 0), count: rows.length })).catch(() => {});
+    driver.commission().then(setDebt).catch(() => {});
   }, []));
+
+  // El servidor puede desconectarlo (p. ej. al pasar el límite de comisión): seguir su estado
+  useEffect(() => {
+    if (profile?.availability === 'OFFLINE' && online) { setOnline(false); setOffer(null); stopTracking().catch(() => {}); }
+  }, [profile?.availability]);
 
   useEffect(() => {
     currentPos().then((p) => map.current?.animateToRegion(region(p, 0.015), 500)).catch(() => {});
@@ -112,6 +119,9 @@ export default function Home() {
               <StatusPill label={online ? 'En línea' : 'Fuera de línea'} tone={online ? 'ok' : 'neutral'} />
             </Row>
             <T v="caption">{online ? 'Buscando viajes cerca de ti… Te avisaremos con sonido y vibración.' : `${today.count} viaje(s) hoy. Conéctate para recibir solicitudes.`}</T>
+            {debt?.blocked && !online ? (
+              <Banner text={`Debes ${rd(debt.owed)} de comisión. Paga para volver a conectarte.`} actionLabel="Ver" onAction={() => router.push('/earnings')} />
+            ) : null}
             {err ? <Banner text={err} /> : null}
             {online ? <Button title="Desconectarme" variant="outline" onPress={goOffline} loading={busy} />
               : <Button title="Conectarme" icon="power-settings-new" onPress={goOnline} loading={busy} />}
