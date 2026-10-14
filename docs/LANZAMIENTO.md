@@ -2,6 +2,35 @@
 
 Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace Claude · **👤** lo haces tú · **⛔** espera la empresa (RNC).
 
+## ▶ Lo primero mañana (15-oct): conectar faxird.com (unos 5 minutos)
+Ya hecho: en Netlify se quitó `faxi.com` y se agregó `faxird.com` (principal) y `www.faxird.com`. Sale "Pending DNS verification", que es normal hasta hacer esto:
+
+**A · Entrar a los DNS** (perfil de Chrome del **trabajo**)
+1. Abre **admin.google.com** (no admin.faxird.com) y entra con **admin@faxird.com**.
+2. Menú ☰ → **Cuenta** → **Dominios** → **Administrar dominios**.
+3. En `faxird.com` → **Ver detalles** → **Configuración de DNS avanzada** → **Iniciar sesión en la consola de DNS**. Se abre Squarespace.
+
+**B · Quitar lo de Squarespace (solo si aparece)**
+4. Si hay un grupo **"Squarespace Defaults"** (o "Valores predeterminados de Squarespace"): 🗑 → **Eliminar**.
+5. ⚠️ **No borres** el grupo **Google Workspace** ni registros **MX** o **TXT** (son del correo).
+
+**C · Agregar 2 registros** en **Custom records / Registros personalizados** → **Add record**:
+
+| Host | Tipo | Datos |
+|---|---|---|
+| `@` | `A` | `75.2.60.5` |
+| `www` | `CNAME` | `faxi.netlify.app` |
+
+Lo demás como está → **Guardar**. Si dice que `www` ya existe, borra el `www` viejo y vuelve a agregarlo.
+
+**D · Esperar y comprobar**
+6. Netlify → **faxi** → **Domain management** → **Verify DNS configuration**. Si sigue amarillo, espera (10 minutos a unas horas).
+7. Abre **https://faxird.com/privacidad**: debe salir la página con candado 🔒.
+
+**No toques** en Netlify "Set up Netlify DNS" (rompe el correo). El aviso sobre el "CDN" se puede ignorar.
+
+📸 Si algo no se ve igual, foto a Claude antes de tocar.
+
 ## Dónde estamos
 
 | Parte | Estado |
@@ -10,7 +39,7 @@ Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace C
 | App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
 | App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
 | Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |
-| Página web | ✅ Publicada en **faxi.netlify.app**. Dominio propio **faxird.com** comprado (14-oct); falta conectarlo en Netlify (DNS). |
+| Página web | ✅ Publicada en **faxi.netlify.app**. Dominio **faxird.com** comprado y agregado en Netlify (14-oct); faltan los 2 registros DNS en Squarespace (arriba). |
 | Producción (Supabase faxi) | ⛔ El proyecto no aparece en tu cuenta. Se crea o se localiza cuando exista la empresa. |
 | Tiendas | ⛔ Cuentas de organización (Google Play y Apple) esperan RNC y D-U-N-S. |
 
@@ -73,7 +102,9 @@ Todo esto necesita la empresa:
 - 👤 **Clave de Maps nueva** (la actual se pegó en un chat): crearla, restringirla a `com.faxi.app` y `com.faxi.conductor` con sus SHA-1, y borrar la vieja.
 - 👤 **Dominio propio** y correo de soporte (abajo). Después cambio las direcciones en las apps, los textos legales y las fichas.
 - 👤 **Textos legales:** rellenar lo que sigue entre [corchetes] (razón social, RNC, dirección, WhatsApp, fechas, plazos, comisión en efectivo, seguro) y revisión de un **abogado dominicano**. Después: `node scripts/build_sitio.mjs` (o pídemelo).
-- 👤 **Decisiones de negocio:** cómo paga el conductor la comisión del 20 % en efectivo; requisitos del INTRANT y año mínimo del vehículo (`MIN_VEHICLE_YEAR`, hoy 2000); ¿Haina dentro de la zona?
+- [x] **Decisiones de negocio (15-oct):** comisión del 20 % pagada **cada lunes**, bloqueo al deber más de **RD$2,000** (ya en la app y el panel → *Comisiones*); vehículos **2008 en adelante**; **Haina fuera** durante el piloto.
+- 👤 Admin → *Tarifas y ajustes* → `COMMISSION_PAY_INFO`: banco, tipo y número de cuenta y titular (piloto: tu cuenta personal; luego la de la empresa). Solo la ven los conductores aprobados, en *Ganancias*. **Nunca en el código.**
+- 👤 Confirmar con el INTRANT el año mínimo y el seguro de responsabilidad civil.
 - ⛔👤 **Google Play** (cuenta de organización): prueba cerrada, ficha (`docs/tiendas/FICHAS.md`), seguridad de los datos, declaración de ubicación en segundo plano y de **servicio en primer plano** (mismo texto y video de la ubicación en segundo plano).
 - 👤 **Tras la primera subida a Play:** Play Console → *Integridad de la app* → copia la **SHA-1 de la clave de firma de apps** y añádela a la clave de Maps. Sin esto, el mapa sale en blanco en las apps instaladas desde Play.
 - 👤 Recomendado: **Sentry** (errores en teléfonos reales). Crea el proyecto y pon el DSN en EAS.
@@ -90,9 +121,9 @@ Todo esto necesita la empresa:
 - **Dominio propio: `faxird.com`** (comprado el 14-oct-2026 con Google Workspace Starter; registrador Squarespace). `faxi.com` **no es nuestro** (otro dueño desde 2000).
 - Apps, textos legales, fichas y sitio ya usan `https://faxird.com/...` y **soporte@faxird.com** (alias gratis del usuario de Workspace).
 
-**Conectar faxird.com a Netlify:**
-1. Netlify → **faxi** → **Domain management** → quitar `faxi.com` y `www.faxi.com` (*Options → Remove domain*).
-2. **Add a domain you already own** → `faxird.com` → **Verify** → **Add domain**. **No uses "Set up Netlify DNS"** (el correo está en Google Workspace).
+**Conectar faxird.com a Netlify** (pasos 1 y 2 hechos el 14-oct; pasos 3–5 detallados arriba en "Lo primero mañana"):
+1. [x] Netlify → **faxi** → **Domain management** → quitar `faxi.com` y `www.faxi.com` (*Options → Remove domain*).
+2. [x] **Add a domain you already own** → `faxird.com` → **Verify** → **Add domain**. **No uses "Set up Netlify DNS"** (el correo está en Google Workspace).
 3. admin.google.com → **Cuenta → Dominios → Administrar dominios** → `faxird.com` → **Ver detalles → Configuración de DNS avanzada → Iniciar sesión en la consola de DNS** (Squarespace).
 4. Ahí: registro **A** de `@` a `75.2.60.5` y **CNAME** de `www` a `faxi.netlify.app`. Quitar solo los registros *Squarespace Defaults* de `@`/`www` si existen. **No borres los MX ni los TXT** de Google Workspace.
 5. Espera (minutos u horas). Netlify activa HTTPS solo. Prueba `https://faxird.com/privacidad`.
