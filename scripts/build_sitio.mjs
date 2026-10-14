@@ -9,8 +9,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'sitio');
 const legal = (name) => readFileSync(join(root, 'apps/admin/src/legal', name + '.md'), 'utf8');
 
-const SITIO = 'https://faxi.netlify.app';   // cambiar por el dominio propio cuando exista (y en apps/*/src/faxi.ts)
-const SOPORTE = '';    // p. ej. 'soporte@midominio.com' cuando exista el correo; vacío = no se muestra
+const SITIO = 'https://faxird.com';   // dominio propio (también en apps/*/src/faxi.ts)
+const SOPORTE = 'soporte@faxird.com';   // alias del usuario de Google Workspace; vacío = no se muestra
 const WHATSAPP = '';   // p. ej. '18095550000' cuando exista el número de soporte; vacío = no se muestra
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

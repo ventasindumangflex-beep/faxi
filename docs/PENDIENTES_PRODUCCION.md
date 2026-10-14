@@ -82,10 +82,10 @@ Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
 - `apply_migration`/`execute_sql` de la herramienta de Supabase piden confirmación con `DROP`/`DELETE`; las migraciones nuevas usan bloques `if not exists` para evitarlos.
 - `delete_my_account` deja la bandera `faxi.self_delete` activa hasta el final de la transacción. En la app cada llamada es su propia transacción; en tests, no hacer otras comprobaciones del guard después de llamarla.
 
-## Dominio (corregido 14-oct-2026)
-- **`faxi.com` NO es nuestro:** el registro público (lookup.icann.org) muestra dueño *Koreacenter co., Ltd* desde el 2-mar-2000, servidores `ns1/ns2.dan.com` (a la venta). El dueño confirmó que no compró ningún dominio.
-- Mientras tanto: apps, textos legales, fichas y sitio usan **https://faxi.netlify.app**; el correo de soporte es **[CORREO DE SOPORTE]**.
-- **Pendiente (dueño):** elegir y comprar un dominio disponible (p. ej. `faxiapp.com`, `faxird.com`, `pidefaxi.com`, `faxi.com.do`; comprobar disponibilidad) y un correo de soporte. Después: cambiar `SITIO`/`SOPORTE` en `scripts/build_sitio.mjs`, `apps/*/src/faxi.ts`, textos legales y fichas; conectar el dominio en Netlify (pasos en `docs/LANZAMIENTO.md`).
+## Dominio (14-oct-2026)
+- **`faxi.com` NO es nuestro** (dueño *Koreacenter co., Ltd* desde 2-mar-2000, a la venta en Dan.com).
+- **Comprado: `faxird.com`** con Google Workspace Starter (prueba de 14 días; dominio 12 USD/año, registrador Squarespace). Correo de soporte: **soporte@faxird.com** como alias del usuario administrador.
+- Apps, textos legales, fichas y sitio ya apuntan a `faxird.com`. **Pendiente:** conectar el dominio en Netlify (DNS, pasos en `docs/LANZAMIENTO.md`) y verificar que `https://faxird.com/privacidad` carga antes de usarlo en las tiendas.
 
 ## Revisión de lanzamiento (13-oct-2026)
 - Pruebas 001–005 pasan en faxi-pruebas sin dejar datos; huella 20 · 51 · 41 · 29 · 52 · 1 · false.

@@ -10,7 +10,7 @@ Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace C
 | App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
 | App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
 | Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |
-| Página web | ✅ Publicada en **faxi.netlify.app** (inicio, soporte y 4 páginas legales). ❌ Falta un dominio propio: `faxi.com` **no es nuestro** (ver abajo). |
+| Página web | ✅ Publicada en **faxi.netlify.app**. Dominio propio **faxird.com** comprado (14-oct); falta conectarlo en Netlify (DNS). |
 | Producción (Supabase faxi) | ⛔ El proyecto no aparece en tu cuenta. Se crea o se localiza cuando exista la empresa. |
 | Tiendas | ⛔ Cuentas de organización (Google Play y Apple) esperan RNC y D-U-N-S. |
 
@@ -86,15 +86,16 @@ Todo esto necesita la empresa:
 ---
 
 ## Página web y dominio
-- **Publicada (14-oct-2026)** en **https://faxi.netlify.app** desde `main` (Netlify, cuenta del equipo *indumangflex*, plan gratis). Cada push a `main` la vuelve a publicar.
-- **`faxi.com` no es nuestro:** registrado desde el 2-mar-2000 por *Koreacenter co., Ltd* y estacionado en Dan.com (a la venta). No se compró ningún dominio.
-- Mientras tanto las apps, los textos legales y las fichas usan `faxi.netlify.app`, y el correo de soporte queda como **[CORREO DE SOPORTE]**.
+- **Publicada (14-oct-2026)** en **https://faxi.netlify.app** desde `main` (Netlify, equipo *indumangflex*, plan gratis). Cada push a `main` la vuelve a publicar.
+- **Dominio propio: `faxird.com`** (comprado el 14-oct-2026 con Google Workspace Starter; registrador Squarespace). `faxi.com` **no es nuestro** (otro dueño desde 2000).
+- Apps, textos legales, fichas y sitio ya usan `https://faxird.com/...` y **soporte@faxird.com** (alias gratis del usuario de Workspace).
 
-**Cuando compres un dominio** (unos 10–12 USD al año):
-1. Dime cuál es: cambio `SITIO` y `SOPORTE` en `scripts/build_sitio.mjs`, las URL de `apps/*/src/faxi.ts`, los textos legales y las fichas.
-2. Netlify → **faxi** → **Domain management** → **Add a domain you already own** → tu dominio → **Verify** → **Add domain**. **No uses "Set up Netlify DNS"** si el correo está en Google Workspace.
-3. En el DNS de donde lo compraste: registro **A** del dominio raíz a `75.2.60.5` y **CNAME** de `www` a `faxi.netlify.app`. **No borres los MX ni los TXT** del correo.
-4. Espera (minutos u horas). Netlify activa HTTPS solo.
+**Conectar faxird.com a Netlify:**
+1. Netlify → **faxi** → **Domain management** → quitar `faxi.com` y `www.faxi.com` (*Options → Remove domain*).
+2. **Add a domain you already own** → `faxird.com` → **Verify** → **Add domain**. **No uses "Set up Netlify DNS"** (el correo está en Google Workspace).
+3. admin.google.com → **Cuenta → Dominios → Administrar dominios** → `faxird.com` → **Ver detalles → Configuración de DNS avanzada → Iniciar sesión en la consola de DNS** (Squarespace).
+4. Ahí: registro **A** de `@` a `75.2.60.5` y **CNAME** de `www` a `faxi.netlify.app`. Quitar solo los registros *Squarespace Defaults* de `@`/`www` si existen. **No borres los MX ni los TXT** de Google Workspace.
+5. Espera (minutos u horas). Netlify activa HTTPS solo. Prueba `https://faxird.com/privacidad`.
 
 ## Actualizar el código en la Mac
 La carpeta `~/Downloads/faxi-main` es una copia vieja (no tiene estos arreglos). Para la etapa 1:

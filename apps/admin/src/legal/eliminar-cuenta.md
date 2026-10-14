@@ -12,7 +12,7 @@ Si tienes un viaje en curso, termínalo o cancélalo primero.
 
 ## Si ya no tienes la app
 
-Escríbenos a **[CORREO DE SOPORTE]** o por WhatsApp al **[NÚMERO]** desde el número de teléfono de tu cuenta, con el asunto "Eliminar mi cuenta". La eliminamos en un máximo de **[PLAZO, p. ej. 10 días hábiles]** y te confirmamos.
+Escríbenos a **soporte@faxird.com** o por WhatsApp al **[NÚMERO]** desde el número de teléfono de tu cuenta, con el asunto "Eliminar mi cuenta". La eliminamos en un máximo de **[PLAZO, p. ej. 10 días hábiles]** y te confirmamos.
 
 ## Qué se borra y qué se conserva
 
