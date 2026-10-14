@@ -27,7 +27,7 @@ Revisión hecha **sin abogado**, contra la Normativa Técnica del INTRANT para t
 ## Falta: decisiones o desarrollo
 - [ ] Peajes y tiempo de espera: ¿se suman a la tarifa? (sección 6).
 - [ ] Plazo de conservación de datos (sección 10; sugerido 10 años por normas fiscales).
-- [ ] Geocerca de 200 m alrededor de los hoteles del Gran Santo Domingo (bloquear recogidas). Necesita la lista de hoteles.
+- [x] Regla de 200 m (migración 012): la app no deja pedir un viaje desde menos de 200 m de un lugar de la lista. **Falta cargar los hoteles** en el panel → *Zonas* (coordenadas de la puerta principal, copiadas de Google Maps).
 - [ ] "Cédula" incluye a extranjeros residentes con cédula: confirmar que es lo deseado.
-- [ ] Revisar los **términos de pasajeros** y la **política de privacidad** con el mismo criterio.
+- [x] Términos de pasajeros v1.1 y política de privacidad v1.1, con el mismo criterio: registro INTRANT y póliza; sin tope de responsabilidad al precio del viaje (choca con la Ley 358-05); 15 días de aviso; Distrito Nacional; datos sensibles de conductores; envíos al INTRANT; plazo de conservación.
 - [ ] Seguir la **reforma laboral** (aprobada en primera lectura en mayo de 2026) y la reforma de protección de datos.

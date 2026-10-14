@@ -19,5 +19,6 @@ Escríbenos a **soporte@faxird.com** o por WhatsApp al **[NÚMERO]** desde el n�
 - **Se borra:** tu número de teléfono, correo, tokens de notificaciones, ubicaciones guardadas y, si eres conductor, tus documentos y fotos.
 - **Se anonimiza:** tu nombre pasa a "Cuenta eliminada".
 - **Se conserva sin tus datos de contacto:** el registro de los viajes (fechas, montos y calificaciones), el tiempo que exijan las leyes fiscales y comerciales, y para atender reclamaciones.
+- **Si eres conductor:** la comisión que debas a faxi sigue vigente aunque elimines la cuenta.
 
 Más detalles en la [Política de privacidad](/privacidad).

@@ -1,6 +1,6 @@
 # Política de privacidad de faxi
 
-**Versión 1.0 · Vigente desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.1 · Vigente desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo.
 
@@ -21,10 +21,12 @@ Contacto para privacidad: **soporte@faxird.com** · WhatsApp de soporte: **[NÚM
 - **Soporte:** los mensajes que nos envíes.
 
 ### Si eres conductor
-- **Cuenta e identidad:** teléfono, nombre, número de licencia de conducir, cédula, certificado de buena conducta y foto de perfil.
+- **Cuenta e identidad:** teléfono, nombre, número de licencia de conducir, cédula, carnet del INTRANT y foto de perfil.
+- **Datos sensibles:** prueba antidoping (dato de salud) y certificado de no antecedentes penales. Los tratamos **solo con tu consentimiento expreso**, que das al marcar la casilla del registro, y solo para verificar los requisitos del INTRANT. Solo los ve el personal autorizado de faxi.
+- **Aceptación:** la versión de los términos que aceptaste y la fecha.
 - **Vehículo:** marca, modelo, año, color, placa, categoría, matrícula, seguro, inspección y fotos del vehículo.
 - **Ubicación en segundo plano:** mientras estás **conectado** recopilamos tu ubicación, incluso con la app cerrada o en segundo plano, para enviarte solicitudes de viaje cercanas y mostrarle al pasajero dónde estás. Al desconectarte dejamos de recopilarla.
-- **Actividad:** viajes aceptados, rechazados y completados, ganancias, comisiones y calificaciones recibidas.
+- **Actividad:** viajes aceptados, rechazados y completados, ganancias, comisiones, pagos de comisión registrados (monto, fecha, forma de pago y referencia) y calificaciones recibidas.
 
 ### De todos los usuarios
 - **Dispositivo:** identificador para notificaciones push, sistema operativo y modelo del teléfono.
@@ -63,15 +65,20 @@ Usamos proveedores que procesan datos por cuenta nuestra y bajo nuestras instruc
 | Google (Maps y Places) | Mapas y búsqueda de direcciones | Estados Unidos |
 | Expo | Notificaciones push | Estados Unidos |
 | Sentry | Informes de errores | Estados Unidos |
-| Vercel | Panel de administración | Estados Unidos |
+| Google Workspace | Correo de soporte | Estados Unidos |
 
-Al usar faxi consientes la **transferencia de tus datos a Estados Unidos**, necesaria para prestar el servicio. También podemos entregar datos a autoridades dominicanas competentes cuando la ley lo exija o mediante orden judicial, y al INTRANT en lo que la regulación de plataformas de transporte requiera.
+Al usar faxi consientes la **transferencia de tus datos a Estados Unidos**, necesaria para prestar el servicio.
+
+También entregamos datos:
+- Al **INTRANT**, lo que exige su normativa para plataformas: el listado de conductores activos y el aviso por escrito de la salida de un conductor, en especial por mala conducta.
+- A otras autoridades dominicanas competentes, cuando la ley lo exija o mediante orden judicial.
 
 ## 6. Cuánto tiempo guardamos tus datos
 
 - Mientras tu cuenta esté activa.
 - Al eliminar tu cuenta borramos tu teléfono, correo, documentos y tokens de notificación, y reemplazamos tu nombre por "Cuenta eliminada".
-- Conservamos el registro de los viajes (sin tus datos de contacto) el tiempo que exijan las leyes fiscales y comerciales, y para atender reclamaciones.
+- Conservamos el registro de los viajes, comisiones y pagos (sin tus datos de contacto) por **[PLAZO, p. ej. 10 años]**, el tiempo que exigen las normas fiscales y comerciales, y para atender reclamaciones.
+- Los documentos de los conductores (incluidos antidoping y antecedentes) se guardan mientras la cuenta esté activa y se borran al eliminarla.
 - Las ubicaciones detalladas de los conductores se conservan [PLAZO, p. ej. 90 días] para resolver incidentes y luego se eliminan.
 
 ## 7. Tus derechos

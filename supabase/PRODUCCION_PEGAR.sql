@@ -5,9 +5,10 @@
 -- Hace: migraciones 005 (ubicación en vivo privada, zona real del Gran Santo Domingo, push automático) y
 -- 006 (solo efectivo), 007 (datos del conductor solo durante el viaje), 008 (endurecimiento), 009 (comisión en efectivo: pago semanal
 -- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados),
--- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
+-- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos),
+-- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK.
+-- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK.
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -505,6 +506,79 @@ revoke all on function public.min_vehicle_year(), public.accept_driver_terms(tex
 grant execute on function public.min_vehicle_year(), public.accept_driver_terms(text) to authenticated;
 revoke all on function public.validate_vehicle() from public, anon, authenticated;
 
+-- ═════════════ Migración 012 ═════════════
+-- FAXI · 012 · Zonas donde no se puede recoger pasajeros (INTRANT)
+-- La Normativa Técnica del INTRANT exige 200 m de distancia de la puerta principal de los hoteles del Gran Santo Domingo
+-- y de las zonas de taxis turísticos. Un admin agrega cada lugar desde el panel (Zonas) con las coordenadas de Google Maps.
+-- request_trip rechaza (22023) un punto de recogida dentro de una zona activa. Sin zonas no cambia nada.
+-- Se puede correr más de una vez.
+
+create table if not exists public.restricted_zones (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(name) between 2 and 120),
+  kind text not null default 'HOTEL' check (kind in ('HOTEL','TAXI_TURISTICO','OTRA')),
+  lat double precision not null check (lat between 17.3 and 20.1),
+  lng double precision not null check (lng between -72.1 and -68.2),
+  radius_m int not null default 200 check (radius_m between 50 and 2000),
+  is_active boolean not null default true,
+  created_by uuid references public.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.restricted_zones enable row level security;
+revoke all on public.restricted_zones from anon;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'restricted_zones_updated_at' and tgrelid = 'public.restricted_zones'::regclass) then
+    create trigger restricted_zones_updated_at before update on public.restricted_zones for each row execute function public.set_updated_at();
+  end if;
+  if not exists (select 1 from pg_trigger where tgname = 'audit_restricted_zones' and tgrelid = 'public.restricted_zones'::regclass) then
+    create trigger audit_restricted_zones after insert or update or delete on public.restricted_zones for each row execute function public.audit_row();
+  end if;
+  -- Lectura para todos los usuarios con sesión (son lugares públicos); escritura solo admins
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'restricted_zones' and policyname = 'restricted_zones_read') then
+    create policy restricted_zones_read on public.restricted_zones for select to authenticated using (true);
+  end if;
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'restricted_zones' and policyname = 'restricted_zones_admin') then
+    create policy restricted_zones_admin on public.restricted_zones for all to authenticated using (public.is_admin()) with check (public.is_admin());
+  end if;
+end $$;
+
+-- Distancia en metros entre dos puntos (fórmula del haversine)
+create or replace function public.distance_m(a_lat double precision, a_lng double precision, b_lat double precision, b_lng double precision)
+returns double precision language sql immutable set search_path = public as $$
+  select 2 * 6371000 * asin(sqrt(
+    power(sin(radians(b_lat - a_lat) / 2), 2) +
+    cos(radians(a_lat)) * cos(radians(b_lat)) * power(sin(radians(b_lng - a_lng) / 2), 2)))
+$$;
+
+create or replace function public.assert_pickup_allowed(p_lat double precision, p_lng double precision) returns void
+language plpgsql stable security definer set search_path = public as $$
+declare z public.restricted_zones;
+begin
+  select * into z from public.restricted_zones
+   where is_active and public.distance_m(lat, lng, p_lat, p_lng) < radius_m
+   order by public.distance_m(lat, lng, p_lat, p_lng) limit 1;
+  if found then
+    raise exception 'Por normas del INTRANT no podemos recogerte a menos de % m de %. Mueve el punto de recogida un poco más lejos.', z.radius_m, z.name
+      using errcode = '22023';
+  end if;
+end $$;
+
+create or replace function public.check_trip_pickup() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.assert_pickup_allowed(new.origin_lat, new.origin_lng);
+  return new;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'trips_check_pickup' and tgrelid = 'public.trips'::regclass) then
+    create trigger trips_check_pickup before insert on public.trips for each row execute function public.check_trip_pickup();
+  end if;
+end $$;
+
+revoke all on function public.distance_m(double precision, double precision, double precision, double precision),
+  public.assert_pickup_allowed(double precision, double precision), public.check_trip_pickup() from public, anon, authenticated;
+
 -- Producción: solo efectivo (el pasajero no puede marcarse pagos; el conductor confirma el cobro)
 update public.app_settings set value = '"CASH"' where key = 'PAYMENT_PROVIDER';
 -- Producción: vehículo con no más de 15 años de fabricación (INTRANT). faxi-pruebas queda en 0 (sin límite) para que FAXI OK corra igual.
@@ -518,8 +592,8 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 15-oct-2026, con 009–011): tablas 21 · funciones 61 · politicas 44 · triggers 32 · indices 54 · cron 1
---   h_tablas 0d7f36 · h_funciones bf73eb · h_politicas c5c2d4 · h_triggers c5c0fe · h_indices e9402f · vault 2 · proveedor CASH · año_minimo = año actual − 15
+-- Esperado (faxi-pruebas, 15-oct-2026, con 009–012): tablas 22 · funciones 64 · politicas 46 · triggers 35 · indices 55 · cron 1
+--   h_tablas d74d15 · h_funciones 9a5ac3 · h_politicas 4cbe1d · h_triggers 1318ca · h_indices 50e301 · vault 2 · proveedor CASH · año_minimo = año actual − 15
 with
  t as (select string_agg(table_name, ',' order by table_name) s, count(*) n from information_schema.tables where table_schema='public' and table_type='BASE TABLE'),
  f as (select string_agg(p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', ',' order by p.proname, pg_get_function_identity_arguments(p.oid)) s, count(*) n from pg_proc p join pg_namespace ns on ns.oid=p.pronamespace where ns.nspname='public'),
