@@ -84,7 +84,8 @@ export default function Drivers() {
 
   async function view(bucket: string, path: string) {
     const { data, error } = await sb().storage.from(bucket).createSignedUrl(path, 120);
-    if (error) setErr(error.message); else window.open(data.signedUrl, '_blank', 'noopener');
+    if (error) setErr(/not found/i.test(error.message) ? 'No se encontró el archivo en el almacenamiento. Los datos de demostración no tienen archivos reales.' : error.message);
+    else window.open(data.signedUrl, '_blank', 'noopener');
   }
 
   const filtered = rows.filter((d) => !q || [d.user.full_name, d.user.phone, d.vehicle?.plate, d.license_number].join(' ').toLowerCase().includes(q.toLowerCase()));

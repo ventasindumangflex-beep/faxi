@@ -1,0 +1,116 @@
+# faxi · Lista para lanzar
+
+Revisión completa del 13-oct-2026. Leyenda: **[x]** hecho · **🤖** lo hace Claude · **👤** lo haces tú · **⛔** espera la empresa (RNC).
+
+## Dónde estamos
+
+| Parte | Estado |
+|---|---|
+| Base de datos (faxi-pruebas) | ✅ Las 5 pruebas pasan (`FAXI OK`, `FAXI MÓVIL OK`, 005, 006, 007) y no dejan datos. Huella idéntica a la referencia. |
+| App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
+| App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
+| Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |
+| Página web faxi.com | ✅ Lista en `sitio/` (inicio, soporte y 4 páginas legales). Falta publicarla (👤, 15 min). |
+| Producción (Supabase faxi) | ⛔ El proyecto no aparece en tu cuenta. Se crea o se localiza cuando exista la empresa. |
+| Tiendas | ⛔ Cuentas de organización (Google Play y Apple) esperan RNC y D-U-N-S. |
+
+## Lo que revisé y corregí hoy
+- [x] **Pruebas de la base** 001–005 en faxi-pruebas: todas pasan, sin restos.
+- [x] **Seguridad (asesor de Supabase):** 31 avisos "funciones ejecutables por usuarios con sesión" son las RPC que usan las apps (así está diseñado); las de administración rechazan a quien no es admin (`42501`). El aviso de "contraseñas filtradas" solo afecta al panel: activarlo en producción si el plan lo permite.
+- [x] **Permisos de las apps** (motivo frecuente de rechazo en las tiendas):
+  - Conductor: se quitó el **micrófono** que añadía `expo-image-picker` sin usarse.
+  - Las dos apps: los textos de permiso de iPhone que quedaban **en inglés** ahora están en español.
+  - Pasajero: se quitaron almacenamiento y "mostrar sobre otras apps", que no usa.
+- [x] **Android 16 (API 36):** cumple el requisito de Google Play de 2026.
+- [x] **Seguridad del pasajero:** botón de 911, compartir viaje, eliminar cuenta (en la app y en la web), reportar un problema.
+- [x] **EAS:** cada perfil usa su grupo de variables (`development`, `preview`, `production`) y el de producción genera el `.aab` para Google Play. La app de pasajeros ya no necesita `EAS_PROJECT_ID=…` delante del comando.
+- [x] **Sitio faxi.com** generado desde los mismos textos legales del panel (`node scripts/build_sitio.mjs`).
+- [x] Correo de soporte en textos legales y fichas: **soporte@faxi.com**.
+- [x] Notificaciones push en faxi-pruebas: **completas** (Vault + trigger, respuesta 200). **No crees un webhook** en Supabase: duplicaría cada notificación.
+
+---
+
+## Etapa 1 · Prueba interna con 2 teléfonos (faxi-pruebas, sin gastar)
+
+1. 👤 **Mapa en blanco:** clave nueva de Maps paso a paso en `docs/MAPA_ANDROID.md` (la app ya limpia la clave, el build falla con mensaje claro si falta y avisa si Google la rechaza).
+2. 👤 **Números de prueba sin SMS** (sirve para el segundo teléfono, sin otro número de Twilio):
+   Supabase → **faxi-pruebas** → Authentication → Sign In / Providers → **Phone** → *Test Phone Numbers and OTPs*:
+   ```
+   18095550301=CODIGO,18295550302=CODIGO
+   ```
+   Cambia `CODIGO` por un número de 6 cifras que solo tú sepas (no lo mandes por chat). Con `809 555 0301` entras como pasajero y con `829 555 0302` como conductor nuevo; luego lo apruebas en el panel. **No llega SMS**: escribe el código que elegiste. Hazlo **solo en faxi-pruebas**.
+3. 👤 **Variables para el APK de prueba:** expo.dev → **faxi.app** → proyecto **faxi** → *Environment variables*. Abre cada variable que ya existe y marca también **Preview** (mismos valores de faxi-pruebas). Deben estar:
+
+   | Variable | Visibilidad | Pasajero | Conductor |
+   |---|---|---|---|
+   | `EXPO_PUBLIC_SUPABASE_URL` | Plain text | ✓ | ✓ |
+   | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Sensitive | ✓ | ✓ |
+   | `EXPO_PUBLIC_GOOGLE_PLACES_KEY` | Sensitive | ✓ | — |
+   | `GOOGLE_MAPS_ANDROID_KEY` | Sensitive | ✓ | ✓ |
+   | `EXPO_PUBLIC_SUPPORT_WHATSAPP` (opcional) | Plain text | ✓ | ✓ |
+   | `EXPO_PUBLIC_SENTRY_DSN` (opcional) | Plain text | ✓ | ✓ |
+
+4. 👤 **App del conductor en Expo** (una vez, en la Mac, con el código nuevo; ver "Actualizar el código en la Mac" abajo):
+   ```
+   cd apps/driver
+   npx eas-cli@latest init
+   ```
+   Te mostrará un ID de proyecto: mándamelo (no es secreto) y lo dejo fijo como en la app de pasajeros. Crea en ese proyecto las mismas variables del paso 3.
+5. 👤 **APK de prueba (se instala sin la Mac encendida):**
+   ```
+   cd apps/passenger && npx eas-cli@latest build --profile preview --platform android
+   cd ../driver   && npx eas-cli@latest build --profile preview --platform android
+   ```
+   Cada uno da un enlace: ábrelo en el teléfono e instala. Recuerda añadir a la clave de Maps la SHA-1 de la app del conductor (`com.faxi.conductor`).
+6. 👤 **Viaje completo:** el conductor se registra con documentos → lo apruebas en el panel → se conecta → el pasajero pide → aceptar → llegar → iniciar → terminar → cobrar efectivo → calificar. Prueba también: cancelar, cerrar la app a mitad de viaje y reabrir, y la notificación al aceptar.
+
+## Etapa 2 · Piloto cerrado con personas reales (10–20 conductores, 30–50 pasajeros)
+
+Todo esto necesita la empresa:
+- ⛔ **Empresa y RNC** → datos para todo lo demás.
+- ⛔ **Twilio:** perfil de cumplimiento (Trust Hub) para enviar SMS a cualquier número. Además, en Verify → *Geo permissions*, deja **solo República Dominicana** (evita fraude por SMS y gastos inesperados).
+- ⛔👤 **Supabase de producción** en plan **Pro** (copias de seguridad diarias, no se pausa). Luego, con tu visto bueno y en orden: migraciones 001–004 + cron → `PRODUCCION_PEGAR.sql` (cambiando el ref si el proyecto es nuevo) → `send-push` → Realtime sin acceso público → tu admin (`docs/PASOS_DEL_DUENO.md`). Comprobar con `supabase/HUELLA_ESQUEMA.sql`.
+- 👤 **Variables de EAS en "Production"** con los valores del Supabase de producción (misma tabla de arriba).
+- 👤 **Clave de Maps nueva** (la actual se pegó en un chat): crearla, restringirla a `com.faxi.app` y `com.faxi.conductor` con sus SHA-1, y borrar la vieja.
+- 👤 **Publicar faxi.com** (abajo) y crear **soporte@faxi.com** en Google Workspace (sin tocar los registros MX).
+- 👤 **Textos legales:** rellenar lo que sigue entre [corchetes] (razón social, RNC, dirección, WhatsApp, fechas, plazos, comisión en efectivo, seguro) y revisión de un **abogado dominicano**. Después: `node scripts/build_sitio.mjs` (o pídemelo).
+- 👤 **Decisiones de negocio:** cómo paga el conductor la comisión del 20 % en efectivo; requisitos del INTRANT y año mínimo del vehículo (`MIN_VEHICLE_YEAR`, hoy 2000); ¿Haina dentro de la zona?
+- ⛔👤 **Google Play** (cuenta de organización): prueba cerrada, ficha (`docs/tiendas/FICHAS.md`), seguridad de los datos, declaración de ubicación en segundo plano y de **servicio en primer plano** (mismo texto y video de la ubicación en segundo plano).
+- 👤 **Tras la primera subida a Play:** Play Console → *Integridad de la app* → copia la **SHA-1 de la clave de firma de apps** y añádela a la clave de Maps. Sin esto, el mapa sale en blanco en las apps instaladas desde Play.
+- 👤 Recomendado: **Sentry** (errores en teléfonos reales). Crea el proyecto y pon el DSN en EAS.
+
+## Etapa 3 · Lanzamiento público
+- Pasar Play de prueba cerrada a **producción**.
+- iPhone: cuenta **Apple Developer de organización** → build de iOS (primera vez, esperar ajustes) → TestFlight → App Store con las notas de `FICHAS.md`. Número de prueba para los revisores en el Supabase de producción; quitarlo al aprobarse.
+- Capturas de pantalla para las tiendas (lista en `FICHAS.md`).
+
+---
+
+## Publicar faxi.com (gratis, ~15 min + espera del DNS)
+Los cambios de esta rama tienen que estar unidos a `main` (te preparo el PR si me lo pides).
+1. Entra a **app.netlify.com** → *Sign up* → **con GitHub** (cuenta `ventasindumangflex-beep`). Plan **Free**.
+2. **Add new project** → *Import an existing project* → **GitHub** → autoriza → elige el repositorio **faxi**.
+3. Rama: **main**. No cambies nada más (Netlify lee `netlify.toml`) → **Deploy**.
+4. En 1 minuto te da una dirección `…netlify.app`. Ábrela: debe salir la portada de faxi.
+5. **Domain management → Add a domain** → `faxi.com` → *Verify* → *Add domain*. Netlify te dice qué registros DNS poner (normalmente un **A** de `faxi.com` y un **CNAME** de `www`). Copia exactamente lo que diga Netlify.
+6. Donde compraste faxi.com → **DNS** → añade esos registros. **No borres los MX ni los TXT** de Google Workspace: son del correo.
+7. Espera (minutos u horas). Netlify activa HTTPS solo. Prueba `https://faxi.com/privacidad` en el teléfono.
+
+Cada vez que cambien los textos: `node scripts/build_sitio.mjs`, commit y push → Netlify publica solo.
+
+## Actualizar el código en la Mac
+La carpeta `~/Downloads/faxi-main` es una copia vieja (no tiene estos arreglos). Para la etapa 1:
+1. GitHub → repositorio **faxi** → arriba a la izquierda, el selector de rama: elige **`claude/empty-session-8tsfph`** (o `main` cuando ya esté unida) → botón **Code → Download ZIP**. Descomprime en Descargas y renombra la carpeta como `faxi-nuevo`.
+2. Copia tus archivos de claves de la carpeta vieja a la nueva (son ocultos; en Terminal):
+   ```
+   cp ~/Downloads/faxi-main/apps/passenger/.env ~/Downloads/faxi-nuevo/apps/passenger/.env
+   cp ~/Downloads/faxi-main/apps/admin/.env.local ~/Downloads/faxi-nuevo/apps/admin/.env.local
+   cp ~/Downloads/faxi-main/apps/passenger/.env ~/Downloads/faxi-nuevo/apps/driver/.env
+   ```
+3. Terminal:
+   ```
+   cd ~/Downloads/faxi-nuevo
+   npm install
+   git init && git add -A && git commit -m "codigo"
+   ```
+   (Los `.env` no se incluyen en el commit; están excluidos a propósito.)

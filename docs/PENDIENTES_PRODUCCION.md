@@ -1,5 +1,7 @@
 # Pendientes antes de publicar faxi
 
+> Lista ordenada por etapas (prueba interna → piloto → público) en `docs/LANZAMIENTO.md`.
+
 Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pendiente.
 
 ## Hecho la noche del 8 al 9 de octubre
@@ -25,7 +27,7 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] **Probar en el teléfono** con la guía `docs/GUIA_PASOS_1_A_4.md`.
 - [ ] Twilio Verify en Supabase Auth (Phone) y límite de SMS; número de prueba para los revisores de Apple/Google.
 - [ ] Crear el proyecto en Sentry y poner el DSN en EAS.
-- [ ] Publicar el panel (Vercel) para que las páginas legales tengan URL, y poner esas URL en `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL`.
+- [ ] Publicar `sitio/` en faxi.com con Netlify (pasos en `docs/LANZAMIENTO.md`). Las apps ya abren `https://faxi.com/...` por defecto; el panel se queda en la Mac durante el piloto.
 - [ ] Completar los datos entre corchetes de los textos legales y **revisión de un abogado** (Ley 172-13, Ley 358-05, INTRANT).
 
 ## Producto
@@ -40,9 +42,53 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] **Apple:** cuenta de organización; notas de revisión listas.
 
 ## Operación
+- [x] Función `send-push` en faxi-pruebas: desplegada (v2, `verify_jwt=false`, se autentica con `x-faxi-secret`) y llamada por el trigger de la migración 005 con el Vault (`faxi_push_url`, `faxi_push_secret`); respuesta 200. **No** hace falta webhook ni `PUSH_WEBHOOK_SECRET` (un webhook duplicaría los avisos). En producción falta desplegarla (paso 3 de `PASOS_DEL_DUENO.md`).
 - [ ] Piloto cerrado con 10–20 conductores y 30–50 pasajeros; proceso de aprobación de conductores definido.
 - [ ] `seed.sql` y los tests **nunca** en producción.
+
+## Problemas encontrados en las fases 1–7
+- **Corregido:** migración 001, índice `commissions_one_active` usaba `category::text` (no inmutable) y fallaba. Ahora son dos índices parciales con la misma garantía.
+- **Limitación de la herramienta:** `apply_migration`/`execute_sql` agotan 60 s con SQL que contiene `DELETE`. Aplicar esas piezas desde el SQL Editor o con CLI/API con acceso de red.
+- **Pendiente de revisar:** el test `002_mobile.sql` depende de `delete_my_account` y de un `SUPER_ADMIN` del seed; solo puede correr en faxi-pruebas.
+- **Corregido (11-oct-2026):** el primer build de Android fallaba con `Namespace 'do.faxi.app' is not a valid Java package name as 'do' is a Java keyword`. El paquete de Android ahora es `com.faxi.app` / `com.faxi.conductor` (iOS conserva `do.faxi.*`, que es válido). **El paquete de Android es permanente una vez publicado en Google Play**: confirmarlo antes de la primera publicación.
+
+## Estado de la prueba en teléfono (11-oct-2026)
+- **Funciona:** build de desarrollo del pasajero (Android `com.faxi.app`), login por SMS con número verificado en Twilio, sugerencias de direcciones (Places API New activada).
+- **Pendiente: mapa en blanco** en la pantalla principal. El código usa `PROVIDER_GOOGLE` correctamente; Google no entrega los mapas. Revisar, en orden: (1) que `faxi-maps-android` tenga guardado el paquete `com.faxi.app` en minúsculas y la SHA-1 del keystore de `faxi.app/projects/faxi` (idéntica a la de Expo → Credentials → Android); (2) métricas de *Maps SDK for Android* (¿403? ¿0 solicitudes?); (3) que `GOOGLE_MAPS_ANDROID_KEY` en Expo tenga el valor de esa clave y que el build instalado sea posterior al cambio. La restricción de la clave se dejó en "Apps para Android" tras una prueba temporal con "Ninguno"; confirmar que quedó guardada.
+- **13-oct-2026:** como quitar la restricción de apps no cambió nada, lo más probable es que la clave guardada en Expo sea otra o tenga espacios o comillas. Solución: clave nueva (`docs/MAPA_ANDROID.md`). La app ahora limpia la clave, el build de EAS para Android falla si falta o está mal formada, y `FaxiMap` (`packages/ui/src/maps.tsx`) avisa si el mapa no carga en 15 s.
+- **13-oct-2026 (noche):** el dueño creó `faxi-maps-android-2` (solo *Maps SDK for Android*, app `com.faxi.app` + SHA-1 `E8:7B:7B:4…` de Expo), la puso en `GOOGLE_MAPS_ANDROID_KEY` (entorno *development*) e hizo un build de desarrollo nuevo con ella. **Falta:** instalarlo en el teléfono y confirmar el mapa; después borrar la clave vieja `faxi-maps-android` y marcar la nueva también en *Preview* y *Production*.
+- **Twilio:** el SMS solo llega a números verificados como Caller ID (error 21608). Para pasajeros reales hace falta el Perfil de Cumplimiento Primario aprobado.
+- **Seguridad:** la clave de Maps se pegó por error en un cuadro de chat; regenerarla antes de producción.
+
+## Producción (12-oct-2026)
+- **El proyecto de producción `faxi` (ref `opehqsltrzhtsqqlctdg`) NO aparece** en la cuenta de Supabase `ventasindumangflex@gmail.com` (login GitHub `ventasindumangflex-beep`): su única organización `faxi` solo contiene `faxi-pruebas`. Puede estar en otra cuenta, pausado o eliminado. Aún no hay usuarios ni viajes reales, así que no se pierde nada.
+- **Decisión pendiente del dueño:** (a) localizarlo en otra cuenta, o (b) crear un proyecto de producción nuevo en plan de pago antes del piloto y aplicarle las migraciones 001–004 + cron (primero verificado en pruebas, con visto bueno explícito). Hasta decidir, no se toca ningún proyecto de producción.
+- Mientras tanto `supabase/HUELLA_ESQUEMA.sql` sirve para verificar cualquier proyecto nuevo contra la referencia de faxi-pruebas.
+
+## Dependencia: constituir la empresa de faxi (decisión del dueño, 12-oct-2026)
+No se registran cuentas de producción a nombre personal. Primero se crea la entidad y su RNC; después se usan sus datos en:
+- **Twilio**: Primary Business Profile en Trust Hub (necesario para enviar SMS a números no verificados).
+- **Google Play** (cuenta de organización, D-U-N-S) y **Apple Developer** (organización).
+- **Supabase de producción** (organización y facturación), **Google Cloud** (facturación de Maps/Places) y **Expo/EAS** (cuenta/equipo del negocio).
+- Términos y política de privacidad con razón social y datos de contacto reales.
+Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
+
+## iPhone / iOS (decisión 11-oct-2026)
+- **Expo Go no sirve en iPhone para este proyecto**: la App Store solo ofrece Expo Go de SDK 57 y faxi usa SDK 54 (el error aparece al abrir el QR). Subir a SDK 57 se descartó por riesgo y esfuerzo.
+- **Camino elegido:** probar y arrancar el piloto en Android; para iPhone, hacer un build de desarrollo/TestFlight con cuenta **Apple Developer de organización** (99 USD/año, requiere D-U-N-S y datos de la empresa de faxi). iOS usa Apple Maps (`PROVIDER_DEFAULT`), así que no depende de la clave de Google Maps.
+- La app **no se ha probado en iOS**: esperar posibles errores propios de la plataforma en el primer build.
 
 ## Notas técnicas
 - `apply_migration`/`execute_sql` de la herramienta de Supabase piden confirmación con `DROP`/`DELETE`; las migraciones nuevas usan bloques `if not exists` para evitarlos.
 - `delete_my_account` deja la bandera `faxi.self_delete` activa hasta el final de la transacción. En la app cada llamada es su propia transacción; en tests, no hacer otras comprobaciones del guard después de llamarla.
+
+## Dominio (decisión del dueño, 13-oct-2026)
+- **Dominio definitivo: `faxi.com`.** Las apps abren `https://faxi.com/terminos`, `/terminos-conductores` y `/privacidad` por defecto (cambiables con `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL`).
+- Falta: confirmar en la Consola del administrador de Google Workspace que `faxi.com` esté **verificado** y con registros MX; crear `soporte@faxi.com`; publicar las 4 páginas legales (`/privacidad`, `/terminos`, `/terminos-conductores`, `/eliminar-cuenta`) en esa dirección; rellenar los campos entre corchetes de los borradores (razón social, RNC, dirección, correos, WhatsApp, fechas) y pasarlos por revisión legal.
+
+## Revisión de lanzamiento (13-oct-2026)
+- Pruebas 001–005 pasan en faxi-pruebas sin dejar datos; huella 20 · 51 · 41 · 29 · 52 · 1 · false.
+- Asesor de seguridad: solo avisos esperados (RPC de las apps; las de admin verifican `is_admin`) y "contraseñas filtradas" (panel; activar en producción).
+- **Corregido:** permisos de más en las apps (micrófono en conductor; almacenamiento y superposición en pasajero; textos de permiso de iOS en inglés). Comprobado con `expo config --type introspect` en modo producción y desarrollo.
+- **Agregado:** perfiles de EAS con su grupo de variables y `.aab` en producción; `owner` y ID de proyecto fijos en la app de pasajeros; sitio estático `sitio/` para faxi.com (`scripts/build_sitio.mjs` + `netlify.toml`); `docs/LANZAMIENTO.md`.
+- **Pendiente nuevo:** tras la primera subida a Google Play, añadir la SHA-1 de la clave de firma de Play a la clave de Maps; declaración de servicio en primer plano (conductor); geo-permisos de Twilio solo RD.

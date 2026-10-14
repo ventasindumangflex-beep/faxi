@@ -8,7 +8,7 @@ import {
 } from '@faxi/core';
 import {
   Avatar, Banner, Button, CarPin, DestPin, Field, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, Stars, T,
-  c, coord, f, mapProvider, region, useTripDetails,
+  c, coord, f, region, useTripDetails, FaxiMap,
 } from '@faxi/ui';
 import { draft } from '../src/draft';
 
@@ -85,13 +85,13 @@ export default function TripScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <MapView ref={map} style={StyleSheet.absoluteFill} provider={mapProvider} initialRegion={region(o, 0.04)} toolbarEnabled={false}>
+      <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.04)} toolbarEnabled={false}>
         <Marker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
         <Marker coordinate={{ latitude: t.dest_lat, longitude: t.dest_lng }} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
         {driverPos && (phase === 'pickup' || phase === 'ride') ? (
           <Marker coordinate={coord(driverPos)} anchor={{ x: 0.5, y: 0.5 }}><CarPin /></Marker>
         ) : null}
-      </MapView>
+      </FaxiMap>
       {phase === 'ride' ? (
         <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, right: 16 }}>
           <IconButton icon="sos" label="Emergencia 911" onPress={() => Linking.openURL('tel:911')} />

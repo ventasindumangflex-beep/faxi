@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { driver, km, mins, rd, watchDriverRequests, type PendingRequest } from '@faxi/core';
-import { Banner, Button, Icon, IconButton, Row, Sheet, StatusPill, T, c, f, mapProvider, region, SD_CENTER, useSession } from '@faxi/ui';
+import { Banner, Button, Icon, IconButton, Row, Sheet, StatusPill, T, c, f, region, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { currentPos, ensureLocationPermission, startTracking, stopTracking } from '../src/tracking';
 
@@ -93,7 +93,7 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <MapView ref={map} style={StyleSheet.absoluteFill} provider={mapProvider} initialRegion={region(SD_CENTER, 0.05)} showsUserLocation showsMyLocationButton={false} toolbarEnabled={false} />
+      <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(SD_CENTER, 0.05)} showsUserLocation showsMyLocationButton={false} toolbarEnabled={false} />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16, right: 16, gap: 10 }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <IconButton icon="menu" label="Menú" onPress={() => router.push('/account')} />

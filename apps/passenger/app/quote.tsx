@@ -5,7 +5,7 @@ import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
 import {
-  Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, T, c, coord, mapProvider, region,
+  Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, T, c, coord, region, FaxiMap,
 } from '@faxi/ui';
 import { draft } from '../src/draft';
 
@@ -46,12 +46,12 @@ export default function QuoteScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <MapView ref={map} style={StyleSheet.absoluteFill} provider={mapProvider} initialRegion={region(o, 0.06)}
+      <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.06)}
         onMapReady={() => map.current?.fitToCoordinates([coord(o), coord(d)], { edgePadding: MAP_PADDING, animated: false })}>
         <Marker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
         <Marker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
         <Polyline coordinates={[coord(o), coord(d)]} strokeColor={c.ink} strokeWidth={3} lineDashPattern={[8, 6]} />
-      </MapView>
+      </FaxiMap>
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16 }}>
         <IconButton icon="arrow-back" label="Volver" onPress={() => router.back()} />
       </SafeAreaView>

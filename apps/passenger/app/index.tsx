@@ -4,7 +4,7 @@ import MapView from 'react-native-maps';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { passenger, type Place } from '@faxi/core';
-import { Banner, Icon, IconButton, ListItem, Sheet, T, c, f, mapProvider, region, SD_CENTER, useSession } from '@faxi/ui';
+import { Banner, Icon, IconButton, ListItem, Sheet, T, c, f, region, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
 import { getHere, type Here } from '../src/location';
 import { draft } from '../src/draft';
 
@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <MapView ref={map} style={StyleSheet.absoluteFill} provider={mapProvider} initialRegion={region(SD_CENTER, 0.05)}
+      <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(SD_CENTER, 0.05)}
         showsUserLocation={!!here && !here.denied} showsMyLocationButton={false} toolbarEnabled={false} />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, left: 16, right: 16, gap: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>

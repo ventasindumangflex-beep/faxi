@@ -1,0 +1,6 @@
+# Sitio público faxi.com (inicio, soporte y páginas legales). Netlify publica sitio/ tal cual, sin instalar nada.
+# Para cambiarlo: editar apps/admin/src/legal/*.md o scripts/build_sitio.mjs y correr `node scripts/build_sitio.mjs`.
+[build]
+  base = "sitio"
+  publish = "."
+  command = "echo 'sitio estatico listo'"
