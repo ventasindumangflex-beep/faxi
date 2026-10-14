@@ -37,7 +37,7 @@ export default function Earnings() {
           <T v="caption">Comisión por pagar a faxi</T>
           <T style={{ fontFamily: f.black, fontSize: 28, letterSpacing: -1 }} color={debt.blocked ? c.error : c.ink}>{rd(Math.max(debt.owed, 0))}</T>
           <T v="caption">Paga cada {debt.pay_day} la comisión de tus viajes en efectivo. Si debes más de {rd(debt.limit)}, no podrás conectarte hasta pagar.</T>
-          {debt.pay_info ? <T v="caption">{debt.pay_info}</T> : null}
+          {debt.pay_info ? <T v="label">Dónde pagar: {debt.pay_info}</T> : null}
           {debt.last_payment_at ? <T v="caption">Último pago: {rd(debt.last_payment_amount)} · {fmtDate(debt.last_payment_at)}</T> : null}
           {debt.blocked ? <Banner text={`Debes más de ${rd(debt.limit)}. Paga tu comisión para volver a conectarte.`} /> : null}
         </Card>

@@ -94,7 +94,7 @@ export default function Pricing() {
           <div key={s.key} className="stack" style={{ borderTop: '1px solid var(--outline-soft)', paddingTop: 10 }}>
             <div className="head"><b>{s.key}</b><button className="btn" onClick={() => saveSetting(s)}>Guardar</button></div>
             {s.description ? <div className="muted small">{s.description}</div> : null}
-            <textarea className="input" rows={s.key === 'SERVICE_AREA' ? 4 : 1} value={s.draft}
+            <textarea className="input" rows={s.key === 'SERVICE_AREA' ? 4 : s.key === 'COMMISSION_PAY_INFO' ? 3 : 1} value={s.draft}
               onChange={(e) => setSettings((all) => all.map((x) => (x.key === s.key ? { ...x, draft: e.target.value } : x)))} />
           </div>
         ))}

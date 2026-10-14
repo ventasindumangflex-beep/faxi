@@ -103,7 +103,7 @@ Todo esto necesita la empresa:
 - 👤 **Dominio propio** y correo de soporte (abajo). Después cambio las direcciones en las apps, los textos legales y las fichas.
 - 👤 **Textos legales:** rellenar lo que sigue entre [corchetes] (razón social, RNC, dirección, WhatsApp, fechas, plazos, comisión en efectivo, seguro) y revisión de un **abogado dominicano**. Después: `node scripts/build_sitio.mjs` (o pídemelo).
 - [x] **Decisiones de negocio (15-oct):** comisión del 20 % pagada **cada lunes**, bloqueo al deber más de **RD$2,000** (ya en la app y el panel → *Comisiones*); vehículos **2008 en adelante**; **Haina fuera** durante el piloto.
-- 👤 Cuando la empresa tenga cuenta bancaria: admin → *Tarifas y ajustes* → `COMMISSION_PAY_INFO` con el banco y número de cuenta (lo ve el conductor en *Ganancias*).
+- 👤 Admin → *Tarifas y ajustes* → `COMMISSION_PAY_INFO`: banco, tipo y número de cuenta y titular (piloto: tu cuenta personal; luego la de la empresa). Solo la ven los conductores aprobados, en *Ganancias*. **Nunca en el código.**
 - 👤 Confirmar con el INTRANT el año mínimo y el seguro de responsabilidad civil.
 - ⛔👤 **Google Play** (cuenta de organización): prueba cerrada, ficha (`docs/tiendas/FICHAS.md`), seguridad de los datos, declaración de ubicación en segundo plano y de **servicio en primer plano** (mismo texto y video de la ubicación en segundo plano).
 - 👤 **Tras la primera subida a Play:** Play Console → *Integridad de la app* → copia la **SHA-1 de la clave de firma de apps** y añádela a la clave de Maps. Sin esto, el mapa sale en blanco en las apps instaladas desde Play.

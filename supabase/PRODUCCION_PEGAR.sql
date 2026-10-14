@@ -4,9 +4,9 @@
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 -- Hace: migraciones 005 (ubicación en vivo privada, zona real del Gran Santo Domingo, push automático) y
 -- 006 (solo efectivo), 007 (datos del conductor solo durante el viaje), 008 (endurecimiento), 009 (comisión en efectivo: pago semanal
--- y bloqueo al deber más de RD$2,000), pone producción en modo solo efectivo y vehículos de 2008 en adelante, deja lista la URL del push
+-- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados), pone producción en modo solo efectivo y vehículos de 2008 en adelante, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK.
+-- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK.
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -398,6 +398,40 @@ grant execute on function
   public.my_commission_status(), public.admin_commission_balances(), public.admin_record_commission_payment(uuid, numeric, text, text)
 to authenticated;
 
+-- ═════════════ Migración 010 ═════════════
+-- FAXI · 010 · Datos de la cuenta donde se paga la comisión: solo para conductores aprobados
+-- COMMISSION_PAY_INFO puede llevar un número de cuenta bancaria. Antes lo podía leer cualquier usuario con sesión
+-- (app_settings_read = true). Ahora solo lo leen los admins en la tabla, y los conductores APROBADOS por my_commission_status.
+-- Se puede correr más de una vez.
+
+-- ───────── 1. Ajustes privados: fuera de la lectura general ─────────
+alter policy app_settings_read on public.app_settings
+  using (key <> 'COMMISSION_PAY_INFO' or public.is_admin());
+
+update public.app_settings
+   set description = 'Dónde paga el conductor la comisión (banco, tipo y número de cuenta, titular). Solo lo ven los admins y los conductores aprobados.'
+ where key = 'COMMISSION_PAY_INFO';
+
+-- ───────── 2. my_commission_status: pay_info solo para conductores aprobados ─────────
+create or replace function public.my_commission_status() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_owed numeric; v_limit numeric; p public.commission_payments; v_approved boolean;
+begin
+  if public.auth_role() is distinct from 'DRIVER' then raise exception 'Solo conductores' using errcode = '42501'; end if;
+  v_owed := public.driver_commission_owed(auth.uid());
+  v_limit := public.commission_debt_limit();
+  v_approved := exists (select 1 from public.drivers where id = auth.uid() and status = 'APPROVED');
+  select * into p from public.commission_payments where driver_id = auth.uid() order by created_at desc limit 1;
+  return jsonb_build_object(
+    'owed', v_owed, 'limit', v_limit, 'blocked', v_owed > v_limit,
+    'pay_day', coalesce(public.setting_text('COMMISSION_PAY_DAY'), 'lunes'),
+    'pay_info', case when v_approved then public.setting_text('COMMISSION_PAY_INFO') end,
+    'last_payment_amount', p.amount, 'last_payment_at', p.created_at);
+end $$;
+
+revoke all on function public.my_commission_status() from public, anon;
+grant execute on function public.my_commission_status() to authenticated;
+
 -- Producción: solo efectivo (el pasajero no puede marcarse pagos; el conductor confirma el cobro)
 update public.app_settings set value = '"CASH"' where key = 'PAYMENT_PROVIDER';
 -- Producción: vehículos de 2008 en adelante (faxi-pruebas sigue en 2000 para que FAXI OK corra igual)
@@ -411,7 +445,7 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 15-oct-2026, con 009): tablas 21 · funciones 59 · politicas 44 · triggers 32 · indices 54 · cron 1
+-- Esperado (faxi-pruebas, 15-oct-2026, con 009 y 010): tablas 21 · funciones 59 · politicas 44 · triggers 32 · indices 54 · cron 1
 --   h_tablas 0d7f36 · h_funciones 9b0b05 · h_politicas c5c2d4 · h_triggers c5c0fe · h_indices e9402f · vault 2 · proveedor CASH · año 2008
 with
  t as (select string_agg(table_name, ',' order by table_name) s, count(*) n from information_schema.tables where table_schema='public' and table_type='BASE TABLE'),

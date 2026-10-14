@@ -34,7 +34,7 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] **INTRANT:** confirmar requisitos vigentes para plataformas (registro, seguro de responsabilidad civil, carnet de conductores, antigüedad máxima del vehículo; en 2021 se anunciaron 15 años). Decidido (15-oct): **2008 en adelante** en producción (`PRODUCCION_PEGAR.sql`); si el INTRANT exige algo más reciente, se cambia en el admin → Tarifas y ajustes → `MIN_VEHICLE_YEAR`.
 - [ ] **Comisión en efectivo:** definir cómo y cuándo el conductor paga a faxi el 20 % de los viajes en efectivo (los términos de conductores lo dejan en blanco).
 - [x] Haina: **fuera de la zona** durante el piloto (decidido 15-oct). Si hay demanda, se amplía el polígono (`app_settings.SERVICE_AREA`).
-- [x] Comisión en efectivo (decidido 15-oct): el conductor paga **cada lunes**; si debe más de **RD$2,000** no puede conectarse. Migración 009 + pantalla *Comisiones* del admin. Falta: poner la cuenta bancaria de la empresa en `COMMISSION_PAY_INFO` (admin → Tarifas y ajustes) cuando exista.
+- [x] Comisión en efectivo (decidido 15-oct): el conductor paga **cada lunes**; si debe más de **RD$2,000** no puede conectarse. Migración 009 + pantalla *Comisiones* del admin. Durante el piloto se paga a la cuenta personal del dueño (decidido 15-oct): escribirla en `COMMISSION_PAY_INFO` (admin → Tarifas y ajustes), **nunca en el código**. Desde la migración 010 solo la ven admins y conductores aprobados. Cambiarla a la cuenta de la empresa cuando exista el RNC.
 - [ ] Capturas de pantalla para las tiendas (lista en `docs/tiendas/FICHAS.md`).
 
 ## Tiendas
