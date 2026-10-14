@@ -16,7 +16,7 @@ Todo se hace en **tu MacBook** y en **tu teléfono**. Cada comando se copia y se
 - [ ] Tu teléfono **Android**, con batería y en el mismo Wi-Fi que la Mac.
 - [ ] Tu número de teléfono **verificado en Twilio** (con la cuenta de prueba solo envía códigos a números verificados).
 - [ ] Estos dos datos de Supabase (son públicos, no son secretos), del proyecto **faxi-pruebas**:
-  - URL: `https://hwypoksdxrfffvaaludj.supabase.co`
+  - URL: la *Project URL* de faxi-pruebas (Supabase → Project Settings → API)
   - Clave pública (publishable): en Supabase → faxi-pruebas → Project Settings → API Keys → la que empieza con `sb_publishable_`.
 
 ---
@@ -63,7 +63,7 @@ Escribe tu correo/usuario y contraseña de Expo.
 
 | Nombre | Valor | Visibilidad |
 |---|---|---|
-| `EXPO_PUBLIC_SUPABASE_URL` | `https://hwypoksdxrfffvaaludj.supabase.co` | Plain text |
+| `EXPO_PUBLIC_SUPABASE_URL` | la *Project URL* de faxi-pruebas (Supabase → Project Settings → API) | Plain text |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | tu clave `sb_publishable_…` | Plain text |
 | `GOOGLE_MAPS_ANDROID_KEY` | la clave `faxi-maps-android` | Sensitive |
 | `EXPO_PUBLIC_GOOGLE_PLACES_KEY` | la clave `faxi-places` | Plain text (las `EXPO_PUBLIC_` no pueden ser secretas) |

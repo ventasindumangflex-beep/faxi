@@ -22,7 +22,7 @@ Lee `README.md` y `docs/PLAN_TECNICO.md` antes de cambiar algo.
 ## Estado (octubre 2026)
 Hecho: migraciones 001–008 (005 ubicación privada + zona real + push automático, 006 solo efectivo, 007 datos del conductor solo durante el viaje, 008 endurecimiento), login OTP, alta de conductor con documentos, despacho, viaje completo, cobro en efectivo, calificación, push, borrado de cuenta, panel admin, Sentry, íconos, borradores legales (`apps/admin/src/legal/`, servidos en /privacidad, /terminos, /terminos-conductores, /eliminar-cuenta), fichas de tienda (`docs/tiendas/FICHAS.md`).
 Producción (faxi) va por detrás: se pone al día pegando `supabase/PRODUCCION_PEGAR.sql` (ver `docs/PASOS_DEL_DUENO.md`).
-Siguiente: probar en teléfonos reales con un piloto cerrado. Lista por etapas: `docs/LANZAMIENTO.md` (detalle en `docs/PENDIENTES_PRODUCCION.md`). Sitio público faxi.com: `sitio/`, generado con `node scripts/build_sitio.mjs` desde `apps/admin/src/legal/`.
+Siguiente: probar en teléfonos reales con un piloto cerrado. Lista por etapas: `docs/LANZAMIENTO.md` (detalle en `docs/PENDIENTES_PRODUCCION.md`). Sitio público: `sitio/` (publicado en https://faxi.netlify.app, dominio propio **faxird.com**; `faxi.com` no es nuestro), generado con `node scripts/build_sitio.mjs` desde `apps/admin/src/legal/`.
 
 ## Reglas fijas de base de datos (no negociables)
 Proyectos Supabase: **faxi** = producción (ref `opehqsltrzhtsqqlctdg`) · **faxi-pruebas** = solo pruebas (ref en `.env` → `SUPABASE_TEST_PROJECT_REF`).

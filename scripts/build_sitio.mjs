@@ -1,4 +1,4 @@
-// Genera el sitio público de faxi.com en sitio/ (inicio, soporte y páginas legales) a partir de apps/admin/src/legal/*.md.
+// Genera el sitio público de faxi en sitio/ (inicio, soporte y páginas legales) a partir de apps/admin/src/legal/*.md.
 // Uso: node scripts/build_sitio.mjs   · Sin dependencias. La carpeta sitio/ se publica tal cual (Netlify lee netlify.toml).
 // No edites sitio/ a mano: cambia los .md (o este archivo) y vuelve a correr el script.
 import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -9,7 +9,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'sitio');
 const legal = (name) => readFileSync(join(root, 'apps/admin/src/legal', name + '.md'), 'utf8');
 
-const SOPORTE = 'soporte@faxi.com';
+const SITIO = 'https://faxird.com';   // dominio propio (también en apps/*/src/faxi.ts)
+const SOPORTE = 'soporte@faxird.com';   // alias del usuario de Google Workspace; vacío = no se muestra
 const WHATSAPP = '';   // p. ej. '18095550000' cuando exista el número de soporte; vacío = no se muestra
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -69,7 +70,7 @@ function page({ path, title, description, body }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-<link rel="canonical" href="https://faxi.com${path}">
+<link rel="canonical" href="${SITIO}${path}">
 <link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-icon.png">
 <meta name="theme-color" content="#1B7A57">
@@ -82,7 +83,7 @@ ${body}
 </main>
 <footer class="pie">
 <nav><a href="/privacidad/">Privacidad</a><a href="/terminos/">Términos para pasajeros</a><a href="/terminos-conductores/">Términos para conductores</a><a href="/eliminar-cuenta/">Eliminar cuenta</a><a href="/soporte/">Soporte</a></nav>
-<p>faxi · Santo Domingo, República Dominicana · <a href="mailto:${SOPORTE}">${SOPORTE}</a></p>
+<p>faxi · Santo Domingo, República Dominicana${SOPORTE ? ` · <a href="mailto:${SOPORTE}">${SOPORTE}</a>` : ''}</p>
 </footer>
 </body>
 </html>
@@ -90,8 +91,8 @@ ${body}
 }
 
 const contacto = `<ul class="contacto">
-<li><strong>Correo:</strong> <a href="mailto:${SOPORTE}">${SOPORTE}</a></li>
-${WHATSAPP ? `<li><strong>WhatsApp:</strong> <a href="https://wa.me/${WHATSAPP}">+${WHATSAPP}</a></li>\n` : ''}</ul>`;
+${SOPORTE ? `<li><strong>Correo:</strong> <a href="mailto:${SOPORTE}">${SOPORTE}</a></li>\n` : ''}${WHATSAPP ? `<li><strong>WhatsApp:</strong> <a href="https://wa.me/${WHATSAPP}">+${WHATSAPP}</a></li>\n` : ''}<li>Desde la app: <strong>Cuenta → Reportar un problema</strong>.</li>
+</ul>`;
 
 const pages = [
   {
@@ -124,9 +125,7 @@ const pages = [
 <p>Estamos para ayudarte con tus viajes, cobros, objetos perdidos o tu cuenta.</p>
 <h2>Desde la app</h2>
 <ol><li>Abre faxi o faxi Conductor.</li><li>Ve a <strong>Cuenta</strong>.</li><li>Toca <strong>Reportar un problema</strong>. Si es sobre un viaje, lo vinculamos automáticamente.</li></ol>
-<h2>Escríbenos</h2>
-${contacto}
-<p>Si tienes una emergencia durante un viaje, llama al <strong>911</strong> (en la app, botón <strong>Emergencia 911</strong>).</p>
+${SOPORTE || WHATSAPP ? `<h2>Escríbenos</h2>\n${contacto}\n` : ''}<p>Si tienes una emergencia durante un viaje, llama al <strong>911</strong> (en la app, botón <strong>Emergencia 911</strong>).</p>
 <h2>Tu cuenta</h2>
 <p>Para borrar tu cuenta y tus datos, sigue los pasos de <a href="/eliminar-cuenta/">Eliminar cuenta</a>.</p>
 </article>`,

@@ -68,4 +68,4 @@ Puedes eliminar tu cuenta desde la app (Cuenta → Eliminar cuenta) cuando no te
 
 Podemos modificar estos términos avisándote en la app antes de que entren en vigor. Se rigen por las leyes de la República Dominicana; cualquier controversia se someterá a los tribunales de Santo Domingo.
 
-Contacto: **soporte@faxi.com** · WhatsApp **[NÚMERO]** · **[DIRECCIÓN]**
+Contacto: **soporte@faxird.com** · WhatsApp **[NÚMERO]** · **[DIRECCIÓN]**

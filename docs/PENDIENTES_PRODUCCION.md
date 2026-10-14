@@ -27,7 +27,7 @@ Estado al 9-oct-2026. Lo marcado [x] está hecho y probado; lo demás sigue pend
 - [ ] **Probar en el teléfono** con la guía `docs/GUIA_PASOS_1_A_4.md`.
 - [ ] Twilio Verify en Supabase Auth (Phone) y límite de SMS; número de prueba para los revisores de Apple/Google.
 - [ ] Crear el proyecto en Sentry y poner el DSN en EAS.
-- [ ] Publicar `sitio/` en faxi.com con Netlify (pasos en `docs/LANZAMIENTO.md`). Las apps ya abren `https://faxi.com/...` por defecto; el panel se queda en la Mac durante el piloto.
+- [x] Sitio `sitio/` publicado en **faxi.netlify.app** (Netlify, 14-oct-2026). Falta un dominio propio (ver "Dominio" abajo); el panel se queda en la Mac durante el piloto.
 - [ ] Completar los datos entre corchetes de los textos legales y **revisión de un abogado** (Ley 172-13, Ley 358-05, INTRANT).
 
 ## Producto
@@ -82,13 +82,14 @@ Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
 - `apply_migration`/`execute_sql` de la herramienta de Supabase piden confirmación con `DROP`/`DELETE`; las migraciones nuevas usan bloques `if not exists` para evitarlos.
 - `delete_my_account` deja la bandera `faxi.self_delete` activa hasta el final de la transacción. En la app cada llamada es su propia transacción; en tests, no hacer otras comprobaciones del guard después de llamarla.
 
-## Dominio (decisión del dueño, 13-oct-2026)
-- **Dominio definitivo: `faxi.com`.** Las apps abren `https://faxi.com/terminos`, `/terminos-conductores` y `/privacidad` por defecto (cambiables con `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL`).
-- Falta: confirmar en la Consola del administrador de Google Workspace que `faxi.com` esté **verificado** y con registros MX; crear `soporte@faxi.com`; publicar las 4 páginas legales (`/privacidad`, `/terminos`, `/terminos-conductores`, `/eliminar-cuenta`) en esa dirección; rellenar los campos entre corchetes de los borradores (razón social, RNC, dirección, correos, WhatsApp, fechas) y pasarlos por revisión legal.
+## Dominio (14-oct-2026)
+- **`faxi.com` NO es nuestro** (dueño *Koreacenter co., Ltd* desde 2-mar-2000, a la venta en Dan.com).
+- **Comprado: `faxird.com`** con Google Workspace Starter (prueba de 14 días; dominio 12 USD/año, registrador Squarespace). Correo de soporte: **soporte@faxird.com** como alias del usuario administrador.
+- Apps, textos legales, fichas y sitio ya apuntan a `faxird.com`. **Pendiente:** conectar el dominio en Netlify (DNS, pasos en `docs/LANZAMIENTO.md`) y verificar que `https://faxird.com/privacidad` carga antes de usarlo en las tiendas.
 
 ## Revisión de lanzamiento (13-oct-2026)
 - Pruebas 001–005 pasan en faxi-pruebas sin dejar datos; huella 20 · 51 · 41 · 29 · 52 · 1 · false.
 - Asesor de seguridad: solo avisos esperados (RPC de las apps; las de admin verifican `is_admin`) y "contraseñas filtradas" (panel; activar en producción).
 - **Corregido:** permisos de más en las apps (micrófono en conductor; almacenamiento y superposición en pasajero; textos de permiso de iOS en inglés). Comprobado con `expo config --type introspect` en modo producción y desarrollo.
-- **Agregado:** perfiles de EAS con su grupo de variables y `.aab` en producción; `owner` y ID de proyecto fijos en la app de pasajeros; sitio estático `sitio/` para faxi.com (`scripts/build_sitio.mjs` + `netlify.toml`); `docs/LANZAMIENTO.md`.
+- **Agregado:** perfiles de EAS con su grupo de variables y `.aab` en producción; `owner` y ID de proyecto fijos en la app de pasajeros; sitio estático `sitio/` para la web pública (`scripts/build_sitio.mjs` + `netlify.toml`); `docs/LANZAMIENTO.md`.
 - **Pendiente nuevo:** tras la primera subida a Google Play, añadir la SHA-1 de la clave de firma de Play a la clave de Maps; declaración de servicio en primer plano (conductor); geo-permisos de Twilio solo RD.

@@ -1,6 +1,10 @@
-# Sitio público faxi.com (inicio, soporte y páginas legales). Netlify publica sitio/ tal cual, sin instalar nada.
+# Sitio público de faxi (inicio, soporte y páginas legales), en faxird.com (y faxi.netlify.app). Netlify publica sitio/ tal cual, sin instalar nada.
 # Para cambiarlo: editar apps/admin/src/legal/*.md o scripts/build_sitio.mjs y correr `node scripts/build_sitio.mjs`.
 [build]
   base = "sitio"
   publish = "."
   command = "echo 'sitio estatico listo'"
+
+# El repo tiene un panel Next.js (apps/admin); que Netlify no le aplique su runtime de Next.js a este sitio estático.
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
