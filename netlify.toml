@@ -4,3 +4,7 @@
   base = "sitio"
   publish = "."
   command = "echo 'sitio estatico listo'"
+
+# El repo tiene un panel Next.js (apps/admin); que Netlify no le aplique su runtime de Next.js a este sitio estático.
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
