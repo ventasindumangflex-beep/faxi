@@ -1,5 +1,5 @@
 -- ╔══════════════════════════════════════════════════════════════════╗
--- ║ SOLO PARA faxi-pruebas (ref hwypoksdxrfffvaaludj). NUNCA en faxi. ║
+-- ║ SOLO PARA faxi-pruebas (ref en .env). NUNCA en faxi.             ║
 -- ╚══════════════════════════════════════════════════════════════════╝
 -- Contiene: política docs_owner_delete + delete_my_account (parte de la migración 004) + seed.sql.
 -- Seguro: se aborta si ya existen usuarios reales (que no sean @faxi.test).
