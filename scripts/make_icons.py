@@ -38,19 +38,20 @@ def save(img, path):
     print('·', path.relative_to(ROOT), img.size)
 
 
-def app_assets(app, bg, letter, dot):
+def app_assets(app, bg, letter, dot, splash=True):
     a = ROOT / 'apps' / app / 'assets'
     # iOS/Android: 1024 sin transparencia, a sangre (las tiendas redondean las esquinas)
     save(mark(1024, letter, dot, bg=bg).convert('RGB'), a / 'icon.png')
     # Android adaptativo: solo el primer plano, contenido dentro del 66 % central
     save(mark(1024, letter, dot, scale=0.42), a / 'adaptive-icon.png')
     # Pantalla de inicio: palabra completa sobre el color de fondo (lo pone app.config)
-    save(mark(1024, letter, dot, scale=0.30, word=True), a / 'splash-icon.png')
+    if splash:
+        save(mark(1024, letter, dot, scale=0.30, word=True), a / 'splash-icon.png')
     # Notificación Android: silueta blanca sobre transparente
     save(mark(96, WHITE, WHITE, scale=0.70), a / 'notification-icon.png')
 
 
-app_assets('passenger', GREEN, WHITE, MINT)
+app_assets('passenger', GREEN, WHITE, MINT, splash=False)  # su pantalla de inicio sale de scripts/make_splash.py
 app_assets('driver', INK, WHITE, '#2FB37E')
 
 # Admin (web): favicon y vista previa

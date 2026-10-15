@@ -6,7 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts, PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold } from '@expo-google-fonts/plus-jakarta-sans';
 import { isConfigured, missingConfig } from '@faxi/core';
-import { ConfigMissing, Loading, SessionProvider, c, registerForPush, useSession } from '@faxi/ui';
+import { ConfigMissing, SessionProvider, c, registerForPush, useSession } from '@faxi/ui';
+import { Intro } from '../src/Intro';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -14,7 +15,8 @@ export default Sentry.wrap(Root);
 
 function Root() {
   const [fonts] = useFonts({ PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
-  useEffect(() => { if (fonts) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
+  // Con la app configurada, la pantalla nativa la quita <Intro /> cuando ya se ve el degradado.
+  useEffect(() => { if (fonts && !isConfigured()) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
   if (!fonts) return null;
   return (
     <SafeAreaProvider>
@@ -46,6 +48,10 @@ function Gate() {
     }
   }, [me?.id]);
 
-  if (loading) return <Loading />;
-  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface }, animation: 'slide_from_right' }} />;
+  return (
+    <>
+      {loading ? null : <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface }, animation: 'slide_from_right' }} />}
+      <Intro ready={!loading} />
+    </>
+  );
 }

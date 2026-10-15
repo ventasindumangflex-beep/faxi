@@ -4,9 +4,16 @@ import MapView from 'react-native-maps';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { passenger, type Place } from '@faxi/core';
-import { Banner, Icon, IconButton, ListItem, Sheet, T, c, f, region, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
+import { Banner, Icon, IconButton, ListItem, Row, Sheet, StatusScrim, T, c, f, r, region, shadow, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
+import type { IconName } from '@faxi/ui';
 import { getHere, type Here } from '../src/location';
 import { draft } from '../src/draft';
+
+const PERKS: { icon: IconName; text: string }[] = [
+  { icon: 'payments', text: 'Pagas en efectivo' },
+  { icon: 'verified-user', text: 'Conductores verificados' },
+  { icon: 'share', text: 'Comparte tu viaje' },
+];
 
 function greeting(name?: string) {
   const h = new Date().getHours();
@@ -50,6 +57,7 @@ export default function Home() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(SD_CENTER, 0.05)}
         showsUserLocation={!!here && !here.denied} showsMyLocationButton={false} toolbarEnabled={false} />
+      <StatusScrim />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, left: 16, right: 16, gap: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
           <IconButton icon="menu" label="Menú" onPress={() => router.push('/account')} />
@@ -61,20 +69,34 @@ export default function Home() {
       </SafeAreaView>
 
       <Sheet>
-        <T v="title">{greeting(me?.full_name.split(' ')[0])}</T>
+        <View style={{ gap: 2 }}>
+          <T v="title" numberOfLines={1}>{greeting(me?.full_name.split(' ')[0])}</T>
+          <T v="caption">Viajes por todo el Gran Santo Domingo</T>
+        </View>
         <Pressable onPress={() => go()} accessibilityRole="button" accessibilityLabel="¿A dónde vas?"
-          style={({ pressed }) => [{ height: 60, borderRadius: 30, backgroundColor: c.surface2, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 18, opacity: pressed ? 0.85 : 1 }]}>
-          <Icon name="search" size={26} />
-          <T style={{ fontFamily: f.bold, fontSize: 18, flex: 1 }}>¿A dónde vas?</T>
+          style={({ pressed }) => [{ minHeight: 64, borderRadius: r.pill, backgroundColor: c.white, borderWidth: 1, borderColor: c.outlineSoft, flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 8, paddingRight: 18, opacity: pressed ? 0.85 : 1 }, shadow]}>
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="search" size={26} color={c.onPrimary} />
+          </View>
+          <T style={{ fontFamily: f.bold, fontSize: 18, flex: 1 }} numberOfLines={1}>¿A dónde vas?</T>
+          <Icon name="arrow-forward" color={c.primaryDark} />
         </Pressable>
         {recents.length ? (
           <View>
+            <T v="micro" style={{ marginTop: 4 }}>Viajes recientes</T>
             {recents.map((p) => (
               <ListItem key={p.address} icon="history" title={p.address.split(',')[0]} subtitle={p.address} onPress={() => go(p)} />
             ))}
           </View>
         ) : (
-          <T v="caption">Pagas en efectivo al terminar el viaje.</T>
+          <Row gap={10} style={{ alignItems: 'stretch' }}>
+            {PERKS.map((p) => (
+              <View key={p.icon} style={{ flex: 1, backgroundColor: c.primarySoft, borderRadius: r.md, paddingVertical: 12, paddingHorizontal: 8, alignItems: 'center', gap: 6 }}>
+                <Icon name={p.icon} color={c.primaryDark} />
+                <T v="caption" center color={c.primaryDark} style={{ fontSize: 12, lineHeight: 16 }}>{p.text}</T>
+              </View>
+            ))}
+          </Row>
         )}
       </Sheet>
     </View>
