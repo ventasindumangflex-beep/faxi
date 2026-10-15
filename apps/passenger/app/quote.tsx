@@ -5,7 +5,7 @@ import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
 import {
-  Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, T, c, coord, region, FaxiMap,
+  Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, StatusScrim, T, c, coord, region, FaxiMap,
 } from '@faxi/ui';
 import { draft } from '../src/draft';
 
@@ -52,44 +52,51 @@ export default function QuoteScreen() {
         <Marker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
         <Polyline coordinates={[coord(o), coord(d)]} strokeColor={c.ink} strokeWidth={3} lineDashPattern={[8, 6]} />
       </FaxiMap>
+      <StatusScrim />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16 }}>
         <IconButton icon="arrow-back" label="Volver" onPress={() => router.back()} />
       </SafeAreaView>
 
-      <Sheet>
+      <Sheet collapsible
+        peek={chosen ? (
+          <Row>
+            <Icon name={ICON[chosen.category]} color={c.primaryDark} />
+            <T v="label" numberOfLines={1} style={{ flex: 1 }}>{chosen.display_name}</T>
+            <T v="h2">{rd(chosen.total)}</T>
+          </Row>
+        ) : null}
+        footer={(
+          <View style={{ gap: 10 }}>
+            {err ? <Banner text={err} /> : null}
+            <Button title={chosen ? `Solicitar ${chosen.display_name}` : 'Solicitar'} onPress={request} loading={busy} disabled={!chosen} />
+          </View>
+        )}>
         <View style={{ gap: 2 }}>
           <T v="title">Elige tu viaje</T>
           <T v="caption" numberOfLines={1}>{o.address.split(',')[0]} → {d.address.split(',')[0]}</T>
+          {quotes?.[0] ? <T v="caption">{mins(quotes[0].duration_min)} · {km(quotes[0].distance_km)} · pagas en efectivo al llegar</T> : null}
         </View>
         {!quotes && !err ? <View style={{ height: 160 }}><Loading label="Calculando precio…" /></View> : null}
         {quotes?.map((q) => {
           const on = q.category === sel;
           return (
             <Pressable key={q.category} onPress={() => setSel(q.category)} accessibilityRole="radio" accessibilityState={{ selected: on }}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12, borderRadius: 18, borderWidth: 2, borderColor: on ? c.primary : c.outlineSoft, backgroundColor: c.white }}>
+              accessibilityLabel={`${q.display_name}, ${q.capacity} personas, ${rd(q.total)}`}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 18, borderWidth: 2, borderColor: on ? c.primary : c.outlineSoft, backgroundColor: c.white }}>
               <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: on ? c.primarySoft : c.surface2, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={ICON[q.category]} color={on ? c.primaryDark : c.ink} />
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <T v="label" numberOfLines={1}>{q.display_name}</T>
-                <Row gap={6}>
+                <T v="label" numberOfLines={2}>{q.display_name}</T>
+                <Row gap={4}>
                   <Icon name="person" size={14} color={c.ink2} />
-                  <T v="caption" numberOfLines={1} style={{ flexShrink: 1 }}>{q.capacity} · {mins(q.duration_min)} · {km(q.distance_km)}</T>
+                  <T v="caption">{q.capacity}</T>
                 </Row>
               </View>
               <T v="h2" style={{ flexShrink: 0 }}>{rd(q.total)}</T>
             </Pressable>
           );
         })}
-        <Row style={{ paddingHorizontal: 4 }}>
-          <Icon name="payments" color={c.primaryDark} />
-          <View style={{ flex: 1 }}>
-            <T v="label">Efectivo</T>
-            <T v="caption">Pagas al conductor al llegar</T>
-          </View>
-        </Row>
-        {err ? <Banner text={err} /> : null}
-        <Button title={chosen ? `Solicitar ${chosen.display_name}` : 'Solicitar'} onPress={request} loading={busy} disabled={!chosen} />
       </Sheet>
     </View>
   );

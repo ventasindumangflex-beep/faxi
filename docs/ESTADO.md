@@ -9,6 +9,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
   - Entra con SMS, busca direcciones, cotiza y pide viajes.
   - Muestra al conductor en el mapa.
   - Pago en efectivo, calificación, compartir viaje, botón 911, soporte y eliminar cuenta.
+  - Pantalla de entrada con el degradado de la marca (`docs/marca/faxi-inicio.png`). En la pantalla de precios, la rayita sube y baja la lista y el botón **Solicitar** siempre se ve.
 - **App de conductores:**
   - Registro con documentos: licencia, cédula, no antecedentes, foto, **carnet del INTRANT**, **antidoping**, matrícula, seguro y fotos del carro.
   - Casilla para aceptar los términos.

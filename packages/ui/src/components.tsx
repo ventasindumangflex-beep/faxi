@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextInput, TextInputProps,
+  ActivityIndicator, LayoutAnimation, PanResponder, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextInput, TextInputProps,
   TextStyle, View, ViewStyle, useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -119,19 +119,60 @@ export function Header({ title, onBack, right }: { title?: string; onBack?: () =
   );
 }
 
-export function Sheet({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+/**
+ * Hoja inferior sobre el mapa. Nunca más alta que la pantalla: si el contenido no cabe, se desplaza.
+ * - `footer` queda siempre visible debajo (p. ej. el botón principal), aunque el contenido se desplace.
+ * - `collapsible` muestra la rayita de arriba: arrastrarla hacia abajo (o tocarla) recoge la hoja para ver el mapa;
+ *   recogida solo se ven `peek` y `footer`. Sin `collapsible` no hay rayita, para no prometer algo que no hace.
+ */
+export function Sheet({ children, style, footer, peek, collapsible }: {
+  children: React.ReactNode; style?: StyleProp<ViewStyle>; footer?: React.ReactNode; peek?: React.ReactNode; collapsible?: boolean;
+}) {
   const ins = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  // Nunca más alto que la pantalla (deja sitio a los botones de arriba); si no cabe, se desplaza.
+  const [open, setOpen] = useState(true);
+  const openRef = useRef(true);
+  const toggle = (next: boolean) => {
+    if (next === openRef.current) return;
+    openRef.current = next;
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setOpen(next);
+  };
+  const pan = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > 6,
+    onPanResponderRelease: (_e, g) => {
+      if (g.dy > 24) toggle(false);
+      else if (g.dy < -24) toggle(true);
+      else if (Math.abs(g.dx) < 10) toggle(!openRef.current);
+    },
+  }), []);
+
   return (
-    <View style={[s.sheet, { paddingBottom: ins.bottom + 16, maxHeight: height - ins.top - 72 }, style]}>
-      <View style={s.handle} />
-      <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} contentContainerStyle={{ gap: 14 }} bounces={false}
-        keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        {children}
-      </ScrollView>
+    <View style={[s.sheet, { paddingBottom: ins.bottom + 16, maxHeight: height - ins.top - 72 }, collapsible && { paddingTop: 0 }, style]}>
+      {collapsible ? (
+        <View {...pan.panHandlers} accessible accessibilityRole="button"
+          accessibilityLabel={open ? 'Ocultar opciones y ver el mapa' : 'Mostrar opciones'} onAccessibilityTap={() => toggle(!openRef.current)}
+          style={{ marginHorizontal: -20, paddingHorizontal: 20, paddingTop: 10, paddingBottom: open ? 4 : 0, gap: 12 }}>
+          <View style={[s.handle, { width: 44, height: 5, marginBottom: 0 }]} />
+          {open ? null : peek}
+        </View>
+      ) : null}
+      {open ? (
+        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} contentContainerStyle={{ gap: 14 }} bounces={false}
+          keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          {children}
+        </ScrollView>
+      ) : null}
+      {footer}
     </View>
   );
+}
+
+/** Franja blanca detrás de la barra de estado para que la hora y la batería se lean sobre el mapa. */
+export function StatusScrim() {
+  const ins = useSafeAreaInsets();
+  return <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: ins.top, backgroundColor: 'rgba(248,250,246,0.92)' }} />;
 }
 
 export function Banner({ text, tone = 'error', actionLabel, onAction, style }: {
@@ -233,7 +274,7 @@ const s = StyleSheet.create({
   back: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginLeft: -8 },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: c.surface, borderTopLeftRadius: r.lg, borderTopRightRadius: r.lg,
-    paddingHorizontal: 20, paddingTop: 10, gap: 14, shadowColor: c.ink, shadowOpacity: 0.14, shadowRadius: 28, shadowOffset: { width: 0, height: -6 }, elevation: 16,
+    paddingHorizontal: 20, paddingTop: 22, gap: 14, shadowColor: c.ink, shadowOpacity: 0.14, shadowRadius: 28, shadowOffset: { width: 0, height: -6 }, elevation: 16,
   },
   handle: { width: 32, height: 4, borderRadius: 2, backgroundColor: c.outline, alignSelf: 'center', marginBottom: 4 },
   listIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: c.surface2, alignItems: 'center', justifyContent: 'center' },

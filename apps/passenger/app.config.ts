@@ -47,7 +47,8 @@ const config: ExpoConfig = {
     // iOS exige los tres textos aunque la app nunca pida "Siempre"; sin ellos usa unos genéricos en inglés.
     ['expo-location', { locationWhenInUsePermission: LOC, locationAlwaysAndWhenInUsePermission: LOC, locationAlwaysPermission: LOC }],
     ['expo-notifications', { color: '#1B7A57', icon: './assets/notification-icon.png' }],
-    ['expo-splash-screen', { image: './assets/splash-icon.png', imageWidth: 220, resizeMode: 'contain', backgroundColor: '#1B7A57' }],
+    // Color del centro del degradado de la marca; src/Intro.tsx sigue con el degradado completo (scripts/make_splash.py).
+    ['expo-splash-screen', { image: './assets/splash-icon.png', imageWidth: 220, resizeMode: 'contain', backgroundColor: '#029A60' }],
   ],
   experiments: { typedRoutes: false },
   // ID público del proyecto en expo.dev (faxi.app/faxi); no es una credencial.
