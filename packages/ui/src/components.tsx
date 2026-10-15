@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   ActivityIndicator, Pressable, ScrollView, StyleProp, StyleSheet, Text as RNText, TextInput, TextInputProps,
-  TextStyle, View, ViewStyle,
+  TextStyle, View, ViewStyle, useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -20,11 +20,14 @@ const tv: Record<TV, TextStyle> = {
   micro: { fontFamily: f.bold, fontSize: 12, lineHeight: 16, letterSpacing: 0.4, textTransform: 'uppercase', color: c.ink2 },
 };
 
+/** La letra grande del teléfono se respeta hasta 1.3×; más allá rompe tarjetas y botones. */
+export const MAX_FONT_SCALE = 1.3;
+
 export function T({ v = 'body', color, style, children, numberOfLines, center, onPress }: {
   v?: TV; color?: string; style?: StyleProp<TextStyle>; children?: React.ReactNode; numberOfLines?: number; center?: boolean; onPress?: () => void;
 }) {
   return (
-    <RNText numberOfLines={numberOfLines} onPress={onPress} suppressHighlighting style={[{ color: c.ink }, tv[v], color ? { color } : null, center ? { textAlign: 'center' } : null, style]}>
+    <RNText numberOfLines={numberOfLines} onPress={onPress} suppressHighlighting maxFontSizeMultiplier={MAX_FONT_SCALE} style={[{ color: c.ink }, tv[v], color ? { color } : null, center ? { textAlign: 'center' } : null, style]}>
       {children}
     </RNText>
   );
@@ -61,7 +64,7 @@ export function Button({ title, onPress, variant = 'filled', icon, loading, disa
       {loading ? <ActivityIndicator color={p.fg} /> : (
         <>
           {icon ? <Icon name={icon} size={20} color={p.fg} /> : null}
-          <T v="label" color={p.fg}>{title}</T>
+          <T v="label" color={p.fg} numberOfLines={1} style={{ flexShrink: 1 }}>{title}</T>
         </>
       )}
     </Pressable>
@@ -81,7 +84,7 @@ export function Field({ label, error, style, ...p }: TextInputProps & { label?: 
   return (
     <View style={{ gap: 6 }}>
       {label ? <T v="caption">{label}</T> : null}
-      <TextInput placeholderTextColor={c.muted} {...p} style={[s.input, error ? { borderColor: c.error } : null, style]} />
+      <TextInput placeholderTextColor={c.muted} maxFontSizeMultiplier={MAX_FONT_SCALE} {...p} style={[s.input, error ? { borderColor: c.error } : null, style]} />
       {error ? <T v="caption" color={c.error}>{error}</T> : null}
     </View>
   );
@@ -118,10 +121,15 @@ export function Header({ title, onBack, right }: { title?: string; onBack?: () =
 
 export function Sheet({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   const ins = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  // Nunca más alto que la pantalla (deja sitio a los botones de arriba); si no cabe, se desplaza.
   return (
-    <View style={[s.sheet, { paddingBottom: ins.bottom + 16 }, style]}>
+    <View style={[s.sheet, { paddingBottom: ins.bottom + 16, maxHeight: height - ins.top - 72 }, style]}>
       <View style={s.handle} />
-      {children}
+      <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} contentContainerStyle={{ gap: 14 }} bounces={false}
+        keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        {children}
+      </ScrollView>
     </View>
   );
 }
@@ -220,7 +228,7 @@ export function Brand({ suffix, size = 34 }: { suffix?: string; size?: number })
 const s = StyleSheet.create({
   btn: { height: 56, borderRadius: r.pill, paddingHorizontal: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1 },
   iconBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: c.white, alignItems: 'center', justifyContent: 'center', ...shadow },
-  input: { height: 56, borderRadius: r.md, borderWidth: 1, borderColor: c.outline, backgroundColor: c.white, paddingHorizontal: 16, fontFamily: f.regular, fontSize: 16, color: c.ink },
+  input: { minHeight: 56, borderRadius: r.md, borderWidth: 1, borderColor: c.outline, backgroundColor: c.white, paddingHorizontal: 16, fontFamily: f.regular, fontSize: 16, color: c.ink },
   card: { backgroundColor: c.white, borderRadius: 20, borderWidth: 1, borderColor: c.outlineSoft, padding: 16, gap: 10 },
   back: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginLeft: -8 },
   sheet: {
