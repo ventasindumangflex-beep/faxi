@@ -1,5 +1,7 @@
 # Arreglar el mapa en blanco (Android)
 
+> ✅ **Resuelto el 15-oct-2026:** con la clave nueva `faxi-maps-android-2` el mapa carga en la app de prueba (perfil *preview*). Falta borrar la clave vieja `faxi-maps-android` y, más adelante, agregar la SHA-1 de la app del conductor y la de Google Play.
+
 ## Qué sabemos
 - El código del mapa está bien: Google Maps en Android, versión recomendada para Expo SDK 54.
 - La app **no se cierra** al abrir el mapa. Eso quiere decir que el build sí lleva una clave; lo que pasa es que **Google la rechaza**.

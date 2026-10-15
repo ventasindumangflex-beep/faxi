@@ -47,7 +47,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
   - el build falla con un mensaje claro si falta la clave;
   - si el mapa no carga, sale un aviso amarillo.
 - Clave nueva de Google Maps creada y cargada en Expo (Development y Preview).
-- **App de prueba (APK) lista el 15-oct.** Se instala sin la Mac. **Falta abrirla y ver el mapa.**
+- ✅ **Mapa funcionando en Android (15-oct)** con la app de prueba (APK, perfil *preview*): calles de Santo Domingo, ubicación y búsqueda.
 
 ### Web, dominio y correo
 - Página web publicada en **faxi.netlify.app**: privacidad, términos, términos de conductores, eliminar cuenta y soporte.
@@ -68,7 +68,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 ## ⏳ Lo que falta
 
 ### 🟢 Se puede hacer ya (sin la empresa)
-1. **Instalar la app de prueba en el Android y ver el mapa.** Ya está construida: escanea el QR del build en expo.dev.
+1. ~~Instalar la app de prueba y ver el mapa~~ ✅ hecho el 15-oct. Falta **borrar la clave vieja** `faxi-maps-android` en Google Cloud.
 2. **faxird.com:** los 2 registros DNS en Squarespace (`docs/LANZAMIENTO.md`, arriba) y confirmar el correo de contacto del dominio ("Acción requerida", para que no lo suspendan).
 3. **Correo:** completar la configuración que pide Google Workspace ("Acción necesaria"), para que los correos no lleguen a spam.
 4. **Hacer privado el repositorio** en GitHub.
@@ -76,7 +76,6 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 6. **Números de prueba sin SMS** en Supabase (faxi-pruebas), para usar 2 teléfonos.
 7. **App del conductor:** crearla en Expo (`eas init`) y hacer su app de prueba. Agregar su huella SHA-1 a la clave de Maps.
 8. **Viaje completo con 2 teléfonos** (pasajero y conductor).
-9. Cuando el mapa funcione: **borrar la clave vieja** de Maps en Google Cloud.
 10. **Pagar Google Workspace** antes del 28-oct.
 11. **Piloto cerrado** con amigos y conductores que ya trabajan en Uber o inDrive (ya tienen carnet y antidoping).
 12. Decidir:
