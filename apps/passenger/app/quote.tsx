@@ -70,21 +70,23 @@ export default function QuoteScreen() {
               <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: on ? c.primarySoft : c.surface2, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={ICON[q.category]} color={on ? c.primaryDark : c.ink} />
               </View>
-              <View style={{ flex: 1 }}>
-                <T v="label">{q.display_name}</T>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <T v="label" numberOfLines={1}>{q.display_name}</T>
                 <Row gap={6}>
                   <Icon name="person" size={14} color={c.ink2} />
-                  <T v="caption">{q.capacity} · {mins(q.duration_min)} · {km(q.distance_km)}</T>
+                  <T v="caption" numberOfLines={1} style={{ flexShrink: 1 }}>{q.capacity} · {mins(q.duration_min)} · {km(q.distance_km)}</T>
                 </Row>
               </View>
-              <T v="h2">{rd(q.total)}</T>
+              <T v="h2" style={{ flexShrink: 0 }}>{rd(q.total)}</T>
             </Pressable>
           );
         })}
         <Row style={{ paddingHorizontal: 4 }}>
           <Icon name="payments" color={c.primaryDark} />
-          <T v="label" style={{ flex: 1 }}>Efectivo</T>
-          <T v="caption">Pagas al conductor al llegar</T>
+          <View style={{ flex: 1 }}>
+            <T v="label">Efectivo</T>
+            <T v="caption">Pagas al conductor al llegar</T>
+          </View>
         </Row>
         {err ? <Banner text={err} /> : null}
         <Button title={chosen ? `Solicitar ${chosen.display_name}` : 'Solicitar'} onPress={request} loading={busy} disabled={!chosen} />

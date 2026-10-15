@@ -60,7 +60,7 @@ Lo demás como está → **Guardar**. Si dice que `www` ya existe, borra el `www
 
 ## Etapa 1 · Prueba interna con 2 teléfonos (faxi-pruebas, sin gastar)
 
-1. 👤 **Mapa en blanco:** clave nueva de Maps paso a paso en `docs/MAPA_ANDROID.md` (la app ya limpia la clave, el build falla con mensaje claro si falta y avisa si Google la rechaza).
+1. [x] **Mapa en blanco: resuelto el 15-oct** (clave nueva; ver `docs/MAPA_ANDROID.md`). Falta borrar la clave vieja. Detalle original: (la app ya limpia la clave, el build falla con mensaje claro si falta y avisa si Google la rechaza).
 2. 👤 **Números de prueba sin SMS** (sirve para el segundo teléfono, sin otro número de Twilio):
    Supabase → **faxi-pruebas** → Authentication → Sign In / Providers → **Phone** → *Test Phone Numbers and OTPs*:
    ```
