@@ -65,6 +65,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 - Carros de máximo 15 años (como Uber).
 - Haina fuera.
 - Durante el piloto cerrado se cobra a tu cuenta personal. Luego se cambia a la de la empresa.
+- **(16-oct) No se lanza al público sin el registro en el INTRANT.** Antes de eso solo hay pruebas internas y piloto cerrado, sin publicidad.
 
 ## ⏳ Lo que falta
 
