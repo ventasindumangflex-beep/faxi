@@ -78,12 +78,12 @@ Lo demás como está → **Guardar**. Si dice que `www` ya existe, borra el `www
    | `EXPO_PUBLIC_SUPPORT_WHATSAPP` (opcional) | Plain text | ✓ | ✓ |
    | `EXPO_PUBLIC_SENTRY_DSN` (opcional) | Plain text | ✓ | ✓ |
 
-4. 👤 **App del conductor en Expo** (una vez, en la Mac, con el código nuevo; ver "Actualizar el código en la Mac" abajo):
+4. ✅ **App del conductor en Expo** (16-oct): proyecto `faxi.app/faxi-conductor`, ID fijo en `apps/driver/app.config.ts`.
+   Sus variables "Preview" se copian de las de la app de pasajeros (en la Mac, con el código al día):
    ```
-   cd apps/driver
-   npx eas-cli@latest init
+   cd ~/Downloads/faxi-main/apps/passenger && npx eas-cli@latest env:pull --environment preview --path /tmp/faxi-preview.env
+   cd ../driver && npx eas-cli@latest env:push --environment preview --path /tmp/faxi-preview.env && rm /tmp/faxi-preview.env
    ```
-   Te mostrará un ID de proyecto: mándamelo (no es secreto) y lo dejo fijo como en la app de pasajeros. Crea en ese proyecto las mismas variables del paso 3.
 5. 👤 **APK de prueba (se instala sin la Mac encendida):**
    ```
    cd apps/passenger && npx eas-cli@latest build --profile preview --platform android
