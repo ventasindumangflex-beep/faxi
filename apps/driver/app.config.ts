@@ -67,7 +67,7 @@ const config: ExpoConfig = {
     ['expo-splash-screen', { image: './assets/splash-icon.png', imageWidth: 220, resizeMode: 'contain', backgroundColor: '#181C1A' }],
   ],
   // ID público del proyecto en expo.dev (faxi.app/faxi-conductor); no es una credencial.
-  extra: { eas: { projectId: process.env.EAS_PROJECT_ID ?? 'a8a6d10b-05be-4595-a15f-3aa0af59bd9c' } },
+  extra: { eas: { projectId: process.env.EAS_PROJECT_ID || 'a8a6d10b-05be-4595-a15f-3aa0af59bd9c' } },
 };
 
 // Sube los mapas de código a Sentry en los builds de EAS si están SENTRY_ORG, SENTRY_PROJECT y SENTRY_AUTH_TOKEN.
