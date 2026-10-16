@@ -52,7 +52,7 @@ const config: ExpoConfig = {
   ],
   experiments: { typedRoutes: false },
   // ID público del proyecto en expo.dev (faxi.app/faxi); no es una credencial.
-  extra: { eas: { projectId: process.env.EAS_PROJECT_ID ?? 'b52dc436-e073-4930-a2a1-cfc89b2b1f4c' } },
+  extra: { eas: { projectId: process.env.EAS_PROJECT_ID || 'b52dc436-e073-4930-a2a1-cfc89b2b1f4c' } },
 };
 
 // Sube los mapas de código a Sentry en los builds de EAS si están SENTRY_ORG, SENTRY_PROJECT y SENTRY_AUTH_TOKEN.
