@@ -1,14 +1,14 @@
 # Términos y condiciones para conductores
 
-**Versión 1.1 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.2 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo, en especial la naturaleza de la relación (sección 2), los requisitos del INTRANT (sección 3), el seguro (sección 9) y el ITBIS de la comisión (sección 6).
 
-Estos términos regulan el uso de la aplicación **faxi Conductor** que ofrece **[RAZÓN SOCIAL]**, RNC **[RNC]** ("faxi"), plataforma registrada ante el INTRANT con el número **[NÚMERO DE REGISTRO INTRANT]**. Para registrarte debes marcar la casilla de aceptación de estos términos y de la [Política de privacidad](/privacidad); guardamos la fecha, la hora y la versión que aceptaste.
+Estos términos regulan el uso de la aplicación **faxi Conductor** que ofrece **[RAZÓN SOCIAL]**, RNC **[RNC]** ("faxi"). Para registrarte debes marcar la casilla de aceptación de estos términos y de la [Política de privacidad](/privacidad); guardamos la fecha, la hora y la versión que aceptaste.
 
 ## 1. Qué es faxi
 
-faxi es una plataforma tecnológica que te conecta con pasajeros que solicitan transporte en taxi por plataforma en el Gran Santo Domingo, conforme a la Normativa Técnica del Servicio de Transporte en Taxis del INTRANT.
+faxi es una plataforma tecnológica que te conecta con pasajeros que solicitan transporte en el Gran Santo Domingo.
 
 ## 2. Tu relación con faxi
 
@@ -36,7 +36,7 @@ faxi revisa tus documentos antes de activarte y puede pedírtelos de nuevo en cu
 - Mientras estés **conectado**, faxi recopila tu ubicación, también con la app en segundo plano, para enviarte viajes cercanos y mostrarle al pasajero dónde estás. Al **desconectarte** deja de recopilarla. Si no aceptas compartir la ubicación no podrás recibir viajes.
 - Durante un viaje, el pasajero ve tu nombre, foto, calificación, vehículo, placa y ubicación. Al terminar el viaje deja de ver tu ubicación y tu teléfono.
 - Al registrarte das tu **consentimiento expreso** para que faxi trate tu prueba antidoping (dato de salud) y tu certificado de antecedentes, solo para verificar los requisitos de la sección 3.
-- faxi comparte con el INTRANT los datos que exige la ley, como el listado de conductores activos y las salidas de conductores por mala conducta.
+- faxi comparte tus datos con las autoridades competentes, como el INTRANT, solo cuando la ley o una autoridad lo exijan.
 - Solo puedes usar los datos de los pasajeros para completar el viaje. Está prohibido guardarlos, contactarlos fuera del viaje o compartirlos.
 
 ## 5. Viajes
@@ -68,11 +68,11 @@ faxi revisa tus documentos antes de activarte y puede pedírtelos de nuevo en cu
 - Los pasajeros califican cada viaje.
 - faxi puede **desactivar tu acceso a la plataforma** por calificaciones bajas sostenidas, reportes graves, documentos vencidos o falsos, o incumplimiento de estos términos. Te informaremos el motivo y podrás presentar una **solicitud de revisión** por Soporte.
 - En casos graves (violencia, acoso, conducir bajo efectos de alcohol o drogas) la desactivación es inmediata, y la revisión se hace después.
-- Por ley, faxi debe informar por escrito al INTRANT las salidas de conductores, en especial las causadas por mala conducta.
+- Cuando la ley o una autoridad lo exijan, faxi informará a las autoridades competentes, como el INTRANT, las desactivaciones por mala conducta.
 
 ## 9. Seguro y responsabilidad
 
-- faxi mantiene una póliza de responsabilidad civil con **[ASEGURADORA]**, núm. **[NÚMERO DE PÓLIZA]**, que cubre muerte o lesiones, incapacidad permanente y temporal, y gastos médicos, quirúrgicos, farmacéuticos y hospitalarios de los pasajeros, según exige el INTRANT.
+- faxi mantiene una póliza de responsabilidad civil con **[ASEGURADORA]**, núm. **[NÚMERO DE PÓLIZA]**, que cubre muerte o lesiones, incapacidad permanente y temporal, y gastos médicos, quirúrgicos, farmacéuticos y hospitalarios de los pasajeros.
 - Tú debes tener el seguro obligatorio de tu vehículo vigente y **declarar a tu aseguradora que lo usas para transportar pasajeros**: muchas pólizas de uso particular no cubren ese uso.
 - Respondes por las multas, daños y reclamos causados por tu conducta, y debes mantener a faxi libre de ellos.
 - faxi es una plataforma tecnológica. Fuera de lo que cubre su póliza y de lo que la ley no permita excluir, no responde por los daños que se produzcan durante el viaje.
