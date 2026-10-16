@@ -83,7 +83,9 @@ Lo demás como está → **Guardar**. Si dice que `www` ya existe, borra el `www
    ```
    cd ~/Downloads/faxi-main/apps/passenger && npx eas-cli@latest env:pull --environment preview --path /tmp/faxi-preview.env
    cd ../driver && npx eas-cli@latest env:push --environment preview --path /tmp/faxi-preview.env && rm /tmp/faxi-preview.env
+   npx eas-cli@latest env:delete --variable-name EAS_PROJECT_ID --variable-environment preview
    ```
+   ⚠️ El último comando es obligatorio: `EAS_PROJECT_ID` es el de la app de pasajeros y, si se queda, el build del conductor falla con "Slug … does not match". (Hecho el 16-oct; primer APK del conductor: build `d96163e6`.)
 5. 👤 **APK de prueba (se instala sin la Mac encendida):**
    ```
    cd apps/passenger && npx eas-cli@latest build --profile preview --platform android
