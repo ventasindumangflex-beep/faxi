@@ -25,7 +25,7 @@ initFaxi({
 export const cfg = {
   termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? 'https://faxird.com/terminos-conductores',
   /** Versión de apps/admin/src/legal/terminos-conductores.md; cambiarla cuando cambie ese texto. */
-  termsVersion: '1.1',
+  termsVersion: '1.2',
   privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://faxird.com/privacidad',
   supportWhatsApp: process.env.EXPO_PUBLIC_SUPPORT_WHATSAPP ?? '',
 };

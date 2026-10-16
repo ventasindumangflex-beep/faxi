@@ -65,6 +65,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 - Carros de máximo 15 años (como Uber).
 - Haina fuera.
 - Durante el piloto cerrado se cobra a tu cuenta personal. Luego se cambia a la de la empresa.
+- **(16-oct) Sin registro en el INTRANT por ahora** (decisión del dueño, conociendo el riesgo de multas y retenciones). Sí se hacen la empresa con RNC y la póliza de responsabilidad civil. Los términos v1.2 ya no dicen que faxi esté registrada, y la publicidad tampoco puede decirlo.
 
 ## ⏳ Lo que falta
 

@@ -1,14 +1,14 @@
 # Términos y condiciones para pasajeros
 
-**Versión 1.1 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.2 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo.
 
-Estos términos regulan el uso de la aplicación **faxi** que ofrece **[RAZÓN SOCIAL]**, RNC **[RNC]** ("faxi"), plataforma registrada ante el INTRANT con el número **[NÚMERO DE REGISTRO INTRANT]**. Al crear una cuenta aceptas estos términos y la [Política de privacidad](/privacidad).
+Estos términos regulan el uso de la aplicación **faxi** que ofrece **[RAZÓN SOCIAL]**, RNC **[RNC]** ("faxi"). Al crear una cuenta aceptas estos términos y la [Política de privacidad](/privacidad).
 
 ## 1. Qué es faxi
 
-faxi es una plataforma tecnológica que conecta a pasajeros con conductores independientes que ofrecen transporte en taxi por plataforma en el Gran Santo Domingo, conforme a la Normativa Técnica del Servicio de Transporte en Taxis del INTRANT. El transporte lo presta el conductor. faxi gestiona la solicitud, calcula la tarifa, verifica a los conductores y atiende reclamaciones.
+faxi es una plataforma tecnológica que conecta a pasajeros con conductores independientes que ofrecen transporte de pasajeros en el Gran Santo Domingo. El transporte lo presta el conductor. faxi gestiona la solicitud, calcula la tarifa, verifica a los conductores y atiende reclamaciones.
 
 ## 2. Tu cuenta
 
@@ -62,7 +62,7 @@ Escríbenos por la sección de Soporte de la app o al WhatsApp **[NÚMERO]** ind
 ## 10. Responsabilidad
 
 - faxi verifica antes de activarlos que los conductores tengan el carnet del INTRANT, licencia, seguro, vehículo en regla y no antecedentes penales.
-- faxi mantiene una póliza de responsabilidad civil con **[ASEGURADORA]**, núm. **[NÚMERO DE PÓLIZA]**, que cubre a los pasajeros en caso de muerte o lesiones, incapacidad y gastos médicos, según exige el INTRANT.
+- faxi mantiene una póliza de responsabilidad civil con **[ASEGURADORA]**, núm. **[NÚMERO DE PÓLIZA]**, que cubre a los pasajeros en caso de muerte o lesiones, incapacidad y gastos médicos.
 - El conductor responde por la forma en que presta el transporte.
 - Nada de esto limita los derechos que te reconoce la Ley 358-05 de Protección de los Derechos del Consumidor.
 

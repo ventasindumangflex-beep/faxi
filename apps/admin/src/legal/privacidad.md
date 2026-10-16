@@ -1,6 +1,6 @@
 # Política de privacidad de faxi
 
-**Versión 1.1 · Vigente desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.2 · Vigente desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo.
 
@@ -70,8 +70,7 @@ Usamos proveedores que procesan datos por cuenta nuestra y bajo nuestras instruc
 Al usar faxi consientes la **transferencia de tus datos a Estados Unidos**, necesaria para prestar el servicio.
 
 También entregamos datos:
-- Al **INTRANT**, lo que exige su normativa para plataformas: el listado de conductores activos y el aviso por escrito de la salida de un conductor, en especial por mala conducta.
-- A otras autoridades dominicanas competentes, cuando la ley lo exija o mediante orden judicial.
+- A las autoridades dominicanas competentes (por ejemplo, el INTRANT o la Policía Nacional), solo cuando la ley lo exija o mediante orden judicial.
 
 ## 6. Cuánto tiempo guardamos tus datos
 

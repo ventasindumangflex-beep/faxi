@@ -19,7 +19,7 @@ Revisión hecha **sin abogado**, contra la Normativa Técnica del INTRANT para t
   - tribunales del Distrito Nacional.
 
 ## Falta: necesita la empresa (RNC)
-- [ ] **Registro de faxi ante el INTRANT** (oficina, representante legal con poder, documentos constitutivos, RNC y listado de conductores). Es el riesgo más grande.
+- [ ] ~~Registro de faxi ante el INTRANT~~ — **el dueño decidió no hacerlo por ahora (16-oct)**, conociendo el riesgo (multas a la plataforma, retención de vehículos a los conductores). Términos y privacidad v1.2 ya no dicen que faxi esté registrada ni que cumpla la normativa de plataformas. Si se registra más adelante, volver a poner el número de registro.
 - [ ] **Póliza de responsabilidad civil** a nombre de faxi (muerte o lesiones, incapacidad, gastos médicos). Completar aseguradora y número en la sección 9.
 - [ ] **Cuenta bancaria a nombre de la empresa** para la comisión. Durante el piloto cerrado se usa la del dueño. Antes de abrir al público, cambiar `COMMISSION_PAY_INFO`.
 - [ ] **ITBIS de la comisión** (con el contador): "20 % ITBIS incluido" o "20 % + ITBIS", y emitir comprobante fiscal.
