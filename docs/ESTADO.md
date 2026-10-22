@@ -104,3 +104,16 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 ### 🔧 Técnico, más adelante
 - Actualizar faxi a la versión 57 de Expo (para probar en iPhone con Expo Go).
 - Sentry: crear el proyecto y poner su clave en Expo.
+
+## 📝 Decisiones de la reunión con Virgilio (22-oct) · pendientes de aplicar
+- **Comisión: 10 %** (antes 20 %). Falta decidir cómo tratar la prueba FAXI OK, que tiene el 20 % escrito (regla 5): ajustarla para que lea la comisión configurada, o dejar el 20 % solo en faxi-pruebas.
+- **Tarifas más atractivas**, sobre todo Premium, SUV y Van. Propuesta para 5 km / 12 min: Económico RD$290 (igual, mínimo RD$150), Confort RD$335, Premium RD$437, SUV RD$484, Van RD$536.
+- **Gastos 50/50** entre los socios hasta que faxi sea rentable (agregar al acuerdo de socios).
+- **Números de prueba sin SMS** (faxi-pruebas → Auth → Phone → Test numbers): 18094093887 y 18296332695.
+- **Hoteles (regla de 200 m):** falta decidir si se quedan, con la lista que dé Virgilio, o si se quita la regla.
+- **Prueba de viaje completo** con 2 teléfonos el sábado o domingo, con Virgilio. Ese día: enseñarle el panel y crearle su usuario admin.
+- **Producción (Supabase faxi):** el dueño la aprobó. Se hace después de aplicar tarifas y comisión en pruebas y con las 2 pruebas OK.
+- **Google Play:** cuenta personal (US$25, verificación de 1 a 3 días). Exige una prueba cerrada con 12 personas durante 14 días, que sirve como piloto.
+- **SRL:** cuando la app esté lista. **Cuenta de banco:** unos 2 meses después de arrancar. **Contador:** la mamá del dueño.
+- **Hecho:** Google Workspace pagado, clave vieja de Maps borrada.
+- **Por decidir:** peajes, tiempo de espera y WhatsApp de soporte.
