@@ -76,7 +76,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 4. **Hacer privado el repositorio** en GitHub.
 5. **Cargar los hoteles** en el panel → *Zonas*.
 6. **Números de prueba sin SMS** en Supabase (faxi-pruebas), para usar 2 teléfonos.
-7. ~~**App del conductor:**~~ ✅ 26-oct: app de prueba instalada, conductor de prueba (…9783) registrado con 6 documentos, aprobado en el panel, se conecta y el mapa carga (SHA-1 de `com.faxi.conductor` agregada a `faxi-maps-android-2`).
+7. **App del conductor:** 26-oct: app de prueba instalada, conductor de prueba (…9783) registrado con 6 documentos, aprobado en el panel, se conecta. **El mapa NO carga todavía** (Google rechaza la clave): se agregó la SHA-1 de `com.faxi.conductor` a `faxi-maps-android-2` sin efecto; siguiente paso, poner en `faxi-conductor` (Preview) el mismo `GOOGLE_MAPS_ANDROID_KEY` que usa el pasajero y volver a hacer el build.
    - ⚠️ **Twilio sin aprobar:** solo manda SMS a números verificados (error 21608). Antes del piloto hay que completar el **Primary Customer Profile** en Twilio → Trust Hub; mientras tanto, verificar cada número de prueba en *Verified Caller IDs* o usar números de prueba con código fijo en Supabase.
 8. **Viaje completo con 2 teléfonos** (pasajero y conductor).
 10. **Pagar Google Workspace** antes del 28-oct.
