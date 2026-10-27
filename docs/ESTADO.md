@@ -70,13 +70,14 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 ## ⏳ Lo que falta
 
 ### 🟢 Se puede hacer ya (sin la empresa)
-1. ~~Instalar la app de prueba y ver el mapa~~ ✅ hecho el 15-oct. Falta **borrar la clave vieja** `faxi-maps-android` en Google Cloud.
+1. ~~Instalar la app de prueba y ver el mapa~~ ✅ hecho el 15-oct. ~~Borrar la clave vieja `faxi-maps-android`~~ ✅ 26-oct. Queda una "Copia de faxi-maps-android-2" sin uso conocido: revisar y borrar si no se usa.
 2. **faxird.com:** los 2 registros DNS en Squarespace (`docs/LANZAMIENTO.md`, arriba) y confirmar el correo de contacto del dominio ("Acción requerida", para que no lo suspendan).
 3. **Correo:** completar la configuración que pide Google Workspace ("Acción necesaria"), para que los correos no lleguen a spam.
 4. **Hacer privado el repositorio** en GitHub.
 5. **Cargar los hoteles** en el panel → *Zonas*.
 6. **Números de prueba sin SMS** en Supabase (faxi-pruebas), para usar 2 teléfonos.
-7. **App del conductor:** crearla en Expo (`eas init`) y hacer su app de prueba. Agregar su huella SHA-1 a la clave de Maps.
+7. ~~**App del conductor:**~~ ✅ 26-oct: app de prueba instalada, conductor de prueba (…9783) registrado con 6 documentos, aprobado en el panel, se conecta y el mapa carga (SHA-1 de `com.faxi.conductor` agregada a `faxi-maps-android-2`).
+   - ⚠️ **Twilio sin aprobar:** solo manda SMS a números verificados (error 21608). Antes del piloto hay que completar el **Primary Customer Profile** en Twilio → Trust Hub; mientras tanto, verificar cada número de prueba en *Verified Caller IDs* o usar números de prueba con código fijo en Supabase.
 8. **Viaje completo con 2 teléfonos** (pasajero y conductor).
 10. **Pagar Google Workspace** antes del 28-oct.
 11. **Piloto cerrado** con amigos y conductores que ya trabajan en Uber o inDrive (ya tienen carnet y antidoping).
