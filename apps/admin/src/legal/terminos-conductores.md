@@ -1,6 +1,6 @@
 # Términos y condiciones para conductores
 
-**Versión 1.2 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.3 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo, en especial la naturaleza de la relación (sección 2), los requisitos del INTRANT (sección 3), el seguro (sección 9) y el ITBIS de la comisión (sección 6).
 
@@ -50,10 +50,10 @@ faxi revisa tus documentos antes de activarte y puede pedírtelos de nuevo en cu
 
 - La tarifa la calcula la app según la distancia y el tiempo, y la ves antes de aceptar. No puedes cobrarle al pasajero montos adicionales a la tarifa que muestra la app. **[INDICAR SI LOS PEAJES Y EL TIEMPO DE ESPERA SE SUMAN A LA TARIFA]**
 - Por ahora todos los viajes son **en efectivo**: cobras al pasajero al terminar y **confirmas el cobro en la app**.
-- faxi cobra una comisión del **20 % [ITBIS INCLUIDO / MÁS ITBIS]** de la tarifa de cada viaje completado, y emite el comprobante fiscal correspondiente. La app te muestra, viaje por viaje, la tarifa, la comisión y tu ganancia.
+- faxi cobra una comisión del **10 % [ITBIS INCLUIDO / MÁS ITBIS]** de la tarifa de cada viaje completado, y emite el comprobante fiscal correspondiente. La app te muestra, viaje por viaje, la tarifa, la comisión y tu ganancia.
 - Como el pasajero te paga todo en efectivo, tú le debes a faxi la comisión de esos viajes. La app te muestra en todo momento cuánto debes. Ese saldo es exigible y **sigue vigente aunque desactives o elimines tu cuenta**.
 - Pagas la comisión **cada lunes**, por la semana anterior, por transferencia o depósito a la cuenta de faxi que aparece en la app (pantalla *Ganancias*). faxi registra tu pago y la app se actualiza. **faxi nunca te pedirá pagos por otro medio ni a otra cuenta**: si alguien lo hace, avísanos a Soporte.
-- Si lo que debes pasa de **RD$2,000**, no podrás conectarte para recibir viajes hasta que pagues. Si estás conectado, la app te desconecta al terminar el viaje con el que pasas ese límite. Al registrarse tu pago puedes volver a conectarte.
+- Si lo que debes pasa de **RD$1,000**, no podrás conectarte para recibir viajes hasta que pagues. Si estás conectado, la app te desconecta al terminar el viaje con el que pasas ese límite. Al registrarse tu pago puedes volver a conectarte.
 - Si no estás de acuerdo con el monto que la app dice que debes, escríbele a Soporte dentro de los **15 días** siguientes al viaje en cuestión. Revisaremos el caso y te responderemos.
 
 ## 7. Conducta y seguridad

@@ -1,20 +1,31 @@
 -- ╔══════════════════════════════════════════════════════════════════════════╗
--- ║ SOLO PARA PRODUCCIÓN: faxi (ref opehqsltrzhtsqqlctdg).                     ║
+-- ║ SOLO PARA PRODUCCIÓN: faxi. Antes de pegar, cambia PON_AQUI_EL_REF abajo. ║
 -- ║ Pegar completo en Supabase → faxi → SQL Editor → Run.  Se puede repetir.  ║
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 -- Hace: migraciones 005 (ubicación en vivo privada, zona real del Gran Santo Domingo, push automático) y
 -- 006 (solo efectivo), 007 (datos del conductor solo durante el viaje), 008 (endurecimiento), 009 (comisión en efectivo: pago semanal
 -- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados),
 -- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos),
--- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
+-- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), 013 (comisión 10 %, tarifas del 22-oct y límite de deuda de RD$1,000) y 014 (seguridad del panel: documentos para aprobar al conductor, ajustes solo SUPER_ADMIN, sin borrar tarifas/comisiones/ajustes, admins protegidos, anular pagos de comisión, nombre del conductor fijo), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 15-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK.
+-- Probado en faxi-pruebas el 28-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK.
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
   if exists (select 1 from public.users where email like '%@faxi.test') then
     raise exception 'ABORTADO: esta base tiene datos de demostración. Este archivo es solo para producción (faxi).';
   end if;
+end $$;
+
+-- Ref del proyecto de producción (Supabase → faxi → Project Settings → General → Project ID; 20 letras).
+-- No se guarda en el repositorio: escríbelo aquí solo en la copia que pegas. Sin él, el archivo se detiene sin cambiar nada.
+do $$
+declare v_ref text := 'PON_AQUI_EL_REF';   -- ← cambia esto por el ref de producción
+begin
+  if v_ref !~ '^[a-z]{20}$' then
+    raise exception 'ABORTADO: escribe el ref de producción en la línea marcada (PON_AQUI_EL_REF) antes de pegar.';
+  end if;
+  perform set_config('faxi.prod_ref', v_ref, false);
 end $$;
 
 -- ═════════════ Migración 005 ═════════════
@@ -584,16 +595,212 @@ update public.app_settings set value = '"CASH"' where key = 'PAYMENT_PROVIDER';
 -- Producción: vehículo con no más de 15 años de fabricación (INTRANT). faxi-pruebas queda en 0 (sin límite) para que FAXI OK corra igual.
 update public.app_settings set value = '15' where key = 'MAX_VEHICLE_AGE_YEARS';
 
+-- ═════════════ Migración 013 ═════════════
+-- FAXI · 013 · Comisión del 10 %, tarifas nuevas y límite de deuda de RD$1,000 (decisión del dueño y Virgilio, 22-oct-2026)
+-- Para 5 km y 12 min: Económico 290 (igual) · Confort 335 · Premium 437 · SUV 484 · Van 536.
+-- Los viajes ya terminados conservan su comisión (cada viaje guarda la suya). La auditoría guarda los valores viejos.
+-- Se puede correr más de una vez.
+
+-- ───────── 1. Comisión: 10 % para todas las categorías ─────────
+do $$ begin
+  if exists (select 1 from public.commissions where is_active and (category is not null or rate <> 0.10))
+     or not exists (select 1 from public.commissions where is_active and category is null) then
+    update public.commissions set is_active = false where is_active;
+    insert into public.commissions(category, rate) values (null, 0.10);
+  end if;
+end $$;
+
+-- ───────── 2. Tarifas (base / por km / por min / mínimo) ─────────
+update public.pricing_rules r
+   set base_fare = n.base, per_km = n.km, per_min = n.min, minimum_fare = n.minimo
+  from (values ('ECONOMICO'::public.vehicle_category,  80, 30, 5, 150),
+               ('CONFORT'::public.vehicle_category,   100, 35, 5, 170),
+               ('PREMIUM'::public.vehicle_category,   135, 46, 6, 220),
+               ('SUV'::public.vehicle_category,       150, 50, 7, 240),
+               ('VAN'::public.vehicle_category,       165, 55, 8, 280)) as n(cat, base, km, min, minimo)
+ where r.category = n.cat and r.is_active
+   and (r.base_fare, r.per_km, r.per_min, r.minimum_fare) is distinct from (n.base::numeric, n.km::numeric, n.min::numeric, n.minimo::numeric);
+
+-- ───────── 3. Límite de deuda: RD$1,000 ─────────
+update public.app_settings set value = '1000'
+ where key = 'COMMISSION_DEBT_LIMIT' and value is distinct from '1000'::jsonb;
+
+create or replace function public.commission_debt_limit() returns numeric
+language sql stable security definer set search_path = public as $$
+  select coalesce(public.setting_num('COMMISSION_DEBT_LIMIT'), 1000)
+$$;
+revoke all on function public.commission_debt_limit() from public, anon, authenticated;
+
+-- ═════════════ Migración 014 ═════════════
+-- FAXI · 014 · Seguridad del panel (revisión del 27-oct-2026)
+-- a) Aprobar a un conductor exige sus 6 documentos aprobados y vigentes (como matrícula y seguro para el vehículo).
+-- b) Los ajustes del sistema (app_settings, incluidas la cuenta de pago y el día de pago) solo los cambia un SUPER_ADMIN.
+--    Los admins los siguen viendo.
+-- c) Nadie borra tarifas, comisiones ni ajustes desde las apps o la API (se desactivan, no se borran).
+-- d) Solo un SUPER_ADMIN cambia o desactiva a otro ADMIN o SUPER_ADMIN.
+-- e) Un SUPER_ADMIN puede anular un pago de comisión, con motivo; queda en la auditoría.
+-- f) Un conductor aprobado (o suspendido) no puede cambiar su nombre; solo un admin.
+-- Pendiente (no se hace aquí): avisar o suspender cuando un documento se vence.
+-- Se puede correr más de una vez.
+
+-- ───────── a) Documentos del conductor para aprobarlo ─────────
+create or replace function public.guard_driver_approval() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_missing text;
+begin
+  if new.status = 'APPROVED' and old.status is distinct from 'APPROVED' and not public.is_system_call() then
+    select string_agg(x.label, ', ' order by x.ord) into v_missing
+      from (values (1, 'FOTO_PERFIL', 'foto de perfil'), (2, 'LICENCIA', 'licencia'), (3, 'CEDULA', 'cédula'),
+                   (4, 'BUENA_CONDUCTA', 'buena conducta'), (5, 'CARNET_INTRANT', 'carnet del INTRANT'),
+                   (6, 'ANTIDOPING', 'antidoping')) as x(ord, doc, label)
+     where not exists (select 1 from public.driver_documents d
+                        where d.driver_id = new.id and d.type::text = x.doc and d.status = 'APPROVED'
+                          and (d.expires_at is null or d.expires_at >= current_date));
+    if v_missing is not null then
+      raise exception 'No se puede aprobar al conductor: falta aprobar (o está vencido): %.', v_missing using errcode = 'FX409';
+    end if;
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_driver_approval() from public, anon, authenticated;
+
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'drivers_guard_approval' and tgrelid = 'public.drivers'::regclass) then
+    create trigger drivers_guard_approval before update of status on public.drivers
+      for each row execute function public.guard_driver_approval();
+  end if;
+end $$;
+
+-- ───────── b) Ajustes del sistema: escritura solo SUPER_ADMIN (la lectura no cambia) ─────────
+alter policy app_settings_admin on public.app_settings
+  using (public.is_super_admin()) with check (public.is_super_admin());
+
+-- ───────── c) Sin borrar tarifas, comisiones ni ajustes ─────────
+revoke delete, truncate on public.app_settings, public.pricing_rules, public.commissions from anon, authenticated, service_role;
+
+-- ───────── d) y f) Protección de administradores y del nombre del conductor ─────────
+create or replace function public.guard_user_update() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.is_system_call() or current_setting('faxi.self_delete', true) = 'on' then return new; end if;
+  if new.id <> old.id then raise exception 'No autorizado' using errcode = '42501'; end if;
+  if new.role is distinct from old.role and not public.is_super_admin() then
+    raise exception 'Solo un SUPER_ADMIN puede cambiar roles' using errcode = '42501';
+  end if;
+  if old.role in ('ADMIN','SUPER_ADMIN') and old.id is distinct from auth.uid() and not public.is_super_admin()
+     and row(new.*) is distinct from row(old.*) then
+    raise exception 'Solo un SUPER_ADMIN puede cambiar o desactivar a un administrador' using errcode = '42501';
+  end if;
+  if (new.is_active is distinct from old.is_active or new.email is distinct from old.email) and not public.is_admin() then
+    raise exception 'No autorizado' using errcode = '42501';
+  end if;
+  if new.full_name is distinct from old.full_name and not public.is_admin()
+     and exists (select 1 from public.drivers d where d.id = new.id and d.status in ('APPROVED','SUSPENDED')) then
+    raise exception 'Tu nombre ya fue verificado. Para cambiarlo, escribe a soporte.' using errcode = '42501';
+  end if;
+  return new;
+end $$;
+
+-- ───────── e) Anular un pago de comisión ─────────
+alter table public.commission_payments add column if not exists voided_at timestamptz;
+alter table public.commission_payments add column if not exists voided_by uuid references public.users(id) on delete set null;
+alter table public.commission_payments add column if not exists void_reason text
+  check (void_reason is null or char_length(void_reason) between 5 and 300);
+
+-- La deuda no cuenta los pagos anulados
+create or replace function public.driver_commission_owed(p_driver uuid) returns numeric
+language sql stable security definer set search_path = public as $$
+  select coalesce((select sum(faxi_commission) from public.trips
+                   where driver_id = p_driver and status = 'COMPLETED' and payment_method = 'CASH'), 0)
+       - coalesce((select sum(amount) from public.commission_payments where driver_id = p_driver and voided_at is null), 0)
+$$;
+revoke all on function public.driver_commission_owed(uuid) from public, anon, authenticated;
+
+-- Igual que en 010, sin contar pagos anulados como "último pago"
+create or replace function public.my_commission_status() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_owed numeric; v_limit numeric; p public.commission_payments; v_approved boolean;
+begin
+  if public.auth_role() is distinct from 'DRIVER' then raise exception 'Solo conductores' using errcode = '42501'; end if;
+  v_owed := public.driver_commission_owed(auth.uid());
+  v_limit := public.commission_debt_limit();
+  v_approved := exists (select 1 from public.drivers where id = auth.uid() and status = 'APPROVED');
+  select * into p from public.commission_payments where driver_id = auth.uid() and voided_at is null order by created_at desc limit 1;
+  return jsonb_build_object(
+    'owed', v_owed, 'limit', v_limit, 'blocked', v_owed > v_limit,
+    'pay_day', coalesce(public.setting_text('COMMISSION_PAY_DAY'), 'lunes'),
+    'pay_info', case when v_approved then public.setting_text('COMMISSION_PAY_INFO') end,
+    'last_payment_amount', p.amount, 'last_payment_at', p.created_at);
+end $$;
+revoke all on function public.my_commission_status() from public, anon;
+grant execute on function public.my_commission_status() to authenticated;
+
+-- Igual que en 009, sin contar pagos anulados como "último pago"
+create or replace function public.admin_commission_balances()
+returns table(driver_id uuid, full_name text, phone text, driver_status public.approval_status, availability public.driver_availability,
+  owed numeric, last_payment_at timestamptz, blocked boolean)
+language plpgsql stable security definer set search_path = public as $$
+#variable_conflict use_column
+declare v_limit numeric := public.commission_debt_limit();
+begin
+  if not public.is_admin() then raise exception 'No autorizado' using errcode = '42501'; end if;
+  return query
+  select d.id, u.full_name, u.phone, d.status, d.availability, x.owed,
+         (select max(cp.created_at) from public.commission_payments cp where cp.driver_id = d.id and cp.voided_at is null), x.owed > v_limit
+  from public.drivers d
+  join public.users u on u.id = d.id
+  cross join lateral (select public.driver_commission_owed(d.id) as owed) x
+  where d.status = 'APPROVED' or x.owed <> 0
+  order by x.owed desc, u.full_name;
+end $$;
+revoke all on function public.admin_commission_balances() from public, anon;
+grant execute on function public.admin_commission_balances() to authenticated;
+
+create or replace function public.admin_void_commission_payment(p_payment_id uuid, p_reason text)
+returns public.commission_payments language plpgsql security definer set search_path = public as $$
+declare cp public.commission_payments; v_owed numeric; v_limit numeric;
+begin
+  if not public.is_super_admin() then
+    raise exception 'Solo un SUPER_ADMIN puede anular pagos de comisión' using errcode = '42501';
+  end if;
+  p_reason := trim(p_reason);
+  if coalesce(char_length(p_reason), 0) < 5 then
+    raise exception 'Escribe el motivo de la anulación (al menos 5 letras)' using errcode = '22023';
+  end if;
+  select * into cp from public.commission_payments where id = p_payment_id for update;
+  if not found then raise exception 'Pago no encontrado' using errcode = 'P0002'; end if;
+  if cp.voided_at is not null then raise exception 'Este pago ya fue anulado' using errcode = 'FX409'; end if;
+  update public.commission_payments set voided_at = now(), voided_by = auth.uid(), void_reason = left(p_reason, 300)
+   where id = cp.id returning * into cp;
+  -- Si al anular vuelve a pasar del límite, se desconecta (si está esperando viajes)
+  v_owed := public.driver_commission_owed(cp.driver_id);
+  v_limit := public.commission_debt_limit();
+  if v_owed > v_limit then
+    update public.drivers set availability = 'OFFLINE' where id = cp.driver_id and availability = 'ONLINE';
+    update public.trip_requests set status = 'CANCELLED', responded_at = now() where driver_id = cp.driver_id and status = 'PENDING';
+  end if;
+  perform public.push_notification(cp.driver_id, 'COMMISSION_PAYMENT_VOIDED', 'Pago de comisión anulado',
+    format('Anulamos tu pago de %s. Motivo: %s. Ahora debes %s.', public.fmt_rd(cp.amount), cp.void_reason, public.fmt_rd(greatest(v_owed, 0))),
+    jsonb_build_object('payment_id', cp.id, 'owed', v_owed));
+  perform public.log_action('COMMISSION_PAYMENT_VOIDED', 'commission_payments', cp.id::text,
+    jsonb_build_object('driver_id', cp.driver_id, 'amount', cp.amount, 'reason', cp.void_reason));
+  return cp;
+end $$;
+revoke all on function public.admin_void_commission_payment(uuid, text) from public, anon;
+grant execute on function public.admin_void_commission_payment(uuid, text) to authenticated;
+
 -- ═════════════ URL del push en producción ═════════════
 do $$ begin
   if not exists (select 1 from vault.secrets where name = 'faxi_push_url') then
-    perform vault.create_secret('https://opehqsltrzhtsqqlctdg.supabase.co/functions/v1/send-push', 'faxi_push_url', 'URL de la Edge Function send-push');
+    perform vault.create_secret('https://' || current_setting('faxi.prod_ref') || '.supabase.co/functions/v1/send-push', 'faxi_push_url', 'URL de la Edge Function send-push');
   end if;
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 15-oct-2026, con 009–012): tablas 22 · funciones 64 · politicas 46 · triggers 35 · indices 55 · cron 1
---   h_tablas d74d15 · h_funciones 9a5ac3 · h_politicas 4cbe1d · h_triggers 1318ca · h_indices 50e301 · vault 2 · proveedor CASH · año_minimo = año actual − 15
+-- Esperado (faxi-pruebas, 28-oct-2026, con 001–014): tablas 22 · funciones 66 · politicas 46 · triggers 36 · indices 55 · cron 1
+--   h_tablas d74d15 · h_funciones 6c98d2 · h_politicas 4cbe1d · h_triggers eb8b41 · h_indices 50e301 · vault 2 · proveedor CASH · año_minimo = año actual − 15
+--   (en faxi-pruebas proveedor es MOCK y año_minimo 2000 a propósito; en producción deben salir CASH y año actual − 15)
+--   politicas cuenta public + storage + realtime (46); HUELLA_ESQUEMA.sql cuenta solo public + storage (44)
 with
  t as (select string_agg(table_name, ',' order by table_name) s, count(*) n from information_schema.tables where table_schema='public' and table_type='BASE TABLE'),
  f as (select string_agg(p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', ',' order by p.proname, pg_get_function_identity_arguments(p.oid)) s, count(*) n from pg_proc p join pg_namespace ns on ns.oid=p.pronamespace where ns.nspname='public'),
