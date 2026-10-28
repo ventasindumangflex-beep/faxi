@@ -58,7 +58,7 @@ export default function Commissions() {
       <div className="head"><h1>Comisiones</h1></div>
       <p className="muted small" style={{ margin: 0 }}>
         Los conductores pagan cada {payDay} la comisión de sus viajes en efectivo. Si alguno debe más de {limit != null ? rd(limit) : '…'}, no puede
-        conectarse hasta que registres su pago aquí. El límite y el día se cambian en Tarifas y ajustes.
+        conectarse hasta que registres su pago aquí. El límite y el día solo los cambia el SUPER_ADMIN (Tarifas y ajustes).
       </p>
       {msg ? <div className={'banner' + (msg.ok ? ' info' : '')}>{msg.text}</div> : null}
 

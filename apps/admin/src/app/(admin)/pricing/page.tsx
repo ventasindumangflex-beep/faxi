@@ -14,16 +14,19 @@ export default function Pricing() {
   const [rate, setRate] = useState('');
   const [settings, setSettings] = useState<(Setting & { draft: string })[]>([]);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [isSuper, setIsSuper] = useState(false);
 
   const load = useCallback(async () => {
-    const [r, c, s] = await Promise.all([
+    const [r, c, s, su] = await Promise.all([
       sb().from('pricing_rules').select('*').order('sort_order'),
       sb().from('commissions').select('rate').eq('is_active', true).is('category', null).maybeSingle(),
       sb().from('app_settings').select('key, value, description').order('key'),
+      sb().rpc('is_super_admin'),
     ]);
     setRules((r.data as Rule[]) ?? []);
     setRate(c.data ? String(Math.round(Number(c.data.rate) * 1000) / 10) : '');
     setSettings(((s.data as Setting[]) ?? []).map((x) => ({ ...x, draft: JSON.stringify(x.value) })));
+    setIsSuper(su.data === true);
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -88,6 +91,8 @@ export default function Pricing() {
         <p className="muted small" style={{ margin: 0 }}>Aplica a viajes que terminen desde ahora. Queda registrado en la auditoría.</p>
       </div>
 
+      {/* Solo el SUPER_ADMIN cambia los ajustes (migración 014); el servidor también lo exige */}
+      {isSuper ? (
       <div className="card">
         <h2>Ajustes del sistema</h2>
         {settings.map((s) => (
@@ -99,6 +104,7 @@ export default function Pricing() {
           </div>
         ))}
       </div>
+      ) : <p className="muted small">Los ajustes del sistema solo los ve y cambia el SUPER_ADMIN.</p>}
     </>
   );
 }

@@ -49,7 +49,9 @@ begin
   t := public.driver_advance_trip(t.id, 'ONTRIP');
   t := public.driver_advance_trip(t.id, 'FINISHED');
   assert t.status = 'FINISHED', 'esperado FINISHED';
-  assert t.faxi_commission = round(t.final_fare * 0.20, 2), 'comisión incorrecta';
+  -- Compara con la comisión activa (no con un número fijo): sigue valiendo si cambia la comisión
+  assert t.commission_rate = (select rate from public.commissions where is_active and category is null), 'tasa de comisión incorrecta';
+  assert t.faxi_commission = round(t.final_fare * t.commission_rate, 2), 'comisión incorrecta';
   assert t.faxi_commission + t.driver_earnings = t.final_fare, 'reparto no cuadra';
 
   -- RLS: otro pasajero no ve el viaje
