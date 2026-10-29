@@ -40,7 +40,13 @@ begin
   update public.app_settings set value = '"Otro banco"' where key = 'COMMISSION_PAY_INFO';
   execute 'reset role';
   assert n = 1, 'el admin no ve los datos de pago';
-  assert public.setting_text('COMMISSION_PAY_INFO') = 'Otro banco', 'el admin no pudo editar los datos de pago';
+  -- Desde la migración 014 solo el SUPER_ADMIN cambia los datos de pago (decisión del dueño, 28-oct-2026)
+  assert public.setting_text('COMMISSION_PAY_INFO') = v_info, 'un ADMIN pudo editar los datos de pago';
+  perform set_config('request.jwt.claims', json_build_object('sub', (select id from public.users where role = 'SUPER_ADMIN' limit 1), 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  update public.app_settings set value = '"Otro banco"' where key = 'COMMISSION_PAY_INFO';
+  execute 'reset role';
+  assert public.setting_text('COMMISSION_PAY_INFO') = 'Otro banco', 'el SUPER_ADMIN no pudo editar los datos de pago';
 
   raise notice 'FAXI 010 OK · datos de pago solo para conductores aprobados';
 end $$;
