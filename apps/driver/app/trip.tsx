@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createLocationBroadcaster, driver, DRIVER_CAN_CANCEL, DRIVER_NEXT, rd, trips, type TripStatus } from '@faxi/core';
+import { airportLine, createLocationBroadcaster, driver, DRIVER_CAN_CANCEL, DRIVER_NEXT, rd, trips, waitLine, type TripStatus } from '@faxi/core';
 import {
   Avatar, Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, T, c, coord, f, region, useTripDetails, FaxiMap,
 } from '@faxi/ui';
@@ -120,6 +120,8 @@ export default function TripScreen() {
             <T v="title">Cobra en efectivo</T>
             <View style={{ alignItems: 'center', gap: 4 }}>
               <T style={{ fontFamily: f.black, fontSize: 48, letterSpacing: -1.6 }}>{rd(t.final_fare)}</T>
+              {waitLine(t) ? <T v="caption">{waitLine(t)}</T> : null}
+              {airportLine(t) ? <T v="caption">{airportLine(t)}</T> : null}
               <T v="caption">Tu ganancia {rd(t.driver_earnings)} · comisión faxi {rd(t.faxi_commission)}</T>
             </View>
             {err ? <Banner text={err} /> : null}

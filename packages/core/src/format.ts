@@ -4,6 +4,12 @@ export const rd = (n?: number | null) =>
   n == null ? '—' : 'RD$ ' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 export const km = (n?: number | null) => (n == null ? '—' : `${Number(n).toFixed(1)} km`);
 export const mins = (n?: number | null) => (n == null ? '—' : `${Math.max(1, Math.round(n))} min`);
+/** Línea de espera para la pantalla del cobro (la calcula el servidor al terminar: migración 016). null si no hubo espera. */
+export const waitLine = (t: { wait_minutes?: number | null; wait_charge?: number | null }) =>
+  t.wait_minutes ? `Espera: ${Math.round(t.wait_minutes)} min${t.wait_charge ? ` · ${rd(t.wait_charge)}` : ''}` : null;
+/** Línea del recargo del aeropuerto (migración 017; ya va incluido en el precio). null si no hay. */
+export const airportLine = (t: { airport_surcharge?: number | null }) =>
+  t.airport_surcharge ? `Recargo aeropuerto: ${rd(t.airport_surcharge)}` : null;
 
 export function fmtDate(iso?: string | null) {
   if (!iso) return '';

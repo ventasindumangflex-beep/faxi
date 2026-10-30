@@ -13,6 +13,7 @@ interface DriverRow {
   vehicle: Vehicle | null;
   docs: Doc[];
 }
+interface Expiring { driver_id: string; full_name: string; phone: string | null; label: string; expires_at: string; days_left: number; expired: boolean }
 
 const TABS: { k: Approval; label: string }[] = [
   { k: 'PENDING', label: 'Por revisar' }, { k: 'APPROVED', label: 'Aprobados' }, { k: 'REJECTED', label: 'Rechazados' }, { k: 'SUSPENDED', label: 'Suspendidos' },
@@ -29,6 +30,7 @@ export default function Drivers() {
   const [vdocs, setVdocs] = useState<Doc[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState('');
+  const [expiring, setExpiring] = useState<Expiring[]>([]);
 
   const load = useCallback(async () => {
     const { data, error } = await sb().from('drivers')
@@ -37,6 +39,12 @@ export default function Drivers() {
     if (error) setErr(error.message); else { setRows(data as DriverRow[]); setErr(null); }
   }, [tab]);
   useEffect(() => { load(); }, [load]);
+  // Documentos vencidos o que vencen en 30 días (migración 015). Con uno vencido el conductor no puede conectarse.
+  useEffect(() => {
+    sb().rpc('admin_expiring_documents', { p_days: 30 }).then(({ data, error }) => {
+      if (error) setErr(error.message); else setExpiring((data as Expiring[]) ?? []);
+    });
+  }, []);
 
   async function openDriver(d: DriverRow) {
     setOpen(d);
@@ -97,6 +105,28 @@ export default function Drivers() {
         <h1>Conductores</h1>
         <input className="input" placeholder="Buscar nombre, teléfono, placa…" value={q} onChange={(e) => setQ(e.target.value)} style={{ width: 280 }} />
       </div>
+      {expiring.length ? (
+        <div className="card">
+          <h2>Documentos vencidos o por vencer (30 días)</h2>
+          <p className="muted small" style={{ margin: 0 }}>Con un documento vencido el conductor no puede conectarse hasta que apruebes el nuevo.</p>
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Conductor</th><th>Teléfono</th><th>Documento</th><th>Vence</th><th>Estado</th></tr></thead>
+              <tbody>
+                {expiring.map((x) => (
+                  <tr key={x.driver_id + x.label}>
+                    <td><b>{x.full_name}</b></td>
+                    <td>{x.phone ?? '—'}</td>
+                    <td>{x.label}</td>
+                    <td>{x.expires_at}</td>
+                    <td>{x.expired ? <span className="pill error">Vencido</span> : <span className="pill warn">Vence en {x.days_left} día{x.days_left === 1 ? '' : 's'}</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : null}
       <div className="tabs">{TABS.map((t) => <button key={t.k} className={tab === t.k ? 'on' : ''} onClick={() => setTab(t.k)}>{t.label}</button>)}</div>
       {err ? <div className="banner">{err}</div> : null}
       <div className="card table-wrap">

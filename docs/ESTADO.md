@@ -1,4 +1,4 @@
-# faxi · Estado del proyecto (15-oct-2026)
+# faxi · Estado del proyecto (30-oct-2026)
 
 Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO.md`, `docs/PENDIENTES_PRODUCCION.md` y `docs/REVISION_LEGAL.md`.
 
@@ -23,12 +23,16 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 - Avisos (push), informes de errores (Sentry) e íconos.
 
 ### Reglas del negocio (en el servidor)
-- Precios, comisión del **20 %**, estados del viaje y búsqueda de conductor.
+- Precios, comisión del **10 %**, estados del viaje y búsqueda de conductor.
+- **Espera:** 5 minutos gratis entre "Llegué" e "Iniciar"; después se cobra la tarifa por minuto de la categoría (migración 016).
+- **Aeropuerto:** recargo fijo opcional, apagado en RD$0; solo el SUPER_ADMIN lo cambia en Zonas. Los peajes no se cobran aparte (migración 017).
+- **Documentos vencidos:** con un documento vencido el conductor no se conecta; revisión diaria a las 3:00 a. m.; lista en el panel → Conductores (migración 015).
+- **Datos:** ubicaciones y avisos 90 días, documentos rechazados 1 año, viajes 10 años (se anonimizan, no se borran). Plazos editables por el SUPER_ADMIN (migración 018).
 - Zona: **Gran Santo Domingo** (Distrito Nacional + provincia Santo Domingo). **Haina fuera** en el piloto.
 - **Solo efectivo.**
 - **Comisión semanal:**
   - El conductor paga **cada lunes**.
-  - Si debe más de **RD$2,000** no puede conectarse.
+  - Si debe más de **RD$1,000** no puede conectarse.
   - Al registrar su pago, vuelve a poder conectarse.
 - **Cuentas para pagar la comisión** (Banreservas, Popular, BHD): solo las ven los conductores aprobados. Están cargadas en faxi-pruebas.
 - **Carros de máximo 15 años** (hoy 2011 o más nuevo). El año mínimo sube solo cada año.
@@ -39,7 +43,8 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
   - La seguridad se revisó.
 
 ### Base de datos
-- **faxi-pruebas** tiene las migraciones 001–012. Pasan todas las pruebas: FAXI OK, FAXI MÓVIL OK, 005, 006, 007, 009, 010, 011 y 012.
+- **faxi-pruebas** tiene las migraciones **001–018** (30-oct). Probadas: FAXI OK, FAXI MÓVIL OK, 005, 006, 009 (zonas) y 016 (espera) después de la 017, y las nuevas 017 (aeropuerto) y 018 (retención). Huella medida: 22 tablas · 78 funciones · 46 políticas · 39 triggers · 55 índices · 3 tareas programadas. Tipos de las 3 apps: OK.
+- **Pendiente de la 018:** quitar de Storage los archivos de los documentos borrados (hoy se borra la fila, no el archivo). Los códigos OTP los maneja Supabase Auth.
 - **Producción no se ha tocado.** Todo lo que necesita está listo en `supabase/PRODUCCION_PEGAR.sql`.
 
 ### Mapa
@@ -61,7 +66,8 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 - Lista de lo que falta, en `docs/REVISION_LEGAL.md`.
 
 ### Decisiones tomadas
-- Comisión: 20 %, pago los lunes, límite de RD$2,000.
+- Comisión: **10 %**, pago los lunes, límite de deuda de **RD$1,000** (desde el 22-oct; antes 20 % y RD$2,000).
+- **(29-oct) Espera 5 min gratis; peajes no se cobran aparte, solo un recargo fijo opcional del aeropuerto (el monto lo define el dueño); la regla de 200 m de hoteles se queda; los viajes se anonimizan a los 10 años (la contadora debe confirmarlo).**
 - Carros de máximo 15 años (como Uber).
 - Haina fuera.
 - Durante el piloto cerrado se cobra a tu cuenta personal. Luego se cambia a la de la empresa.
@@ -70,19 +76,22 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 ## ⏳ Lo que falta
 
 ### 🟢 Se puede hacer ya (sin la empresa)
-1. ~~Instalar la app de prueba y ver el mapa~~ ✅ hecho el 15-oct. Falta **borrar la clave vieja** `faxi-maps-android` en Google Cloud.
+1. ~~Instalar la app de prueba y ver el mapa~~ ✅ hecho el 15-oct. ~~Borrar la clave vieja `faxi-maps-android`~~ ✅ 26-oct. Queda una "Copia de faxi-maps-android-2" sin uso conocido: revisar y borrar si no se usa.
 2. **faxird.com:** los 2 registros DNS en Squarespace (`docs/LANZAMIENTO.md`, arriba) y confirmar el correo de contacto del dominio ("Acción requerida", para que no lo suspendan).
 3. **Correo:** completar la configuración que pide Google Workspace ("Acción necesaria"), para que los correos no lleguen a spam.
 4. **Hacer privado el repositorio** en GitHub.
-5. **Cargar los hoteles** en el panel → *Zonas*.
+5. **Cargar los hoteles** en el panel → *Zonas* (guía para Virgilio en `docs/HOTELES_ZONAS.md`; plantilla en `docs/plantilla-hoteles.csv`). Crear el usuario ADMIN de Virgilio con `supabase/CREAR_ADMIN_VIRGILIO.sql` (solo lo corre el dueño).
 6. **Números de prueba sin SMS** en Supabase (faxi-pruebas), para usar 2 teléfonos.
-7. **App del conductor:** crearla en Expo (`eas init`) y hacer su app de prueba. Agregar su huella SHA-1 a la clave de Maps.
+7. **App del conductor** (27-oct): conductor de prueba registrado con sus 6 documentos y aprobado en el panel; se conecta y ya completó un viaje de prueba (cobro y calificación bien).
+   - **Mapa:** la clave de Maps que tenía `faxi-conductor` en Expo era distinta a la del pasajero. Se corrigió el 27-oct y se hizo el build `b9c25fae` (APK preview). El paquete `com.faxi.conductor` y su SHA-1 ya están en `faxi-maps-android-2`. **Confirmado el 28-oct en un teléfono: el mapa del conductor carga** con ese build (Santo Domingo, estado "En línea"). No hace falta tocar nada más en Google para el mapa.
+   - **Twilio sin aprobar:** solo manda SMS a números verificados (error 21608). Antes del piloto hay que completar el **Primary Customer Profile** en Twilio → Trust Hub. Mientras tanto: verificar cada número en *Verified Caller IDs*, o usar números de prueba con código fijo en Supabase (solo faxi-pruebas).
+   - **Pendiente de limpieza:** al terminar las pruebas, borrar los números de prueba con código fijo en Supabase (faxi-pruebas → Authentication → Sign In / Providers → Phone).
 8. **Viaje completo con 2 teléfonos** (pasajero y conductor).
 10. **Pagar Google Workspace** antes del 28-oct.
 11. **Piloto cerrado** con amigos y conductores que ya trabajan en Uber o inDrive (ya tienen carnet y antidoping).
 12. Decidir:
-    - si los **peajes y el tiempo de espera** se suman a la tarifa;
-    - el **plazo de conservación de datos** (sugerido: 10 años para viajes, 90 días para ubicaciones);
+    - el **monto del recargo del aeropuerto** (hoy RD$0 = apagado);
+    - confirmar con la contadora los **10 años** de los viajes;
     - el **WhatsApp de soporte**.
 
 ### 🔴 Necesita la empresa (RNC)
@@ -104,3 +113,17 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 ### 🔧 Técnico, más adelante
 - Actualizar faxi a la versión 57 de Expo (para probar en iPhone con Expo Go).
 - Sentry: crear el proyecto y poner su clave en Expo.
+
+## 📝 Decisiones de la reunión con Virgilio (22-oct) · pendientes de aplicar
+- **Comisión: 10 %** (antes 20 %). Falta decidir cómo tratar la prueba FAXI OK, que tiene el 20 % escrito (regla 5): ajustarla para que lea la comisión configurada, o dejar el 20 % solo en faxi-pruebas.
+- **Tarifas más atractivas**, sobre todo Premium, SUV y Van. Propuesta para 5 km / 12 min: Económico RD$290 (igual, mínimo RD$150), Confort RD$335, Premium RD$437, SUV RD$484, Van RD$536.
+- **Gastos 50/50** entre los socios hasta que faxi sea rentable (agregar al acuerdo de socios).
+- **Números de prueba sin SMS** (faxi-pruebas → Auth → Phone → Test numbers): 18094093887 y 18296332695.
+- **Hoteles (regla de 200 m):** falta decidir si se quedan, con la lista que dé Virgilio, o si se quita la regla.
+- **Prueba de viaje completo** con 2 teléfonos el sábado o domingo, con Virgilio. Ese día: enseñarle el panel y crearle su usuario admin.
+- **Producción (Supabase faxi):** el dueño la aprobó. Se hace después de aplicar tarifas y comisión en pruebas y con las 2 pruebas OK.
+- **Google Play:** cuenta personal (US$25, verificación de 1 a 3 días). Exige una prueba cerrada con 12 personas durante 14 días, que sirve como piloto.
+- **SRL:** cuando la app esté lista. **Cuenta de banco:** unos 2 meses después de arrancar. **Contador:** la mamá del dueño.
+- **Hecho:** Google Workspace pagado, clave vieja de Maps borrada.
+- **Decidido el 29-oct:** espera de 5 min gratis, peajes sin cobro aparte (recargo opcional del aeropuerto), regla de 200 m se queda, retención de datos (migraciones 016, 017 y 018 aplicadas y probadas en faxi-pruebas).
+- **Por decidir:** monto del recargo del aeropuerto y WhatsApp de soporte.

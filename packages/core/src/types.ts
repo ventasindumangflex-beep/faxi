@@ -25,6 +25,8 @@ export interface Trip {
   distance_km: number; duration_min: number;
   estimated_fare: number; final_fare: number | null; commission_rate: number | null;
   faxi_commission: number | null; driver_earnings: number | null;
+  wait_minutes?: number | null; wait_charge?: number | null;   // espera entre "Llegué" e "Iniciar" (migración 016)
+  airport_surcharge?: number | null;                           // recargo del aeropuerto, ya incluido en los precios (017)
   payment_method: PaymentMethod; cancel_reason: string | null;
   requested_at: string; assigned_at: string | null; arrived_at: string | null; started_at: string | null;
   finished_at: string | null; completed_at: string | null; cancelled_at: string | null;
@@ -33,6 +35,7 @@ export interface Trip {
 export interface Quote {
   category: Category; display_name: string; capacity: number; distance_km: number; duration_min: number;
   total: number; minimum_fare: number; surcharge: number;
+  airport_surcharge?: number;   // ya incluido en total (migración 017); 0 = sin recargo
 }
 
 export interface TripDetails {

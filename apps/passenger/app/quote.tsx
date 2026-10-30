@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
+import { airportLine, km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
 import {
   Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, StatusScrim, T, c, coord, region, FaxiMap,
 } from '@faxi/ui';
@@ -59,11 +59,14 @@ export default function QuoteScreen() {
 
       <Sheet collapsible
         peek={chosen ? (
-          <Row>
-            <Icon name={ICON[chosen.category]} color={c.primaryDark} />
-            <T v="label" numberOfLines={1} style={{ flex: 1 }}>{chosen.display_name}</T>
-            <T v="h2">{rd(chosen.total)}</T>
-          </Row>
+          <View style={{ gap: 2 }}>
+            <Row>
+              <Icon name={ICON[chosen.category]} color={c.primaryDark} />
+              <T v="label" numberOfLines={1} style={{ flex: 1 }}>{chosen.display_name}</T>
+              <T v="h2">{rd(chosen.total)}</T>
+            </Row>
+            {airportLine(chosen) ? <T v="caption">{airportLine(chosen)} (incluido)</T> : null}
+          </View>
         ) : null}
         footer={(
           <View style={{ gap: 10 }}>
