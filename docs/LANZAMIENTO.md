@@ -35,7 +35,7 @@ Lo demás como está → **Guardar**. Si dice que `www` ya existe, borra el `www
 
 | Parte | Estado |
 |---|---|
-| Base de datos (faxi-pruebas) | Migraciones 001–018 aplicadas (30-oct); pruebas OK hasta `FAXI 018 OK` (016 espera, 017 recargo del aeropuerto apagado, 018 retención de datos). Huella en `supabase/HUELLA_ESQUEMA.sql`. |
+| Base de datos (faxi-pruebas) | Migraciones 001–020 aplicadas (30-oct); pruebas OK hasta `FAXI 020 OK` (016 espera, 017 recargo del aeropuerto apagado, 018 retención de datos). Huella en `supabase/HUELLA_ESQUEMA.sql`. |
 | App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
 | App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
 | Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |

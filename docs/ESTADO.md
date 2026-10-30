@@ -44,7 +44,8 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
 
 ### Base de datos
 - **faxi-pruebas** tiene las migraciones **001–018** (30-oct). Probadas: FAXI OK, FAXI MÓVIL OK, 005, 006, 009 (zonas) y 016 (espera) después de la 017, y las nuevas 017 (aeropuerto) y 018 (retención). Huella medida: 22 tablas · 78 funciones · 46 políticas · 39 triggers · 55 índices · 3 tareas programadas. Tipos de las 3 apps: OK.
-- **Pendiente de la 018:** quitar de Storage los archivos de los documentos borrados (hoy se borra la fila, no el archivo). Los códigos OTP los maneja Supabase Auth.
+- **019 (30-oct):** se encontró que cualquier usuario con sesión podía leer la cuenta de pago de las comisiones llamando a `setting_text()`; la 019 cierra `setting_text` y `setting_num`. Probado con FAXI 019 OK.
+- **020 (30-oct):** los archivos de documentos borrados (por la retención 018 o por borrar la cuenta) se encolan y la Edge Function `purge-storage` los quita de Storage cada día. Probada de punta a punta en faxi-pruebas (respuesta 200, archivo borrado, cola marcada). En producción hay que desplegar la función y crear el secreto `faxi_purge_url` (ver `docs/PASOS_DEL_DUENO.md`). Los códigos OTP los maneja Supabase Auth.
 - **Producción no se ha tocado.** Todo lo que necesita está listo en `supabase/PRODUCCION_PEGAR.sql`.
 
 ### Mapa

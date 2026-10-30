@@ -30,3 +30,8 @@ Sigue `docs/GUIA_PASOS_1_A_4.md`. Usa **faxi-pruebas** (no producción). Lo que 
 - Crea un proyecto en **sentry.io** (React Native) y pásame el DSN, o ponlo tú en EAS como `EXPO_PUBLIC_SENTRY_DSN`.
 - Completa lo que está entre **[corchetes]** en los textos legales (`apps/admin/src/legal/`) y pásaselos a un abogado.
 - Decide cómo te pagan los conductores la comisión de los viajes en efectivo.
+
+### Después de la migración 020 (limpieza de archivos)
+Igual que `send-push`: Edge Functions → Deploy a new function → *Via Editor* → nombre `purge-storage` → pega `supabase/functions/purge-storage/index.ts` → **desactiva "Verify JWT"** → Deploy. Luego, en el SQL Editor del mismo proyecto:
+`select vault.create_secret('https://<ref del proyecto>.supabase.co/functions/v1/purge-storage', 'faxi_purge_url');`
+Hasta hacerlo, los archivos de documentos borrados esperan en una cola y no se borran de Storage.

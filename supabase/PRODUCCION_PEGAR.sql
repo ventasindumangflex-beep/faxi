@@ -6,9 +6,9 @@
 -- 006 (solo efectivo), 007 (datos del conductor solo durante el viaje), 008 (endurecimiento), 009 (comisión en efectivo: pago semanal
 -- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados),
 -- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos),
--- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), 013 (comisión 10 %, tarifas del 22-oct y límite de deuda de RD$1,000) y 014 (seguridad del panel: documentos para aprobar al conductor, ajustes solo SUPER_ADMIN, sin borrar tarifas/comisiones/ajustes, admins protegidos, anular pagos de comisión, nombre del conductor fijo) y 015 (historial de ubicaciones solo durante el viaje; con un documento vencido el conductor no se conecta, revisión diaria a las 3:00 a. m. y lista en el panel → Conductores), 016 (tiempo de espera: 5 minutos gratis y luego la tarifa por minuto), 017 (recargo fijo opcional del aeropuerto, apagado en RD$0) y 018 (retención de datos: borrado y anonimización diaria con plazos en app_settings), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
+-- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), 013 (comisión 10 %, tarifas del 22-oct y límite de deuda de RD$1,000) y 014 (seguridad del panel: documentos para aprobar al conductor, ajustes solo SUPER_ADMIN, sin borrar tarifas/comisiones/ajustes, admins protegidos, anular pagos de comisión, nombre del conductor fijo) y 015 (historial de ubicaciones solo durante el viaje; con un documento vencido el conductor no se conecta, revisión diaria a las 3:00 a. m. y lista en el panel → Conductores), 016 (tiempo de espera: 5 minutos gratis y luego la tarifa por minuto), 017 (recargo fijo opcional del aeropuerto, apagado en RD$0) 018 (retención de datos: borrado y anonimización diaria con plazos en app_settings) y 019 (los ajustes del sistema no se leen por RPC), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 29-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK · FAXI 015 OK · FAXI 016 OK · FAXI 017 OK · FAXI 018 OK (30-oct-2026; después de la 017 se repitieron FAXI OK, FAXI MÓVIL OK, 005, 009 y 012 sin errores).
+-- Probado en faxi-pruebas el 29-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK · FAXI 015 OK · FAXI 016 OK · FAXI 017 OK · FAXI 018 OK · FAXI 019 OK · FAXI 020 OK (30-oct-2026; después de la 017 se repitieron FAXI OK, FAXI MÓVIL OK, 005, 009 y 012 sin errores).
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -1315,6 +1315,80 @@ do $$ begin
   end if;
 exception when others then
   raise notice 'pg_cron no disponible (%). Programa select public.run_data_retention() cada día a las 07:00 UTC.', sqlerrm;
+end $$;
+
+-- ═════════════ Migración 019 ═════════════
+-- FAXI · 019 · Los ajustes del sistema no se leen por RPC (30-oct-2026)
+-- setting_text() y setting_num() estaban abiertas a cualquier usuario con sesión: un pasajero podía leer la cuenta de pago
+-- de las comisiones. Las apps no las llaman; solo las usan funciones SECURITY DEFINER. Se puede correr más de una vez.
+revoke all on function public.setting_text(text) from public, anon, authenticated;
+revoke all on function public.setting_num(text) from public, anon, authenticated;
+
+-- ═════════════ Migración 020 ═════════════
+-- FAXI · 020 · Borrar también los ARCHIVOS de los documentos que la 018 y el borrado de cuenta quitan de la base.
+-- Cada fila borrada deja su archivo en storage_purge_queue; la revisión diaria (3:30 a. m. de RD) llama a la Edge Function
+-- purge-storage. Después de pegar esto: desplegar supabase/functions/purge-storage/index.ts con "Verify JWT" APAGADO y crear
+--   select vault.create_secret('https://<ref>.supabase.co/functions/v1/purge-storage', 'faxi_purge_url');
+-- Mientras no exista esa URL, la cola espera y no pasa nada. Se puede correr más de una vez.
+create table if not exists public.storage_purge_queue (
+  id bigint generated always as identity primary key,
+  bucket text not null,
+  path text not null,
+  queued_at timestamptz not null default now(),
+  purged_at timestamptz,
+  attempts int not null default 0,
+  last_error text
+);
+alter table public.storage_purge_queue enable row level security;      -- sin políticas: solo la llave de servicio y el dueño la ven
+revoke all on public.storage_purge_queue from anon, authenticated;
+create index if not exists storage_purge_pending on public.storage_purge_queue (queued_at) where purged_at is null;
+
+create or replace function public.queue_storage_purge() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if old.file_path is not null and old.file_path <> '' then
+    insert into public.storage_purge_queue(bucket, path)
+    values (case tg_table_name when 'driver_documents' then 'driver-documents' else 'vehicle-documents' end, old.file_path);
+  end if;
+  return old;
+end $$;
+revoke all on function public.queue_storage_purge() from public, anon, authenticated;
+
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'driver_documents_queue_purge' and tgrelid = 'public.driver_documents'::regclass) then
+    create trigger driver_documents_queue_purge after delete on public.driver_documents
+      for each row execute function public.queue_storage_purge();
+  end if;
+  if not exists (select 1 from pg_trigger where tgname = 'vehicle_documents_queue_purge' and tgrelid = 'public.vehicle_documents'::regclass) then
+    create trigger vehicle_documents_queue_purge after delete on public.vehicle_documents
+      for each row execute function public.queue_storage_purge();
+  end if;
+end $$;
+
+-- Llama a la Edge Function solo si hay archivos esperando y el proyecto ya tiene la URL en el Vault
+create or replace function public.run_storage_purge() returns boolean
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if not exists (select 1 from public.storage_purge_queue where purged_at is null and attempts < 5) then return false; end if;
+  select decrypted_secret into v_url from vault.decrypted_secrets where name = 'faxi_purge_url' limit 1;
+  select decrypted_secret into v_secret from vault.decrypted_secrets where name = 'faxi_push_secret' limit 1;
+  if v_url is null or v_secret is null then return false; end if;
+  perform net.http_post(url := v_url, body := '{}'::jsonb,
+    headers := jsonb_build_object('content-type', 'application/json', 'x-faxi-secret', v_secret), timeout_milliseconds := 20000);
+  return true;
+exception when others then
+  raise warning 'faxi purge-storage: %', sqlerrm;
+  return false;
+end $$;
+revoke all on function public.run_storage_purge() from public, anon, authenticated;
+
+do $$ begin
+  if not exists (select 1 from cron.job where jobname = 'faxi-limpiar-storage') then
+    perform cron.schedule('faxi-limpiar-storage', '30 7 * * *', 'select public.run_storage_purge()');   -- 3:30 a. m. de RD, después de la retención
+  end if;
+exception when others then
+  raise notice 'pg_cron no disponible (%). Programa select public.run_storage_purge() cada día a las 07:30 UTC.', sqlerrm;
 end $$;
 
 -- ═════════════ URL del push en producción ═════════════
