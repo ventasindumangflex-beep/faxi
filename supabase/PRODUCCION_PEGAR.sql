@@ -6,9 +6,9 @@
 -- 006 (solo efectivo), 007 (datos del conductor solo durante el viaje), 008 (endurecimiento), 009 (comisión en efectivo: pago semanal
 -- y bloqueo al deber más de RD$2,000), 010 (datos de la cuenta de pago solo para conductores aprobados),
 -- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos),
--- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), 013 (comisión 10 %, tarifas del 22-oct y límite de deuda de RD$1,000) y 014 (seguridad del panel: documentos para aprobar al conductor, ajustes solo SUPER_ADMIN, sin borrar tarifas/comisiones/ajustes, admins protegidos, anular pagos de comisión, nombre del conductor fijo) y 015 (historial de ubicaciones solo durante el viaje; con un documento vencido el conductor no se conecta, revisión diaria a las 3:00 a. m. y lista en el panel → Conductores), 016 (tiempo de espera: 5 minutos gratis y luego la tarifa por minuto), 017 (recargo fijo opcional del aeropuerto, apagado en RD$0) y 018 (retención de datos: borrado y anonimización diaria con plazos en app_settings), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
+-- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), 013 (comisión 10 %, tarifas del 22-oct y límite de deuda de RD$1,000) y 014 (seguridad del panel: documentos para aprobar al conductor, ajustes solo SUPER_ADMIN, sin borrar tarifas/comisiones/ajustes, admins protegidos, anular pagos de comisión, nombre del conductor fijo) y 015 (historial de ubicaciones solo durante el viaje; con un documento vencido el conductor no se conecta, revisión diaria a las 3:00 a. m. y lista en el panel → Conductores), 016 (tiempo de espera: 5 minutos gratis y luego la tarifa por minuto), 017 (recargo fijo opcional del aeropuerto, apagado en RD$0) 018 (retención de datos: borrado y anonimización diaria con plazos en app_settings) y 019 (los ajustes del sistema no se leen por RPC), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 29-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK · FAXI 015 OK · FAXI 016 OK · FAXI 017 OK · FAXI 018 OK (30-oct-2026; después de la 017 se repitieron FAXI OK, FAXI MÓVIL OK, 005, 009 y 012 sin errores).
+-- Probado en faxi-pruebas el 29-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK · FAXI 015 OK · FAXI 016 OK · FAXI 017 OK · FAXI 018 OK · FAXI 019 OK (30-oct-2026; después de la 017 se repitieron FAXI OK, FAXI MÓVIL OK, 005, 009 y 012 sin errores).
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -1316,6 +1316,13 @@ do $$ begin
 exception when others then
   raise notice 'pg_cron no disponible (%). Programa select public.run_data_retention() cada día a las 07:00 UTC.', sqlerrm;
 end $$;
+
+-- ═════════════ Migración 019 ═════════════
+-- FAXI · 019 · Los ajustes del sistema no se leen por RPC (30-oct-2026)
+-- setting_text() y setting_num() estaban abiertas a cualquier usuario con sesión: un pasajero podía leer la cuenta de pago
+-- de las comisiones. Las apps no las llaman; solo las usan funciones SECURITY DEFINER. Se puede correr más de una vez.
+revoke all on function public.setting_text(text) from public, anon, authenticated;
+revoke all on function public.setting_num(text) from public, anon, authenticated;
 
 -- ═════════════ URL del push en producción ═════════════
 do $$ begin
