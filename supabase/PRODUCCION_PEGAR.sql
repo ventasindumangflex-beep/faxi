@@ -1399,8 +1399,8 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 30-oct-2026, con 001–018): tablas 22 · funciones 78 · politicas 46 · triggers 39 · indices 55 · cron 3
---   h_tablas d74d15 · h_funciones 1726e1 · h_politicas 4cbe1d · h_triggers f32f47 · h_indices 50e301 · vault 2 · proveedor CASH · año_minimo = año actual − 15
+-- Esperado (faxi-pruebas, 30-oct-2026, con 001–020): tablas 23 · funciones 80 · politicas 46 · triggers 41 · indices 57 · cron 4
+--   h_tablas ce07fd · h_funciones 3466b3 · h_politicas 4cbe1d · h_triggers 9e7bdf · h_indices 360bb4 · vault 2 · proveedor CASH · año_minimo = año actual − 15
 --   (en faxi-pruebas proveedor es MOCK y año_minimo 2000 a propósito; en producción deben salir CASH y año actual − 15)
 --   politicas cuenta public + storage + realtime (46); HUELLA_ESQUEMA.sql cuenta solo public + storage (44)
 with
