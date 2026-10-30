@@ -9,7 +9,7 @@ Apps reales de faxi para Santo Domingo:
 | `apps/admin` | Panel web de operaciones | Next.js 15 |
 | `packages/core` | Tipos, cliente Supabase, RPC, formato RD$, estados del viaje, Realtime | TypeScript |
 | `packages/ui` | Diseño (tokens del prototipo), componentes, login OTP, push, mapas | React Native |
-| `supabase/` | Migraciones 001–004, seed, tests, Edge Function `send-push` | Postgres |
+| `supabase/` | Migraciones 001–020, seed, tests, Edge Functions `send-push` y `purge-storage` | Postgres |
 | `prototype/` | Prototipos `.dc.html`: referencia visual, no se publican | — |
 
 Pago: **solo efectivo**. El conductor confirma el cobro (`driver_confirm_cash`). Azul/CardNET entran en la fase 2.
@@ -20,18 +20,25 @@ Pago: **solo efectivo**. El conductor confirma el cobro (`driver_confirm_cash`).
 
 Con Claude Code y el MCP de Supabase conectado, pídele:
 
-> Aplica en orden `supabase/migrations/*.sql` (001 → 004), luego `supabase/seed.sql` **solo en un proyecto de pruebas**, y corre `supabase/tests/001_trip_flow.sql` y `002_mobile.sql`. Deben salir `FAXI OK` y `FAXI MÓVIL OK`.
+> Aplica en orden `supabase/migrations/*.sql` (001 → 020), luego `supabase/seed.sql` **solo en un proyecto de pruebas**, y corre todos los `supabase/tests/*.sql`. Cada uno termina en `ROLLBACK` y debe dar su aviso (`FAXI OK`, `FAXI MÓVIL OK`, `FAXI 005 OK` … `FAXI 020 OK`).
+>
+> Producción **no** se arma con las migraciones una por una: se pega `supabase/PRODUCCION_PEGAR.sql` (ver `docs/PASOS_DEL_DUENO.md`), y solo con el visto bueno del dueño. Los cambios de esquema van primero en **faxi-pruebas**.
 
 Después, en el Dashboard de Supabase:
 
 1. **Auth → Providers → Phone**: actívalo con **Twilio Verify** (Account SID, Auth Token, Verify Service SID). En *Rate limits* deja ~30 SMS/hora por IP.
-2. **Database → Extensions**: confirma que `pg_cron` está activo (la 004 programa `expire_stale()` cada 15 s).
-3. **Edge Function de notificaciones**
+2. **Database → Extensions**: confirma que `pg_cron` está activo (la 004 programa `expire_stale()` cada 15 s, y más tarde la revisión de documentos vencidos, la retención de datos y la limpieza de archivos).
+3. **Edge Functions** (las dos con *Verify JWT* apagado; se autentican con el secreto `faxi_push_secret` del Vault)
    ```bash
    supabase functions deploy send-push --no-verify-jwt
-   supabase secrets set PUSH_WEBHOOK_SECRET=<cadena-larga-aleatoria>
+   supabase functions deploy purge-storage --no-verify-jwt
    ```
-   **Database → Webhooks → Create**: tabla `notifications`, evento `INSERT`, tipo *Supabase Edge Function* → `send-push`, cabecera `x-faxi-secret: <la misma cadena>`.
+   Luego, en el SQL Editor, una vez por proyecto (las URLs dependen del proyecto):
+   ```sql
+   select vault.create_secret('https://<ref>.supabase.co/functions/v1/send-push', 'faxi_push_url');
+   select vault.create_secret('https://<ref>.supabase.co/functions/v1/purge-storage', 'faxi_purge_url');
+   ```
+   **No crees un Database Webhook a mano:** el trigger `notifications_push` ya llama a `send-push`, y un webhook duplicaría los avisos.
 4. **Primer admin**: crea un usuario con correo y contraseña en *Auth → Users*, y en el SQL Editor:
    `update public.users set role = 'SUPER_ADMIN' where email = 'tu@correo.com';`
 
@@ -58,7 +65,7 @@ npm start                       # abre el dev build y escanea el QR
 ```
 Repite en `apps/driver`. Los mapas, la ubicación en segundo plano y las notificaciones **no funcionan en Expo Go**: usa el *development build*.
 
-Admin: `npm run admin` → http://localhost:3001. Publicar: importa `apps/admin` en Vercel con las dos variables `NEXT_PUBLIC_*`.
+Admin: `npm run admin` → http://localhost:3001. Durante el piloto el panel se queda en la Mac; para publicarlo luego, importa `apps/admin` en Vercel con las dos variables `NEXT_PUBLIC_*`.
 
 ## 4. Publicar
 
@@ -77,11 +84,10 @@ Antes de enviar: iconos (`assets/icon.png` 1024×1024, descomentado en `app.conf
 4. Conductor cobra en efectivo → `driver_confirm_cash` → `COMPLETED`.
 5. Pasajero califica → `rate_trip`.
 
-Ubicación: el conductor emite por **Broadcast** (`trip:<id>`) cada ~5 s durante el viaje y guarda en la base cada ~15 s con `update_location` (tarea en segundo plano).
+Ubicación (canales privados `trip:<id>`: solo escuchan el pasajero y el conductor del viaje, y solo mientras está en curso): el conductor emite por **Broadcast** (`trip:<id>`) cada ~5 s durante el viaje y guarda en la base cada ~15 s con `update_location` (tarea en segundo plano).
 
 ## 6. Qué falta para fase 2
 - Pagos con tarjeta (Edge Function + webhook Azul/CardNET; `PAYMENT_PROVIDER` ≠ `MOCK`).
 - Rutas reales con Routes API (hoy: línea recta × 1.35).
 - Chat pasajero-conductor (tabla `messages` ya existe).
-- Canales Realtime privados para la ubicación (hoy cualquiera con el id del viaje podría escuchar el canal).
-- Sentry (`npx expo install @sentry/react-native` + `npx @sentry/wizard -i reactNative`).
+- Sentry ya está en las dos apps: falta crear el proyecto y poner `EXPO_PUBLIC_SENTRY_DSN`.
