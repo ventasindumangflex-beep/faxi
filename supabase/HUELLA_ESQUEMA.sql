@@ -1,8 +1,10 @@
 -- FAXI · Huella del esquema (SOLO LECTURA: únicamente SELECT; es seguro correrla en producción).
 -- Uso: pegar en el SQL Editor de cada proyecto (faxi-pruebas y faxi) y comparar el resultado.
--- Referencia de faxi-pruebas (ref en .env → SUPABASE_TEST_PROJECT_REF), 28-oct-2026 (con las migraciones 001–014), con ESTA consulta:
---   tablas 22 · funciones 66 · politicas 44 · triggers 36 · indices 55 · cron 1 · anon_puede_borrar_cuenta false · comision 0.1000 · limite_deuda 1000
---   (antes, 15-oct, con 009–012: funciones 64 · triggers 35; la 014 agrega 2 funciones y 1 trigger)
+-- Referencia de faxi-pruebas (ref en .env → SUPABASE_TEST_PROJECT_REF), 29-oct-2026 (con las migraciones 001–015), con ESTA consulta:
+--   Medido con 001–015: tablas 22 · funciones 73 · politicas 44 · triggers 37 · indices 55 · cron 2 · anon_puede_borrar_cuenta false · comision 0.1000 · limite_deuda 1000
+--   Esperado con 001–018 (deducido; verificar al aplicar 017 y 018): funciones 78 (+2 de la 017, +3 de la 018) · triggers 39 (+1, +1) · cron 3 (+1 de la 018); tablas, politicas e indices igual
+--   (antes: 15-oct con 009–012, funciones 64 · triggers 35 · cron 1; la 014 agrega 2 funciones y 1 trigger;
+--    la 015 agrega 7 funciones, 1 trigger y la revisión diaria de documentos vencidos en cron)
 -- Si faxi (producción) da otros números, falta algo por aplicar o sobra algo; NO se arregla a ciegas: avisar antes de tocar producción.
 select
  (select count(*) from pg_tables where schemaname='public') as tablas,

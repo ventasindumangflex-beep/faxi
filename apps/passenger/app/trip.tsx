@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ENDED_UNSUCCESSFUL, PASSENGER_CAN_CANCEL, etaMin, passenger, rd, trips, type TripDetails, type TripStatus,
+  ENDED_UNSUCCESSFUL, PASSENGER_CAN_CANCEL, etaMin, airportLine, passenger, rd, trips, waitLine, type TripDetails, type TripStatus,
 } from '@faxi/core';
 import {
   Avatar, Banner, Button, CarPin, DestPin, Field, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, Stars, T,
@@ -129,6 +129,8 @@ export default function TripScreen() {
               <View style={{ alignItems: 'center', gap: 4, paddingVertical: 8 }}>
                 <T v="caption">Paga en efectivo a {dv?.name.split(' ')[0] ?? 'tu conductor'}</T>
                 <T style={{ fontFamily: f.black, fontSize: 44, letterSpacing: -1.5 }}>{rd(t.final_fare)}</T>
+                {waitLine(t) ? <T v="caption">{waitLine(t)}</T> : null}
+                {airportLine(t) ? <T v="caption">{airportLine(t)}</T> : null}
               </View>
               <Row style={{ justifyContent: 'center' }}><ActivityIndicator color={c.primary} /><T v="caption">Esperando que el conductor confirme el cobro…</T></Row>
             </>

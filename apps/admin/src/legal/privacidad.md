@@ -76,9 +76,10 @@ También entregamos datos:
 
 - Mientras tu cuenta esté activa.
 - Al eliminar tu cuenta borramos tu teléfono, correo, documentos y tokens de notificación, y reemplazamos tu nombre por "Cuenta eliminada".
-- Conservamos el registro de los viajes, comisiones y pagos (sin tus datos de contacto) por **[PLAZO, p. ej. 10 años]**, el tiempo que exigen las normas fiscales y comerciales, y para atender reclamaciones.
-- Los documentos de los conductores (incluidos antidoping y antecedentes) se guardan mientras la cuenta esté activa y se borran al eliminarla.
-- Las ubicaciones detalladas de los conductores se conservan [PLAZO, p. ej. 90 días] para resolver incidentes y luego se eliminan.
+- Conservamos el registro de los viajes, comisiones y pagos (sin tus datos de contacto) por **10 años**, el tiempo que exigen las normas fiscales y comerciales, y para atender reclamaciones. Pasados los 10 años no borramos los montos y fechas (son registros contables), pero quitamos las direcciones, los mensajes y los comentarios del viaje.
+- Los documentos de los conductores (incluidos antidoping y antecedentes) se guardan mientras la cuenta esté activa y se borran al eliminarla. Los documentos rechazados se borran al **año**, y los vencidos que ya fueron reemplazados por uno nuevo, también al año de vencidos.
+- Las ubicaciones detalladas de los viajes se conservan **90 días** para resolver incidentes y luego se eliminan. Los avisos que te enviamos y las ofertas de viaje a conductores también se borran a los **90 días**.
+- Las copias de seguridad de nuestro proveedor pueden guardar lo que borramos hasta **7 días más**.
 
 ## 7. Tus derechos
 
