@@ -19,6 +19,9 @@ La regla se queda. Sin lugares cargados no cambia nada: por eso hay que cargar l
 **Si te equivocas:** en la lista toca **Pausar** en esa fila (no se borra; se puede volver a **Activar**).
 **Si el panel dice que las coordenadas no sirven:** pega los dos números como los copia Google Maps, con coma en medio. Deben estar en el Gran Santo Domingo.
 
+## Hoteles que ya tienen nombre (falta la puerta)
+`docs/plantilla-hoteles.csv` ya trae 13 hoteles de Piantini, la Zona Colonial y el Malecón (tomados de un listado general, no de Virgilio). Solo falta ponerles la latitud y la longitud de la **puerta principal**, sacadas de Google Maps como arriba. Virgilio debe agregar los que él ve con taxis turísticos y quitar los que no apliquen. No se cargan en producción con coordenadas que no estén comprobadas.
+
 ## Para pasarle la lista a Frederick (sin panel)
 Llena `docs/plantilla-hoteles.csv` (o `supabase/CARGAR_HOTELES_PLANTILLA.sql`) con una línea por hotel: **nombre, tipo, latitud, longitud**. No inventes coordenadas: sácalas de Google Maps como arriba. Frederick la carga con permiso, **primero en faxi-pruebas**.
 
