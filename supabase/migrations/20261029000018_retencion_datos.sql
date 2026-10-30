@@ -31,10 +31,14 @@ on conflict (key) do nothing;
 -- Un error de dedo no debe borrar todo: cero (apagado) o al menos 30 días, y siempre un número
 create or replace function public.guard_retention_settings() returns trigger
 language plpgsql security definer set search_path = public as $$
+declare v numeric;
 begin
   if new.key like 'RETENTION\_%' then
-    if jsonb_typeof(new.value) <> 'number' or (new.value #>> '{}')::numeric <> trunc((new.value #>> '{}')::numeric)
-       or ((new.value #>> '{}')::numeric <> 0 and (new.value #>> '{}')::numeric < 30) then
+    if jsonb_typeof(new.value) <> 'number' then
+      raise exception 'El plazo debe ser un número entero de días: 0 (apagado) o al menos 30.' using errcode = '22023';
+    end if;
+    v := (new.value #>> '{}')::numeric;
+    if v <> trunc(v) or (v <> 0 and v < 30) then
       raise exception 'El plazo debe ser un número entero de días: 0 (apagado) o al menos 30.' using errcode = '22023';
     end if;
   end if;
