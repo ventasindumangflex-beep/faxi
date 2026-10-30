@@ -35,7 +35,7 @@ Lo demás como está → **Guardar**. Si dice que `www` ya existe, borra el `www
 
 | Parte | Estado |
 |---|---|
-| Base de datos (faxi-pruebas) | Migraciones 001–016 aplicadas; las 13 pruebas dan OK (hasta `FAXI 016 OK`). **Escritas y pendientes de aplicar y probar por el dueño:** 017 (recargo del aeropuerto, apagado) y 018 (retención de datos). Huella en `supabase/HUELLA_ESQUEMA.sql`. |
+| Base de datos (faxi-pruebas) | Migraciones 001–018 aplicadas (30-oct); pruebas OK hasta `FAXI 018 OK` (016 espera, 017 recargo del aeropuerto apagado, 018 retención de datos). Huella en `supabase/HUELLA_ESQUEMA.sql`. |
 | App de pasajeros | ✅ Instalada en Android; entra por SMS y busca direcciones. ❌ El mapa sale en blanco: falta la clave nueva (`docs/MAPA_ANDROID.md`). |
 | App de conductores | ⚠️ Código listo; aún sin build ni prueba en teléfono. |
 | Panel admin | ✅ Funciona en la Mac (aprobar y rechazar conductores probado). |
@@ -107,9 +107,9 @@ Todo esto necesita la empresa:
 - 👤 **Decisiones del 22 y 29-oct (dueño y Virgilio):**
   - **Comisión 10 %**, tarifas nuevas y límite de deuda de RD$1,000 → migración 013 (hecha en faxi-pruebas; el 20 % de más abajo ya no vale).
   - **Tiempo de espera:** 5 minutos gratis entre "Llegué" e "Iniciar"; después, la tarifa por minuto de la categoría → migración 016 (hecha en faxi-pruebas). Los términos de conductores ya están en la 1.3; falta mencionar la espera cuando el abogado los revise.
-  - **Peajes:** no se cobran aparte, salvo un **recargo fijo opcional del aeropuerto** (apagado en RD$0; solo el SUPER_ADMIN lo cambia en Zonas) → migración 017 (escrita; falta aplicarla y probarla). **El monto lo define el dueño.**
+  - **Peajes:** no se cobran aparte, salvo un **recargo fijo opcional del aeropuerto** (apagado en RD$0; solo el SUPER_ADMIN lo cambia en Zonas) → migración 017 (aplicada y probada en faxi-pruebas). **El monto lo define el dueño.**
   - **Hoteles:** la regla de 200 m del INTRANT se queda. Falta la lista de Virgilio: `docs/HOTELES_ZONAS.md` y `supabase/CARGAR_HOTELES_PLANTILLA.sql`.
-  - **Datos:** ubicaciones y avisos 90 días, documentos rechazados 1 año, viajes 10 años (se anonimizan; no se borran) → migración 018 (escrita; falta aplicarla y probarla). **La contadora debe confirmar los 10 años.** Los plazos están en la política de privacidad como [PLAZO] hasta que se aprueben. Faltan por quitar los archivos de documentos borrados en Storage, y los códigos OTP los maneja Supabase Auth.
+  - **Datos:** ubicaciones y avisos 90 días, documentos rechazados 1 año, viajes 10 años (se anonimizan; no se borran) → migración 018 (aplicada y probada en faxi-pruebas). **La contadora debe confirmar los 10 años.** Los plazos ya están escritos en la política de privacidad; si la contadora los cambia, se ajustan en `app_settings` y en el texto. Faltan por quitar los archivos de documentos borrados en Storage, y los códigos OTP los maneja Supabase Auth.
   - **Usuario ADMIN de Virgilio:** `supabase/CREAR_ADMIN_VIRGILIO.sql` está preparado; solo lo corre el dueño.
 - [x] **Decisiones de negocio (15-oct):** comisión del 20 % pagada **cada lunes**, bloqueo al deber más de **RD$2,000** (ya en la app y el panel → *Comisiones*); vehículos de **máximo 15 años** (regla del INTRANT, hoy 2011+; cambiado el 15-oct tras la revisión legal); **Haina fuera** durante el piloto.
 - 👤 **Revisión legal previa (15-oct):** lo que falta está en `docs/REVISION_LEGAL.md` (registro en el INTRANT, póliza de responsabilidad civil, ITBIS de la comisión, cuenta a nombre de la empresa).

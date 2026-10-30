@@ -8,8 +8,7 @@
 -- 011 (INTRANT: vehículo de máximo 15 años, carnet y antidoping del conductor, aceptación de términos),
 -- 012 (no recoger a menos de 200 m de hoteles y zonas de taxis turísticos; los lugares se agregan en el panel → Zonas), 013 (comisión 10 %, tarifas del 22-oct y límite de deuda de RD$1,000) y 014 (seguridad del panel: documentos para aprobar al conductor, ajustes solo SUPER_ADMIN, sin borrar tarifas/comisiones/ajustes, admins protegidos, anular pagos de comisión, nombre del conductor fijo) y 015 (historial de ubicaciones solo durante el viaje; con un documento vencido el conductor no se conecta, revisión diaria a las 3:00 a. m. y lista en el panel → Conductores), 016 (tiempo de espera: 5 minutos gratis y luego la tarifa por minuto), 017 (recargo fijo opcional del aeropuerto, apagado en RD$0) y 018 (retención de datos: borrado y anonimización diaria con plazos en app_settings), pone producción en modo solo efectivo y vehículos de máximo 15 años, deja lista la URL del push
 -- y al final muestra la "huella" para comparar con faxi-pruebas.
--- Probado en faxi-pruebas el 29-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK · FAXI 015 OK · FAXI 016 OK.
--- PENDIENTE de probar en faxi-pruebas: 017 (FAXI 017 OK) y 018 (FAXI 018 OK). No pegar en producción hasta que den OK.
+-- Probado en faxi-pruebas el 29-oct-2026: FAXI OK · FAXI MÓVIL OK · FAXI 005 OK · FAXI 006 OK · FAXI 007 OK · FAXI 009 OK · FAXI 010 OK · FAXI 011 OK · FAXI 012 OK · FAXI 013 OK · FAXI 014 OK · FAXI 015 OK · FAXI 016 OK · FAXI 017 OK · FAXI 018 OK (30-oct-2026; después de la 017 se repitieron FAXI OK, FAXI MÓVIL OK, 005, 009 y 012 sin errores).
 
 -- Seguro: si esta base tiene las cuentas de demostración (@faxi.test) NO es producción.
 do $$ begin
@@ -1322,9 +1321,8 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado con 001–018: tablas 22 · funciones 78 · politicas 46 · triggers 39 · indices 55 · cron 3  (cuentas deducidas de las migraciones;
---   las verifica el dueño al aplicar 017 y 018 en faxi-pruebas y entonces se anotan aquí los hashes nuevos).
---   Último medido (faxi-pruebas, 29-oct-2026, con 001–015): funciones 73 · triggers 37 · cron 2 · h_tablas d74d15 · h_funciones d9b46f · h_politicas 4cbe1d · h_triggers cc0ecc · h_indices 50e301 · vault 2 · proveedor CASH · año_minimo = año actual − 15
+-- Esperado (faxi-pruebas, 30-oct-2026, con 001–018): tablas 22 · funciones 78 · politicas 46 · triggers 39 · indices 55 · cron 3
+--   h_tablas d74d15 · h_funciones 1726e1 · h_politicas 4cbe1d · h_triggers f32f47 · h_indices 50e301 · vault 2 · proveedor CASH · año_minimo = año actual − 15
 --   (en faxi-pruebas proveedor es MOCK y año_minimo 2000 a propósito; en producción deben salir CASH y año actual − 15)
 --   politicas cuenta public + storage + realtime (46); HUELLA_ESQUEMA.sql cuenta solo public + storage (44)
 with
