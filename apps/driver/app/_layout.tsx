@@ -11,12 +11,14 @@ import { ConfigMissing, Loading, SessionProvider, ThemeProvider, c, registerForP
 import { DriverProvider, useDriver } from '../src/driverCtx';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+try { SplashScreen.setOptions({ duration: 400, fade: true }); } catch { /* versión sin soporte */ }
 
 export default Sentry.wrap(Root);
 
 function Root() {
   const [fonts] = useFonts({ PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
-  useEffect(() => { if (fonts) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
+  // Con la app configurada, la pantalla nativa se quita en Gate cuando ya se sabe a qué pantalla ir.
+  useEffect(() => { if (fonts && !isConfigured()) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
   if (!fonts) return null;
   return (
     <SafeAreaProvider>
@@ -68,6 +70,13 @@ function Gate() {
       registerForPush().catch(() => {});
     }
   }, [me?.id]);
+
+  // La pantalla nativa se queda hasta que la sesión y el perfil están listos: nada de salto al indicador de carga. Tope de 6 s por si no hay internet.
+  useEffect(() => {
+    if (!busy) { SplashScreen.hideAsync().catch(() => {}); return; }
+    const h = setTimeout(() => SplashScreen.hideAsync().catch(() => {}), 6000);
+    return () => clearTimeout(h);
+  }, [busy]);
 
   if (busy) return <Loading />;
   return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'slide_from_right' }} />;
