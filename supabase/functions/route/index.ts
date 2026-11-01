@@ -1,5 +1,5 @@
 // FAXI · Edge Function: ruta real por las calles (migración 022).
-// La llaman las apps con la sesión del usuario (verify_jwt activo). Consulta la Routes API de Google con una clave que SOLO vive
+// La llaman las apps con la sesión del usuario (verify_jwt activo y además se comprueba que el token sea de un usuario, no la llave pública). Consulta la Routes API de Google con una clave que SOLO vive
 // aquí (secreto GOOGLE_ROUTES_KEY), guarda distancia, tiempo y línea de la ruta en route_cache (solo escribe la llave de servicio)
 // y la devuelve. Si ya hay una ruta de las últimas 6 horas, la devuelve sin gastar una consulta a Google.
 // route_estimate() en la base usa esa ruta guardada para cotizar: el precio sale de la distancia real y no se puede falsear desde la app.
@@ -29,6 +29,10 @@ Deno.serve(async (req) => {
   if (crow < 0.05) return json({ error: 'El destino debe ser distinto del origen' }, 400);
 
   const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  // Solo usuarios con sesión: la llave pública de la app no basta (así nadie gasta la cuota de Google en bucle).
+  const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
+  const { data: who, error: whoErr } = await sb.auth.getUser(token);
+  if (whoErr || !who?.user) return json({ error: 'Inicia sesión para ver la ruta' }, 401);
   const key = { o_lat: r4(o.lat), o_lng: r4(o.lng), d_lat: r4(d.lat), d_lng: r4(d.lng) };
 
   const { data: hit } = await sb.from('route_cache').select('distance_km, duration_min, polyline, created_at').match(key).maybeSingle();
