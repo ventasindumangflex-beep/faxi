@@ -4,8 +4,8 @@ begin;
 
 do $$
 declare
-  esperado jsonb := '{"ECONOMICO": 290, "CONFORT": 335, "PREMIUM": 437, "SUV": 484, "VAN": 536}';
-  minimo   jsonb := '{"ECONOMICO": 150, "CONFORT": 170, "PREMIUM": 220, "SUV": 240, "VAN": 280}';
+  esperado jsonb := '{"ECONOMICO": 200, "CONFORT": 233, "PREMIUM": 301, "SUV": 333, "VAN": 373}';  -- tarifas por tramos de la 021 (antes 290/335/437/484/536)
+  minimo   jsonb := '{"ECONOMICO": 130, "CONFORT": 150, "PREMIUM": 190, "SUV": 210, "VAN": 240}';
   cat public.vehicle_category; q record; c record; n int;
 begin
   -- Una sola comisión activa, del 10 %, para todas las categorías
@@ -33,7 +33,7 @@ begin
                  and (data->'old'->>'rate')::numeric = 0.20 and (data->'new'->>'is_active')::boolean = false),
     'la auditoría no guardó la comisión del 20 %';
 
-  raise notice 'FAXI 013 OK · comisión 10 %% · 290 / 335 / 437 / 484 / 536 · límite RD$1,000';
+  raise notice 'FAXI 013 OK · comisión 10 %% · 200 / 233 / 301 / 333 / 373 (tarifas 021) · límite RD$1,000';
 end $$;
 
 rollback;
