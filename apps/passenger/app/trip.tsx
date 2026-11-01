@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Linking, Platform, ScrollView, Share, StyleSheet, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -8,8 +8,7 @@ import {
 } from '@faxi/core';
 import {
   ActionPill, Avatar, Banner, BigButton, Button, CarPin, Confetti, CountdownPill, DestPin, Field, HudChip, Icon, Loading, MAP_PADDING, OriginPin,
-  Plate, ProgressBar, Radar, RouteGlow, Row, Sheet, Stars, T, c, coord, f, region, useCountdown, useTheme, useTripDetails, FaxiMap,
-} from '@faxi/ui';
+  Plate, ProgressBar, Radar, RouteGlow, Row, Sheet, Stars, T, c, coord, f, region, useCountdown, useTheme, useTripDetails, FaxiMap, PinMarker } from '@faxi/ui';
 import { draft } from '../src/draft';
 
 type Phase = 'search' | 'pickup' | 'ride' | 'pay' | 'rate' | 'ended';
@@ -98,10 +97,10 @@ export default function TripScreen() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.04)} toolbarEnabled={false}>
         {route ? <RouteGlow coordinates={route.map(coord)} /> : null}
-        <Marker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
-        <Marker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
+        <PinMarker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></PinMarker>
+        <PinMarker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></PinMarker>
         {driverPos && (phase === 'pickup' || phase === 'ride') ? (
-          <Marker coordinate={coord(driverPos)} anchor={{ x: 0.5, y: 0.5 }}><CarPin /></Marker>
+          <PinMarker coordinate={coord(driverPos)} anchor={{ x: 0.5, y: 0.5 }}><CarPin /></PinMarker>
         ) : null}
       </FaxiMap>
 

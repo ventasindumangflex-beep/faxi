@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { airportLine, km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
 import {
   Banner, BigButton, DestPin, HudChip, IconButton, Loading, MAP_PADDING, OriginPin, RouteGlow, Row, Sheet, StatusScrim, T, VehicleCard, c, coord,
-  region, useTheme, FaxiMap,
-} from '@faxi/ui';
+  region, useTheme, FaxiMap, PinMarker } from '@faxi/ui';
 import { draft } from '../src/draft';
 
 export default function QuoteScreen() {
@@ -48,8 +47,8 @@ export default function QuoteScreen() {
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.06)}
         onMapReady={() => map.current?.fitToCoordinates([coord(o), coord(d)], { edgePadding: MAP_PADDING, animated: false })}>
         <RouteGlow coordinates={[coord(o), coord(d)]} />
-        <Marker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
-        <Marker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
+        <PinMarker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></PinMarker>
+        <PinMarker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></PinMarker>
       </FaxiMap>
       <StatusScrim />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16, right: 16 }}>

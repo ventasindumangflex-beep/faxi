@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
-import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE, Polyline, type MapViewProps, type Region } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE, Polyline, type MapMarkerProps, type MapViewProps, type Region } from 'react-native-maps';
 import type { LatLng } from '@faxi/core';
 import { Banner, Icon } from './components';
 import { useTheme } from './theme';
@@ -26,6 +26,16 @@ export const CarPin = () => (
     <Icon name="local-taxi" size={20} color="#04170D" />
   </View>
 );
+
+/**
+ * Marcador con vista propia (pin, auto). En Android, si el marcador sigue "mirando cambios" se vuelve a dibujar todo el tiempo y parpadea.
+ * Se dibuja una vez (con un margen para que carguen las fuentes de los íconos) y después se congela; el movimiento del auto no lo necesita.
+ */
+export function PinMarker({ children, ...props }: MapMarkerProps) {
+  const [track, setTrack] = useState(true);
+  useEffect(() => { const h = setTimeout(() => setTrack(false), 700); return () => clearTimeout(h); }, []);
+  return <Marker anchor={{ x: 0.5, y: 0.5 }} {...props} tracksViewChanges={track}>{children}</Marker>;
+}
 
 /** Ruta en verde neón con brillo: una línea ancha y translúcida debajo y una fina y sólida encima. Úsala dentro de <FaxiMap>. */
 export function RouteGlow({ coordinates, dashed }: { coordinates: { latitude: number; longitude: number }[]; dashed?: boolean }) {

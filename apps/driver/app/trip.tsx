@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Linking, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { airportLine, createLocationBroadcaster, driver, DRIVER_CAN_CANCEL, DRIVER_NEXT, rd, trips, waitLine, type TripStatus } from '@faxi/core';
 import {
   Avatar, Banner, BigButton, Button, DestPin, HudChip, Icon, IconButton, Loading, MAP_PADDING, OriginPin, RouteGlow, Row, Sheet, StatusScrim, T, c, coord, region,
-  useTheme, useTripDetails, FaxiMap,
-} from '@faxi/ui';
+  useTheme, useTripDetails, FaxiMap, PinMarker } from '@faxi/ui';
 
 const LIVE: TripStatus[] = ['ASSIGNED', 'ENROUTE', 'ARRIVED', 'STARTED', 'ONTRIP'];
 
@@ -92,8 +91,8 @@ export default function TripScreen() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region({ lat: t.origin_lat, lng: t.origin_lng }, 0.03)} showsUserLocation toolbarEnabled={false}>
         {live && !toPickup ? <RouteGlow coordinates={[coord({ lat: t.origin_lat, lng: t.origin_lng }), coord({ lat: t.dest_lat, lng: t.dest_lng })]} /> : null}
-        <Marker coordinate={{ latitude: t.origin_lat, longitude: t.origin_lng }} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
-        <Marker coordinate={{ latitude: t.dest_lat, longitude: t.dest_lng }} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
+        <PinMarker coordinate={{ latitude: t.origin_lat, longitude: t.origin_lng }} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></PinMarker>
+        <PinMarker coordinate={{ latitude: t.dest_lat, longitude: t.dest_lng }} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></PinMarker>
       </FaxiMap>
       <StatusScrim />
       {live ? (
