@@ -1,8 +1,9 @@
 import { currentUid, sb } from './client';
 import { FaxiError, toFaxiError } from './errors';
+import { decodePolyline } from './polyline';
 import { DRIVER_ACTIVE, PASSENGER_ACTIVE } from './format';
 import type {
-  AppUser, Category, CommissionStatus, DocRow, DriverApplication, DriverDocType, DriverProfile, LatLng, PendingRequest, Place, Quote,
+  AppUser, Category, CommissionStatus, RouteInfo, DocRow, DriverApplication, DriverDocType, DriverProfile, LatLng, PendingRequest, Place, Quote,
   TicketCategory, Trip, TripDetails, TripStatus, VehicleDocType,
 } from './types';
 
@@ -60,6 +61,21 @@ export const auth = {
 
 export const push = {
   register: (token: string, platform: 'ios' | 'android') => rpc('register_push_token', { p_token: token, p_platform: platform }),
+};
+
+/**
+ * Ruta real por las calles. La consulta el servidor (Edge Function `route`), que además la guarda para que el precio salga de la distancia real.
+ * Si no hay ruta (sin internet, Google caído, sin clave), devuelve null y la app sigue con la línea recta y la estimación del servidor.
+ */
+export const routes = {
+  between: async (o: LatLng, d: LatLng): Promise<RouteInfo | null> => {
+    try {
+      const { data, error } = await sb().functions.invoke('route', { body: { o, d } });
+      if (error || !data || typeof data.polyline !== 'string') return null;
+      const points = decodePolyline(data.polyline);
+      return points.length >= 2 ? { distance_km: Number(data.distance_km), duration_min: Number(data.duration_min), points } : null;
+    } catch { return null; }
+  },
 };
 
 export const trips = {

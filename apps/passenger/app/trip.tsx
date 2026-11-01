@@ -4,7 +4,7 @@ import MapView from 'react-native-maps';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ENDED_UNSUCCESSFUL, PASSENGER_CAN_CANCEL, airportLine, distanceKm, etaMin, passenger, rd, trips, waitLine, type TripDetails, type TripStatus,
+  ENDED_UNSUCCESSFUL, PASSENGER_CAN_CANCEL, airportLine, distanceKm, etaMin, passenger, rd, routes, trips, waitLine, type LatLng, type TripDetails, type TripStatus,
 } from '@faxi/core';
 import {
   ActionPill, Avatar, Banner, BigButton, Button, CarPin, Confetti, CountdownPill, DestPin, Field, HudChip, Icon, Loading, MAP_PADDING, OriginPin,
@@ -33,6 +33,8 @@ export default function TripScreen() {
   const [err, setErr] = useState<string | null>(null);
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState('');
+  const [road, setRoad] = useState<LatLng[] | null>(null);          // origen → destino por las calles
+  const [pickupRoad, setPickupRoad] = useState<LatLng[] | null>(null); // conductor → origen por las calles
 
   const t = details?.trip;
   const phase = t ? phaseOf(t.status, !!details?.rating) : null;
@@ -40,6 +42,18 @@ export default function TripScreen() {
   const d = t ? { lat: t.dest_lat, lng: t.dest_lng } : null;
   const eta = t && o && driverPos ? etaMin(driverPos, o) : null;
   const arrivalSecs = useCountdown(phase === 'pickup' && t?.status === 'ENROUTE' && eta ? eta * 60 : null);
+
+  // Rutas reales por las calles: una vez por viaje (el servidor ya la tiene guardada de la cotización) y una para ir a recoger.
+  const tid = t?.id;
+  useEffect(() => {
+    if (!o || !d) return;
+    routes.between(o, d).then((r) => { if (r) setRoad(r.points); });
+  }, [tid]);
+  const hasPickup = phase === 'pickup' && !!driverPos;
+  useEffect(() => {
+    if (!hasPickup || !driverPos || !o || pickupRoad) return;
+    routes.between(driverPos, o).then((r) => { if (r) setPickupRoad(r.points); });
+  }, [hasPickup]);
 
   // Encuadre del mapa según la fase
   useEffect(() => {
@@ -87,7 +101,7 @@ export default function TripScreen() {
   }
 
   const sos = () => Linking.openURL('tel:911');
-  const route = phase === 'pickup' ? (driverPos ? [driverPos, o] : null) : phase === 'ride' ? [driverPos ?? o, d] : null;
+  const route = phase === 'pickup' ? (pickupRoad ?? (driverPos ? [driverPos, o] : null)) : phase === 'ride' ? (road ?? [driverPos ?? o, d]) : null;
   const minsLeft = phase === 'ride' ? (driverPos ? etaMin(driverPos, d) : Math.max(1, Math.round(t.duration_min))) : 0;
   const total = distanceKm(o, d);
   const progress = driverPos && total > 0 ? 1 - distanceKm(driverPos, d) / total : 0.08;

@@ -4,7 +4,7 @@ import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { airportLine, createLocationBroadcaster, driver, DRIVER_CAN_CANCEL, DRIVER_NEXT, rd, trips, waitLine, type TripStatus } from '@faxi/core';
+import { airportLine, createLocationBroadcaster, driver, DRIVER_CAN_CANCEL, DRIVER_NEXT, rd, routes, trips, waitLine, type LatLng, type TripStatus } from '@faxi/core';
 import {
   Avatar, Banner, BigButton, Button, DestPin, HudChip, Icon, IconButton, Loading, MAP_PADDING, OriginPin, RouteGlow, Row, Sheet, StatusScrim, T, c, coord, region,
   useTheme, useTripDetails, FaxiMap, PinMarker } from '@faxi/ui';
@@ -29,8 +29,14 @@ export default function TripScreen() {
   const map = useRef<MapView>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [road, setRoad] = useState<LatLng[] | null>(null);   // origen → destino por las calles; sin ella, línea recta
   const t = details?.trip;
   const live = !!t && LIVE.includes(t.status);
+  const tid = t?.id;
+  useEffect(() => {
+    if (!t) return;
+    routes.between({ lat: t.origin_lat, lng: t.origin_lng }, { lat: t.dest_lat, lng: t.dest_lng }).then((r) => { if (r) setRoad(r.points); });
+  }, [tid]);
 
   // Ubicación en vivo para el pasajero: Broadcast cada ~5 s mientras el viaje está activo
   useEffect(() => {
@@ -90,7 +96,7 @@ export default function TripScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region({ lat: t.origin_lat, lng: t.origin_lng }, 0.03)} showsUserLocation toolbarEnabled={false}>
-        {live && !toPickup ? <RouteGlow coordinates={[coord({ lat: t.origin_lat, lng: t.origin_lng }), coord({ lat: t.dest_lat, lng: t.dest_lng })]} /> : null}
+        {live && !toPickup ? <RouteGlow coordinates={road ? road.map(coord) : [coord({ lat: t.origin_lat, lng: t.origin_lng }), coord({ lat: t.dest_lat, lng: t.dest_lng })]} /> : null}
         <PinMarker coordinate={{ latitude: t.origin_lat, longitude: t.origin_lng }} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></PinMarker>
         <PinMarker coordinate={{ latitude: t.dest_lat, longitude: t.dest_lng }} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></PinMarker>
       </FaxiMap>

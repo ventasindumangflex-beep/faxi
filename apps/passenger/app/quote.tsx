@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { airportLine, km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
+import { airportLine, km, mins, passenger, rd, routes, type Category, type LatLng, type Quote } from '@faxi/core';
 import {
   Banner, BigButton, DestPin, HudChip, IconButton, Loading, MAP_PADDING, OriginPin, RouteGlow, Row, Sheet, StatusScrim, T, VehicleCard, c, coord,
   region, useTheme, FaxiMap, PinMarker } from '@faxi/ui';
@@ -17,11 +17,16 @@ export default function QuoteScreen() {
   const [sel, setSel] = useState<Category | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [road, setRoad] = useState<LatLng[] | null>(null);   // ruta real por las calles; sin ella, línea recta
 
   useEffect(() => {
     if (!o || !d) return;
+    // Primero la ruta real: el servidor la guarda y el precio sale de esa distancia. Si no hay ruta, cotiza con la estimación de siempre.
     // Los precios los calcula el servidor (quote_trip): aquí solo se muestran
-    passenger.quote(o, d).then((q) => { setQuotes(q); setSel(q[0]?.category ?? null); }).catch((e) => setErr(e.message));
+    routes.between(o, d)
+      .then((r) => { setRoad(r?.points ?? null); return passenger.quote(o, d); })
+      .then((q) => { setQuotes(q); setSel(q[0]?.category ?? null); })
+      .catch((e) => setErr(e.message));
   }, []);
 
   if (!o || !d) return <Redirect href="/" />;
@@ -46,7 +51,7 @@ export default function QuoteScreen() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.06)}
         onMapReady={() => map.current?.fitToCoordinates([coord(o), coord(d)], { edgePadding: MAP_PADDING, animated: false })}>
-        <RouteGlow coordinates={[coord(o), coord(d)]} />
+        <RouteGlow coordinates={road ? road.map(coord) : [coord(o), coord(d)]} />
         <PinMarker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></PinMarker>
         <PinMarker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></PinMarker>
       </FaxiMap>

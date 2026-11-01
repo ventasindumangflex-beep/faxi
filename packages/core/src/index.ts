@@ -4,3 +4,4 @@ export * from './errors';
 export * from './format';
 export * from './api';
 export * from './realtime';
+export * from './polyline';

@@ -79,3 +79,6 @@ export interface CommissionStatus {
   owed: number; limit: number; blocked: boolean; pay_day: string; pay_info: string | null;
   last_payment_amount: number | null; last_payment_at: string | null;
 }
+
+/** Ruta real por las calles (Edge Function `route`). `points` es la línea ya decodificada. */
+export interface RouteInfo { distance_km: number; duration_min: number; points: LatLng[] }
