@@ -1391,6 +1391,115 @@ exception when others then
   raise notice 'pg_cron no disponible (%). Programa select public.run_storage_purge() cada día a las 07:30 UTC.', sqlerrm;
 end $$;
 
+-- ═════════════ Migración 021 ═════════════
+-- FAXI · 021 · Tarifas por tramos de distancia, como Uber / inDrive (decisión del dueño, 1-nov-2026)
+-- Hasta tier_km kilómetros se cobra per_km por km; de ahí en adelante, per_km_long (más barato). Así un viaje largo no se dispara.
+-- precio = base + (km hasta tier_km × per_km) + (km de más × per_km_long) + (minutos × per_min), con el mínimo de la categoría.
+-- tier_km = 0 apaga los tramos (un solo per_km para todo el viaje, como antes).
+-- Referencia (Económico, tiempo ≈ 24 km/h): 5 km ≈ RD$205 · 10 km ≈ 360 · 15 km ≈ 485 · 20 km ≈ 605 · 30 km ≈ 850.
+-- La comisión (10 %), el recargo del aeropuerto y la espera no cambian: se calculan igual sobre este precio. Se puede correr más de una vez.
+
+-- ───────── 1. Columnas del segundo tramo ─────────
+alter table public.pricing_rules add column if not exists tier_km numeric(6,2) not null default 0 check (tier_km >= 0);
+alter table public.pricing_rules add column if not exists per_km_long numeric(10,2) check (per_km_long is null or per_km_long >= 0);
+
+-- ───────── 2. El cálculo: igual que antes, con la parte de distancia por tramos ─────────
+create or replace function public.quote_fare(p_category public.vehicle_category, p_distance_km numeric, p_duration_min numeric, p_discount numeric default 0)
+returns table(pricing_rule_id uuid, base numeric, distance_part numeric, time_part numeric, surcharge numeric, discount numeric, minimum_adj numeric, total numeric)
+language plpgsql stable security definer set search_path = public as $$
+#variable_conflict use_column
+declare r public.pricing_rules; v_sub numeric; v_raw numeric;
+begin
+  select * into r from public.pricing_rules pr where pr.category = p_category and pr.is_active;
+  if not found then raise exception 'Categoría % no disponible', p_category using errcode = 'P0002'; end if;
+  if p_distance_km is null or p_distance_km <= 0 or p_duration_min is null or p_duration_min <= 0 then
+    raise exception 'Distancia o duración inválida' using errcode = '22023';
+  end if;
+  pricing_rule_id := r.id;
+  base := r.base_fare;
+  if r.tier_km > 0 and r.per_km_long is not null then
+    distance_part := round(least(p_distance_km, r.tier_km) * r.per_km + greatest(p_distance_km - r.tier_km, 0) * r.per_km_long, 2);
+  else
+    distance_part := round(p_distance_km * r.per_km, 2);
+  end if;
+  time_part := round(p_duration_min * r.per_min, 2);
+  v_sub := base + distance_part + time_part;
+  surcharge := round(v_sub * (r.surge_multiplier - 1), 2);
+  discount := least(greatest(coalesce(p_discount, 0), 0), v_sub + surcharge);
+  v_raw := v_sub + surcharge - discount;
+  minimum_adj := greatest(0, r.minimum_fare - v_raw);
+  total := round(v_raw + minimum_adj, 0);
+  return next;
+end $$;
+revoke all on function public.quote_fare(public.vehicle_category, numeric, numeric, numeric) from public, anon;
+grant execute on function public.quote_fare(public.vehicle_category, numeric, numeric, numeric) to authenticated;
+
+-- ───────── 3. Tarifas nuevas (base / km hasta el km 10 / km de más / minuto / mínimo) ─────────
+update public.pricing_rules r
+   set base_fare = n.base, per_km = n.km, tier_km = 10, per_km_long = n.km_long, per_min = n.min, minimum_fare = n.minimo
+  from (values ('ECONOMICO'::public.vehicle_category, 45, 25, 18, 2.5, 130),
+               ('CONFORT'::public.vehicle_category,   52, 29, 21, 3,   150),
+               ('PREMIUM'::public.vehicle_category,   68, 37, 27, 4,   190),
+               ('SUV'::public.vehicle_category,       75, 42, 30, 4,   210),
+               ('VAN'::public.vehicle_category,       83, 46, 33, 5,   240)) as n(cat, base, km, km_long, min, minimo)
+ where r.category = n.cat and r.is_active
+   and (r.base_fare, r.per_km, r.tier_km, r.per_km_long, r.per_min, r.minimum_fare)
+       is distinct from (n.base::numeric, n.km::numeric, 10::numeric, n.km_long::numeric, n.min::numeric, n.minimo::numeric);
+
+-- ═════════════ Migración 022 ═════════════
+-- FAXI · 022 · Rutas reales por las calles (decisión del dueño, 1-nov-2026)
+-- La Edge Function `route` consulta la Routes API de Google con una clave que solo vive en el servidor y guarda el resultado
+-- (distancia, tiempo y línea de la ruta) en route_cache. Las apps NO escriben ahí: solo la llave de servicio.
+-- route_estimate() (que usan quote_trip, request_trip y el despacho) usa la ruta guardada si existe y es de las últimas 6 horas;
+-- si no, sigue con la estimación de siempre (línea recta × 1.35 a 22 km/h). Así el precio sale de la distancia real
+-- y, si Google falla, la app sigue funcionando. Se puede correr más de una vez.
+
+create table if not exists public.route_cache (
+  id bigint generated always as identity primary key,
+  o_lat numeric(8,4) not null, o_lng numeric(9,4) not null,
+  d_lat numeric(8,4) not null, d_lng numeric(9,4) not null,
+  distance_km numeric(7,2) not null check (distance_km >= 0.1 and distance_km <= 300),
+  duration_min numeric(7,1) not null check (duration_min > 0 and duration_min <= 1000),
+  polyline text not null check (char_length(polyline) between 2 and 100000),
+  created_at timestamptz not null default now(),
+  unique (o_lat, o_lng, d_lat, d_lng)
+);
+alter table public.route_cache enable row level security;          -- sin políticas: solo la llave de servicio
+revoke all on public.route_cache from anon, authenticated;
+create index if not exists route_cache_created_idx on public.route_cache (created_at);
+
+-- Misma firma que antes (ahora STABLE porque lee la tabla y SECURITY DEFINER para poder leerla)
+create or replace function public.route_estimate(o_lat double precision, o_lng double precision, d_lat double precision, d_lng double precision,
+  out distance_km numeric, out duration_min numeric)
+language plpgsql stable security definer set search_path = public as $$
+#variable_conflict use_variable
+declare a double precision; straight double precision; c record;
+begin
+  select rc.distance_km as dk, rc.duration_min as dm into c from public.route_cache rc
+   where rc.o_lat = round(o_lat::numeric, 4) and rc.o_lng = round(o_lng::numeric, 4)
+     and rc.d_lat = round(d_lat::numeric, 4) and rc.d_lng = round(d_lng::numeric, 4)
+     and rc.created_at > now() - interval '6 hours';
+  if found then
+    distance_km := c.dk; duration_min := c.dm;
+    return;
+  end if;
+  a := sin(radians(d_lat - o_lat) / 2) ^ 2 + cos(radians(o_lat)) * cos(radians(d_lat)) * sin(radians(d_lng - o_lng) / 2) ^ 2;
+  straight := 2 * 6371 * asin(sqrt(a));
+  distance_km := round(greatest(straight * 1.35, 0.5)::numeric, 2);
+  duration_min := round(distance_km / 22.0 * 60 + 2, 1);
+end $$;
+revoke all on function public.route_estimate(double precision, double precision, double precision, double precision) from public, anon;
+grant execute on function public.route_estimate(double precision, double precision, double precision, double precision) to authenticated;
+
+-- Las rutas viejas no hacen falta: se borran las de más de 2 días, todos los días a las 3:15 a. m. de RD (07:15 UTC)
+do $$ begin
+  if not exists (select 1 from cron.job where jobname = 'faxi-limpiar-rutas') then
+    perform cron.schedule('faxi-limpiar-rutas', '15 7 * * *', $q$delete from public.route_cache where created_at < now() - interval '2 days'$q$);
+  end if;
+exception when others then
+  raise notice 'pg_cron no disponible (%). Programa el borrado de route_cache cada día a las 07:15 UTC.', sqlerrm;
+end $$;
+
 -- ═════════════ URL del push en producción ═════════════
 do $$ begin
   if not exists (select 1 from vault.secrets where name = 'faxi_push_url') then
@@ -1399,8 +1508,8 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas, 30-oct-2026, con 001–020): tablas 23 · funciones 80 · politicas 46 · triggers 41 · indices 57 · cron 4
---   h_tablas ce07fd · h_funciones 3466b3 · h_politicas 4cbe1d · h_triggers 9e7bdf · h_indices 360bb4 · vault 2 · proveedor CASH · año_minimo = año actual − 15
+-- Esperado (faxi-pruebas y faxi, 1-nov-2026, con 001–022): tablas 24 · funciones 80 · politicas 46 · triggers 41 · indices 60 · cron 5
+--   h_tablas d36014 · h_funciones 3466b3 · h_politicas 4cbe1d · h_triggers 9e7bdf · h_indices dc9d2e · vault 2 · proveedor CASH · año_minimo = año actual − 15
 --   (en faxi-pruebas proveedor es MOCK y año_minimo 2000 a propósito; en producción deben salir CASH y año actual − 15)
 --   politicas cuenta public + storage + realtime (46); HUELLA_ESQUEMA.sql cuenta solo public + storage (44)
 with
