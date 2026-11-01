@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import { StyleSheet, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { Redirect, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { airportLine, km, mins, passenger, rd, type Category, type Quote } from '@faxi/core';
 import {
-  Banner, Button, DestPin, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, StatusScrim, T, c, coord, region, FaxiMap,
+  Banner, BigButton, DestPin, HudChip, IconButton, Loading, MAP_PADDING, OriginPin, RouteGlow, Row, Sheet, StatusScrim, T, VehicleCard, c, coord,
+  region, useTheme, FaxiMap,
 } from '@faxi/ui';
 import { draft } from '../src/draft';
 
-const ICON: Record<Category, 'directions-car' | 'local-taxi' | 'airport-shuttle'> = {
-  ECONOMICO: 'directions-car', CONFORT: 'directions-car', PREMIUM: 'local-taxi', SUV: 'airport-shuttle', VAN: 'airport-shuttle',
-};
-
 export default function QuoteScreen() {
+  useTheme();
   const o = draft.origin, d = draft.dest;
   const map = useRef<MapView>(null);
   const [quotes, setQuotes] = useState<Quote[] | null>(null);
@@ -23,6 +21,7 @@ export default function QuoteScreen() {
 
   useEffect(() => {
     if (!o || !d) return;
+    // Los precios los calcula el servidor (quote_trip): aquí solo se muestran
     passenger.quote(o, d).then((q) => { setQuotes(q); setSel(q[0]?.category ?? null); }).catch((e) => setErr(e.message));
   }, []);
 
@@ -48,21 +47,23 @@ export default function QuoteScreen() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.06)}
         onMapReady={() => map.current?.fitToCoordinates([coord(o), coord(d)], { edgePadding: MAP_PADDING, animated: false })}>
+        <RouteGlow coordinates={[coord(o), coord(d)]} />
         <Marker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
         <Marker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
-        <Polyline coordinates={[coord(o), coord(d)]} strokeColor={c.ink} strokeWidth={3} lineDashPattern={[8, 6]} />
       </FaxiMap>
       <StatusScrim />
-      <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16 }}>
-        <IconButton icon="arrow-back" label="Volver" onPress={() => router.back()} />
+      <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16, right: 16 }}>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <IconButton icon="arrow-back" label="Volver" onPress={() => router.back()} />
+          {quotes?.[0] ? <HudChip label={`${km(quotes[0].distance_km)} · ${mins(quotes[0].duration_min)}`} /> : null}
+        </Row>
       </SafeAreaView>
 
       <Sheet collapsible
         peek={chosen ? (
           <View style={{ gap: 2 }}>
             <Row>
-              <Icon name={ICON[chosen.category]} color={c.primaryDark} />
-              <T v="label" numberOfLines={1} style={{ flex: 1 }}>{chosen.display_name}</T>
+              <T numberOfLines={1} style={{ flex: 1 }} v="label">{chosen.display_name}</T>
               <T v="h2">{rd(chosen.total)}</T>
             </Row>
             {airportLine(chosen) ? <T v="caption">{airportLine(chosen)} (incluido)</T> : null}
@@ -71,35 +72,24 @@ export default function QuoteScreen() {
         footer={(
           <View style={{ gap: 10 }}>
             {err ? <Banner text={err} /> : null}
-            <Button title={chosen ? `Solicitar ${chosen.display_name}` : 'Solicitar'} onPress={request} loading={busy} disabled={!chosen} />
+            <BigButton title={chosen ? `Pedir ${chosen.display_name}` : 'Pedir'} price={chosen ? rd(chosen.total) : undefined}
+              onPress={request} loading={busy} disabled={!chosen} />
+            <T v="caption" center style={{ fontSize: 12.5 }}>Efectivo · Sin sorpresas: el precio se calcula antes de pedir.</T>
           </View>
         )}>
         <View style={{ gap: 2 }}>
           <T v="title">Elige tu viaje</T>
           <T v="caption" numberOfLines={1}>{o.address.split(',')[0]} → {d.address.split(',')[0]}</T>
-          {quotes?.[0] ? <T v="caption">{mins(quotes[0].duration_min)} · {km(quotes[0].distance_km)} · pagas en efectivo al llegar</T> : null}
         </View>
         {!quotes && !err ? <View style={{ height: 160 }}><Loading label="Calculando precio…" /></View> : null}
-        {quotes?.map((q) => {
-          const on = q.category === sel;
-          return (
-            <Pressable key={q.category} onPress={() => setSel(q.category)} accessibilityRole="radio" accessibilityState={{ selected: on }}
-              accessibilityLabel={`${q.display_name}, ${q.capacity} personas, ${rd(q.total)}`}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 18, borderWidth: 2, borderColor: on ? c.primary : c.outlineSoft, backgroundColor: c.white }}>
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: on ? c.primarySoft : c.surface2, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={ICON[q.category]} color={on ? c.primaryDark : c.ink} />
-              </View>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <T v="label" numberOfLines={2}>{q.display_name}</T>
-                <Row gap={4}>
-                  <Icon name="person" size={14} color={c.ink2} />
-                  <T v="caption">{q.capacity}</T>
-                </Row>
-              </View>
-              <T v="h2" style={{ flexShrink: 0 }}>{rd(q.total)}</T>
-            </Pressable>
-          );
-        })}
+        <View style={{ gap: 8 }} accessibilityRole="radiogroup">
+          {quotes?.map((q) => (
+            <VehicleCard key={q.category} category={q.category} name={q.display_name} subtitle={`${q.capacity} personas`}
+              price={rd(q.total)} selected={q.category === sel} onPress={() => setSel(q.category)}
+              accessibilityLabel={`${q.display_name}, ${q.capacity} personas, ${rd(q.total)}`} />
+          ))}
+        </View>
+        {chosen && airportLine(chosen) ? <T v="caption">{airportLine(chosen)} (ya incluido en el precio)</T> : null}
       </Sheet>
     </View>
   );

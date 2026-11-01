@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { router } from 'expo-router';
 import { fmtDate, passenger, rd, STATUS_LABEL, type Trip } from '@faxi/core';
-import { Banner, Card, Header, Row, Screen, StatusPill, T, c } from '@faxi/ui';
+import { Banner, Card, Header, Row, Screen, StatusPill, T, c, useTheme } from '@faxi/ui';
 
 export default function History() {
+  useTheme();
   const [rows, setRows] = useState<Trip[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);

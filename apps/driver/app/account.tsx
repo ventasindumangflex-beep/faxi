@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Alert, Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { auth, CATEGORY_LABEL, driver } from '@faxi/core';
-import { Avatar, Banner, Card, Divider, Header, ListItem, Row, Screen, T, useSession } from '@faxi/ui';
+import { AppearancePicker, Avatar, Banner, Card, Header, Row, Screen, SettingsGroup, SettingsRow, T, useSession, useTheme } from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { cfg } from '../src/faxi';
 import { stopTracking } from '../src/tracking';
 
+/** Ajustes del conductor: apariencia (solo en este teléfono), cuenta, ayuda y legal. */
 export default function Account() {
+  useTheme();
   const { me } = useSession();
   const { profile } = useDriver();
   const [err, setErr] = useState<string | null>(null);
@@ -30,12 +32,12 @@ export default function Account() {
 
   return (
     <Screen scroll>
-      <Header title="Tu cuenta" onBack={() => router.back()} />
+      <Header title="Ajustes" onBack={() => router.back()} />
       <Row>
         <Avatar name={me?.full_name} size={60} />
-        <View style={{ flex: 1 }}>
-          <T v="h2">{me?.full_name}</T>
-          <T v="caption">{me?.phone} · ★ {profile?.rating_avg?.toFixed(1) ?? 'Nuevo'} · {profile?.trips_count ?? 0} viajes</T>
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <T v="h2" numberOfLines={1}>{me?.full_name}</T>
+          <T v="caption" numberOfLines={2}>{me?.phone} · ★ {profile?.rating_avg?.toFixed(1) ?? 'Nuevo'} · {profile?.trips_count ?? 0} viajes</T>
         </View>
       </Row>
       {v ? (
@@ -46,18 +48,29 @@ export default function Account() {
         </Card>
       ) : null}
       {err ? <Banner text={err} /> : null}
-      <View>
-        <ListItem icon="account-balance-wallet" title="Ganancias" onPress={() => router.push('/earnings')} />
-        <ListItem icon="support-agent" title="Reportar un problema" onPress={() => router.push('/support')} />
-        {cfg.supportWhatsApp ? <ListItem icon="chat" title="Soporte por WhatsApp" onPress={() => Linking.openURL(`https://wa.me/${cfg.supportWhatsApp}`)} /> : null}
-        <ListItem icon="description" title="Términos para conductores" onPress={() => Linking.openURL(cfg.termsUrl)} />
-        <ListItem icon="privacy-tip" title="Política de privacidad" onPress={() => Linking.openURL(cfg.privacyUrl)} />
-      </View>
-      <Divider />
-      <View>
-        <ListItem icon="logout" title="Cerrar sesión" onPress={signOut} right={<View />} />
-        <ListItem icon="delete-forever" title="Eliminar cuenta" danger onPress={confirmDelete} right={<View />} />
-      </View>
+
+      <SettingsGroup title="Apariencia">
+        <AppearancePicker />
+      </SettingsGroup>
+
+      <SettingsGroup title="Cuenta">
+        <SettingsRow title="Ganancias" onPress={() => router.push('/earnings')} />
+        <SettingsRow title="Cobro" value="Efectivo" />
+        <SettingsRow title="Avisos de viajes" value="En los ajustes del teléfono" onPress={() => Linking.openSettings()} />
+        <SettingsRow title="Idioma" value="Español" />
+      </SettingsGroup>
+
+      <SettingsGroup title="Ayuda">
+        {cfg.supportWhatsApp ? <SettingsRow title="Soporte por WhatsApp" onPress={() => Linking.openURL(`https://wa.me/${cfg.supportWhatsApp}`)} /> : null}
+        <SettingsRow title="Reportar un problema" onPress={() => router.push('/support')} />
+        <SettingsRow title="Términos para conductores" onPress={() => Linking.openURL(cfg.termsUrl)} />
+        <SettingsRow title="Política de privacidad" onPress={() => Linking.openURL(cfg.privacyUrl)} />
+      </SettingsGroup>
+
+      <SettingsGroup title="Sesión">
+        <SettingsRow title="Cerrar sesión" onPress={signOut} />
+        <SettingsRow title="Eliminar mi cuenta" danger onPress={confirmDelete} />
+      </SettingsGroup>
     </Screen>
   );
 }

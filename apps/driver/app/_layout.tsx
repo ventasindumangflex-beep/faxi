@@ -7,7 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts, PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold } from '@expo-google-fonts/plus-jakarta-sans';
 import { isConfigured, missingConfig } from '@faxi/core';
-import { ConfigMissing, Loading, SessionProvider, c, registerForPush, useSession } from '@faxi/ui';
+import { ConfigMissing, Loading, SessionProvider, ThemeProvider, c, registerForPush, useSession, useTheme } from '@faxi/ui';
 import { DriverProvider, useDriver } from '../src/driverCtx';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -20,15 +20,25 @@ function Root() {
   if (!fonts) return null;
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      {isConfigured() ? (
-        <SessionProvider><DriverProvider><Gate /></DriverProvider></SessionProvider>
-      ) : <ConfigMissing missing={missingConfig()} />}
+      {/* La app del conductor arranca en modo oscuro (de noche se maneja mejor); cada quien lo cambia en Ajustes */}
+      <ThemeProvider defaultMode="dark">
+        <ThemedStatusBar />
+        {isConfigured() ? (
+          <SessionProvider><DriverProvider><Gate /></DriverProvider></SessionProvider>
+        ) : <ConfigMissing missing={missingConfig()} />}
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
 
+/** Íconos claros de la barra de estado en el tema oscuro y oscuros en el claro. */
+function ThemedStatusBar() {
+  const { scheme } = useTheme();
+  return <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />;
+}
+
 function Gate() {
+  useTheme(); // vuelve a dibujar al cambiar el tema
   const { session, me, loading } = useSession();
   useEffect(() => { Sentry.setUser(me ? { id: me.id } : null); }, [me?.id]);
   const { profile, missingDocs, loading: loadingDriver } = useDriver();
@@ -60,5 +70,5 @@ function Gate() {
   }, [me?.id]);
 
   if (busy) return <Loading />;
-  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface }, animation: 'slide_from_right' }} />;
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'slide_from_right' }} />;
 }

@@ -3,11 +3,13 @@ import { Linking, View } from 'react-native';
 import { auth, normalizePhoneDO } from '@faxi/core';
 import { Banner, Brand, Button, Field, Header, Row, Screen, T } from './components';
 import { c, f, r } from './tokens';
+import { useTheme } from './theme';
 
 export function PhoneLogin({ role, title, subtitle, brandSuffix, termsUrl, privacyUrl, onSent }: {
   role: 'PASSENGER' | 'DRIVER'; title: string; subtitle: string; brandSuffix?: string;
   termsUrl: string; privacyUrl: string; onSent: (phone: string) => void;
 }) {
+  useTheme();
   const [raw, setRaw] = useState('');
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -30,7 +32,7 @@ export function PhoneLogin({ role, title, subtitle, brandSuffix, termsUrl, priva
           <T v="caption">{subtitle}</T>
         </View>
         <Row gap={10}>
-          <View style={{ height: 56, paddingHorizontal: 16, borderRadius: r.md, backgroundColor: c.surface2, justifyContent: 'center' }}>
+          <View style={{ height: 56, paddingHorizontal: 16, borderRadius: r.md, backgroundColor: c.card, justifyContent: 'center' }}>
             <T v="label">RD +1</T>
           </View>
           <View style={{ flex: 1 }}>
@@ -48,6 +50,7 @@ export function PhoneLogin({ role, title, subtitle, brandSuffix, termsUrl, priva
 }
 
 export function LegalLinks({ termsUrl, privacyUrl }: { termsUrl: string; privacyUrl: string }) {
+  useTheme();
   return (
     <Row gap={18} style={{ flexWrap: 'wrap' }}>
       <T v="caption" color={c.primaryDark} style={{ fontFamily: f.bold, textDecorationLine: 'underline' }}
@@ -125,6 +128,7 @@ export function NameForm({ onDone }: { onDone: () => void }) {
 }
 
 export function WrongRole({ message }: { message: string }) {
+  useTheme();
   return (
     <Screen>
       <View style={{ flex: 1, justifyContent: 'center', gap: 16 }}>
@@ -138,6 +142,7 @@ export function WrongRole({ message }: { message: string }) {
 }
 
 export function ConfigMissing({ missing }: { missing: string[] }) {
+  useTheme();
   return (
     <Screen>
       <View style={{ flex: 1, justifyContent: 'center', gap: 12 }}>

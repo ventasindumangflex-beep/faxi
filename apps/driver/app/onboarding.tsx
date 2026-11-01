@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Alert, Linking, Pressable, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { CATEGORY_CAPACITY, CATEGORY_LABEL, DOC_LABEL, driver, type Category, type DriverDocType, type VehicleDocType } from '@faxi/core';
-import { Banner, Button, Card, Chip, Field, Icon, Row, Screen, StatusPill, T, c, useSession } from '@faxi/ui';
+import { Banner, Button, Card, Chip, Field, Icon, Row, Screen, StatusPill, T, c, useSession, useTheme } from '@faxi/ui';
 import { REQUIRED_DRIVER_DOCS, REQUIRED_VEHICLE_DOCS, useDriver } from '../src/driverCtx';
 import { cfg } from '../src/faxi';
 
 const CATEGORIES: Category[] = ['ECONOMICO', 'CONFORT', 'PREMIUM', 'SUV', 'VAN'];
 
 export default function Onboarding() {
+  useTheme();
   const { me } = useSession();
   const { profile, docs, missingDocs, refresh } = useDriver();
   const v = profile?.vehicle;

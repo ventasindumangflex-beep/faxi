@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 import { router } from 'expo-router';
 import type { Place } from '@faxi/core';
-import { Banner, Field, Header, ListItem, Row, Screen, T, c, SD_CENTER } from '@faxi/ui';
+import { Banner, Field, Header, ListItem, Row, Screen, T, c, SD_CENTER, useTheme } from '@faxi/ui';
 import { autocomplete, placeDetails, type Suggestion } from '../src/places';
 import { getHere } from '../src/location';
 import { draft } from '../src/draft';
@@ -10,6 +10,7 @@ import { draft } from '../src/draft';
 type Target = 'origin' | 'dest';
 
 export default function Search() {
+  useTheme();
   const [origin, setOrigin] = useState<Place | null>(draft.origin);
   const [text, setText] = useState({ origin: draft.origin?.address ?? '', dest: '' });
   const [focus, setFocus] = useState<Target>('dest');
@@ -58,7 +59,7 @@ export default function Search() {
           </View>
         </Row>
         <Row>
-          <View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: c.primary }} />
+          <View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: c.neon }} />
           <View style={{ flex: 1 }}>
             <Field value={text.dest} onFocus={() => setFocus('dest')} autoFocus placeholder="¿A dónde vas?"
               onChangeText={(v) => setText((t) => ({ ...t, dest: v }))} accessibilityLabel="Destino" />
