@@ -1,6 +1,6 @@
 # Términos y condiciones para conductores
 
-**Versión 1.3 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.4 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo, en especial la naturaleza de la relación (sección 2), los requisitos del INTRANT (sección 3), el seguro (sección 9) y el ITBIS de la comisión (sección 6).
 
@@ -48,7 +48,7 @@ faxi revisa tus documentos antes de activarte y puede pedírtelos de nuevo en cu
 
 ## 6. Tarifas, cobro y comisión
 
-- La tarifa la calcula la app según la distancia y el tiempo, y la ves antes de aceptar. No puedes cobrarle al pasajero montos adicionales a la tarifa que muestra la app. **[INDICAR SI LOS PEAJES Y EL TIEMPO DE ESPERA SE SUMAN A LA TARIFA]**
+- La tarifa la calcula la app según la distancia y el tiempo, y la ves antes de aceptar. No puedes cobrarle al pasajero montos adicionales a la tarifa que muestra la app. Los **peajes no se cobran aparte**, salvo el **recargo fijo del aeropuerto** cuando aplique: la app lo muestra por separado antes de pedir y ya viene incluido en el precio. El **tiempo de espera** sí se suma: los primeros **5 minutos** entre que marcas "Llegué" e "Iniciar" son gratis y, después, se cobra por minuto según la categoría. La app lo calcula y lo muestra en la pantalla del cobro, y la comisión de faxi se calcula sobre el precio final con la espera.
 - Por ahora todos los viajes son **en efectivo**: cobras al pasajero al terminar y **confirmas el cobro en la app**.
 - faxi cobra una comisión del **10 % [ITBIS INCLUIDO / MÁS ITBIS]** de la tarifa de cada viaje completado, y emite el comprobante fiscal correspondiente. La app te muestra, viaje por viaje, la tarifa, la comisión y tu ganancia.
 - Como el pasajero te paga todo en efectivo, tú le debes a faxi la comisión de esos viajes. La app te muestra en todo momento cuánto debes. Ese saldo es exigible y **sigue vigente aunque desactives o elimines tu cuenta**.

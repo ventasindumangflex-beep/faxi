@@ -38,7 +38,7 @@ export default function Account() {
 
       <SettingsGroup title="Cuenta">
         <SettingsRow title="Forma de pago" value="Efectivo" />
-        <SettingsRow title="Avisos del viaje" value="En los ajustes del teléfono" onPress={() => Linking.openSettings()} />
+        <SettingsRow title="Avisos del viaje" value="Ajustes del teléfono" onPress={() => Linking.openSettings()} />
         <SettingsRow title="Idioma" value="Español" />
         <SettingsRow title="Tus viajes" onPress={() => router.push('/history')} />
       </SettingsGroup>

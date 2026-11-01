@@ -1,6 +1,6 @@
 # Términos y condiciones para pasajeros
 
-**Versión 1.2 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
+**Versión 1.3 · Vigentes desde: [FECHA DE PUBLICACIÓN]**
 
 > BORRADOR PARA REVISIÓN LEGAL. Los datos entre corchetes deben completarse y un abogado dominicano debe revisar este texto antes de publicarlo.
 
@@ -28,7 +28,7 @@ Por normas del INTRANT, los conductores no pueden recoger pasajeros a menos de *
 - La tarifa final se calcula al terminar el viaje con la distancia estimada y el **tiempo real** del viaje (nunca menos que el tiempo estimado). Por eso puede ser mayor que la estimada si el viaje tarda más de lo previsto, por ejemplo por tráfico; nunca será menor.
 - Todas las tarifas están en pesos dominicanos (RD$) e incluyen los impuestos aplicables.
 - La tarifa mínima por categoría se muestra en la app.
-- **[INDICAR SI LOS PEAJES Y EL TIEMPO DE ESPERA SE SUMAN A LA TARIFA]**
+- Los **peajes no se cobran aparte**, salvo el **recargo fijo del aeropuerto**, que la app te muestra antes de pedir y ya viene incluido en el precio. Tu conductor te espera **5 minutos gratis** al llegar; después se cobra por minuto según la categoría. El total, con la espera si la hubo, aparece al llegar y lo pagas en efectivo.
 
 ## 5. Pago
 

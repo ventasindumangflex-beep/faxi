@@ -122,11 +122,11 @@ export function IconButton({ icon, onPress, label, style }: { icon: IconName; on
 }
 
 export function Field({ label, error, style, ...p }: TextInputProps & { label?: string; error?: string | null }) {
-  useTheme();
+  const { scheme } = useTheme();
   return (
     <View style={{ gap: 6 }}>
       {label ? <T v="caption">{label}</T> : null}
-      <TextInput placeholderTextColor={c.muted} selectionColor={c.primary} maxFontSizeMultiplier={MAX_FONT_SCALE} {...p}
+      <TextInput placeholderTextColor={c.muted} selectionColor={c.primary} keyboardAppearance={scheme} maxFontSizeMultiplier={MAX_FONT_SCALE} {...p}
         style={[s.input, error ? { borderColor: c.error } : null, style]} />
       {error ? <T v="caption" color={c.error}>{error}</T> : null}
     </View>
@@ -196,7 +196,7 @@ export function Sheet({ children, style, footer, peek, collapsible }: {
   }), []);
 
   return (
-    <View style={[s.sheet, { paddingBottom: ins.bottom + 16, maxHeight: height - ins.top - 72 }, collapsible && { paddingTop: 0 }, style]}>
+    <View style={[s.sheet, { paddingBottom: ins.bottom + 16, maxHeight: Math.min(height - ins.top - 72, height * 0.74) }, collapsible && { paddingTop: 0 }, style]}>
       {collapsible ? (
         <View {...pan.panHandlers} accessible accessibilityRole="button"
           accessibilityLabel={open ? 'Ocultar opciones y ver el mapa' : 'Mostrar opciones'} onAccessibilityTap={() => toggle(!openRef.current)}

@@ -3,7 +3,6 @@ import { Platform, View } from 'react-native';
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE, Polyline, type MapViewProps, type Region } from 'react-native-maps';
 import type { LatLng } from '@faxi/core';
 import { Banner, Icon } from './components';
-import { c } from './tokens';
 import { useTheme } from './theme';
 import { MAP_STYLE } from './mapStyle';
 

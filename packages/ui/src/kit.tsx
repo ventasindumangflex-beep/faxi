@@ -217,9 +217,9 @@ export function Segmented<V extends string>({ options, value, onChange, label }:
         const on = o.value === value;
         return (
           <Pressable key={o.value} onPress={() => onChange(o.value)} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={o.label}
-            style={{ flex: 1, minHeight: 48, borderRadius: r.pill, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: on ? c.neon : 'transparent' }}>
+            style={{ flex: 1, minHeight: 48, borderRadius: r.pill, paddingHorizontal: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: on ? c.neon : 'transparent' }}>
             {o.icon ? <Icon name={o.icon} size={16} color={on ? c.onPrimary : c.muted} /> : null}
-            <T numberOfLines={1} color={on ? c.onPrimary : c.muted} style={{ fontFamily: f.black, fontSize: 13.5, lineHeight: 18, flexShrink: 1 }}>{o.label}</T>
+            <T fit color={on ? c.onPrimary : c.muted} style={{ fontFamily: f.black, fontSize: 13.5, lineHeight: 18, flexShrink: 1 }}>{o.label}</T>
           </Pressable>
         );
       })}

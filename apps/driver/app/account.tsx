@@ -56,7 +56,7 @@ export default function Account() {
       <SettingsGroup title="Cuenta">
         <SettingsRow title="Ganancias" onPress={() => router.push('/earnings')} />
         <SettingsRow title="Cobro" value="Efectivo" />
-        <SettingsRow title="Avisos de viajes" value="En los ajustes del teléfono" onPress={() => Linking.openSettings()} />
+        <SettingsRow title="Avisos de viajes" value="Ajustes del teléfono" onPress={() => Linking.openSettings()} />
         <SettingsRow title="Idioma" value="Español" />
       </SettingsGroup>
 

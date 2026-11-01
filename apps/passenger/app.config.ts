@@ -18,7 +18,7 @@ const config: ExpoConfig = {
   scheme: 'faxi',
   version: '1.0.0',
   orientation: 'portrait',
-  userInterfaceStyle: 'light',
+  userInterfaceStyle: 'automatic', // la app elige Claro/Oscuro/Automático (packages/ui/src/theme.tsx); lo nativo lo sigue
   newArchEnabled: true,
   icon: './assets/icon.png',                 // generado con scripts/make_icons.py
   ios: {

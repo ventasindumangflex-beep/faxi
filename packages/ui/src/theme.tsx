@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { AccessibilityInfo, useColorScheme } from 'react-native';
+import { AccessibilityInfo, Appearance, useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { applyScheme, c, type Palette, type Scheme } from './tokens';
 
@@ -31,6 +31,8 @@ export function ThemeProvider({ defaultMode = 'auto', children }: { defaultMode?
   }, []);
 
   const mode = stored ?? defaultMode;
+  // Claro/Oscuro elegido en la app: también para lo nativo (barra de abajo, teclado, avisos). Automático = el del teléfono.
+  useEffect(() => { try { Appearance.setColorScheme(mode === 'auto' ? null : mode); } catch { /* versión sin soporte */ } }, [mode]);
   const scheme: Scheme = mode === 'auto' ? (system === 'light' ? 'light' : 'dark') : mode;
   applyScheme(scheme); // antes de dibujar los hijos: así `c` ya trae los colores del tema
 

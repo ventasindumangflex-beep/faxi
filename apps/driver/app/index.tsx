@@ -6,7 +6,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { driver, km, mins, rd, watchDriverRequests, type CommissionStatus, type PendingRequest } from '@faxi/core';
 import {
-  Banner, BigButton, Button, CountdownPill, HudChip, Icon, IconButton, OnlineToggle, Row, Sheet, StatusScrim, T, c, f, region, SD_CENTER, useSession, useTheme, FaxiMap,
+  Banner, BigButton, Button, CountdownPill, HudChip, Icon, IconButton, OnlineToggle, Row, Sheet, StatusScrim, T, c, region, SD_CENTER, useSession, useTheme, FaxiMap,
 } from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { currentPos, ensureLocationPermission, startTracking, stopTracking } from '../src/tracking';
