@@ -1,4 +1,8 @@
-# faxi · Estado del proyecto (30-oct-2026)
+# faxi · Estado del proyecto (2-nov-2026)
+
+> **Al 2-nov-2026:** producción (faxi) con las migraciones 001–022, función `route` y huella igual a faxi-pruebas; tarifas por tramos (Económico 15 km ≈ RD$485), ruta real por las calles (necesita el secreto `GOOGLE_ROUTES_KEY`),
+> rediseño completo y compilaciones `.aab` de producción hechas (build 3). Falta: verificación de identidad de Google Play, aprobación de Twilio y los 12 probadores (14 días). Subida paso a paso: `docs/SUBIDA_A_PLAY.md`.
+> **Decisión del dueño:** no se cargan los hoteles por ahora; la lista de Zonas queda vacía y la regla de 200 m del INTRANT no se aplica hasta que se carguen (queda como riesgo legal anotado).
 
 Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO.md`, `docs/PENDIENTES_PRODUCCION.md` y `docs/REVISION_LEGAL.md`.
 

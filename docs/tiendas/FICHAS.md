@@ -79,14 +79,14 @@ TÚ DECIDES CUÁNDO
 • Ve el origen, el destino y la tarifa antes de aceptar.
 
 TODO EN LA APP
-• Navega al punto de recogida con Google Maps o Waze.
+• Ve la ruta por las calles hasta el destino y navega al punto de recogida con Google Maps o Waze.
 • Avisa tu llegada, inicia y termina el viaje con un toque.
 • Cobra en efectivo y confirma el pago en la app.
 • Consulta tus ganancias de hoy y de los últimos 7 días, viaje por viaje.
 
 REGÍSTRATE FÁCIL
 • Completa tus datos y los de tu vehículo.
-• Sube fotos de tu licencia, cédula, certificado de buena conducta, matrícula y seguro.
+• Sube fotos de tu licencia, cédula, certificado de buena conducta, carnet del INTRANT, prueba antidoping, matrícula y seguro.
 • El equipo de faxi revisa tus documentos y te avisa cuando estés aprobado.
 
 SEGURIDAD
