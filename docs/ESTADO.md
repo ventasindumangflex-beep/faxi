@@ -1,4 +1,8 @@
-# faxi · Estado del proyecto (30-oct-2026)
+# faxi · Estado del proyecto (2-nov-2026)
+
+> **Al 2-nov-2026:** producción (faxi) con las migraciones 001–022, función `route` y huella igual a faxi-pruebas; tarifas por tramos (Económico 15 km ≈ RD$485), ruta real por las calles (necesita el secreto `GOOGLE_ROUTES_KEY`),
+> rediseño completo y compilaciones `.aab` de producción hechas (build 3). Falta: verificación de identidad de Google Play, aprobación de Twilio y los 12 probadores (14 días). Subida paso a paso: `docs/SUBIDA_A_PLAY.md`.
+> **Decisión del dueño:** no se cargan los hoteles por ahora; la lista de Zonas queda vacía y la regla de 200 m del INTRANT no se aplica hasta que se carguen (queda como riesgo legal anotado).
 
 Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO.md`, `docs/PENDIENTES_PRODUCCION.md` y `docs/REVISION_LEGAL.md`.
 
@@ -43,7 +47,7 @@ Resumen simple de lo hecho y lo que falta. Detalle técnico en `docs/LANZAMIENTO
   - La seguridad se revisó.
 
 ### Base de datos
-- **faxi-pruebas** tiene las migraciones **001–018** (30-oct). Probadas: FAXI OK, FAXI MÓVIL OK, 005, 006, 009 (zonas) y 016 (espera) después de la 017, y las nuevas 017 (aeropuerto) y 018 (retención). Huella medida: 22 tablas · 78 funciones · 46 políticas · 39 triggers · 55 índices · 3 tareas programadas. Tipos de las 3 apps: OK.
+- **faxi-pruebas** tiene las migraciones **001–020** (30-oct). Probadas: FAXI OK, FAXI MÓVIL OK, 005, 006, 009 (zonas) y 016 (espera) después de la 017, y las nuevas 017 (aeropuerto) y 018 (retención). Huella medida con 001–020: 23 tablas · 80 funciones · 46 políticas · 41 triggers · 57 índices · 4 tareas programadas. Tipos de las 3 apps: OK.
 - **019 (30-oct):** se encontró que cualquier usuario con sesión podía leer la cuenta de pago de las comisiones llamando a `setting_text()`; la 019 cierra `setting_text` y `setting_num`. Probado con FAXI 019 OK.
 - **020 (30-oct):** los archivos de documentos borrados (por la retención 018 o por borrar la cuenta) se encolan y la Edge Function `purge-storage` los quita de Storage cada día. Probada de punta a punta en faxi-pruebas (respuesta 200, archivo borrado, cola marcada). En producción hay que desplegar la función y crear el secreto `faxi_purge_url` (ver `docs/PASOS_DEL_DUENO.md`). Los códigos OTP los maneja Supabase Auth.
 - **Producción no se ha tocado.** Todo lo que necesita está listo en `supabase/PRODUCCION_PEGAR.sql`.

@@ -34,8 +34,8 @@ begin
     select total into v_base from public.quote_fare(t.category, t.distance_km, t.duration_min);
     assert t.wait_minutes = 12, 'espera mal medida: ' || t.wait_minutes;
     if v_round = 1 then
-      assert t.wait_charge = 7 * 5, format('cargo de espera %s, esperado 35 (7 min × RD$5)', t.wait_charge);
-      assert t.final_fare = v_base + 35, format('precio final %s, esperado %s', t.final_fare, v_base + 35);
+      assert t.wait_charge = 7 * 2.5, format('cargo de espera %s, esperado 17.50 (7 min × RD$2.50, tarifa por minuto de Económico desde la 021)', t.wait_charge);
+      assert t.final_fare = round(v_base + 17.5, 0), format('precio final %s, esperado %s', t.final_fare, round(v_base + 17.5, 0));
     else
       assert t.wait_charge = 0, 'cobró espera dentro de los minutos gratis';
       assert t.final_fare = v_base, 'el precio final no debe llevar espera';

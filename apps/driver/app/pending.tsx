@@ -3,7 +3,7 @@ import { Linking, RefreshControl, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth, DOC_LABEL } from '@faxi/core';
-import { Banner, Brand, Button, Card, Icon, Row, StatusPill, T, c } from '@faxi/ui';
+import { Banner, Brand, Button, Card, Icon, Row, StatusPill, T, c, useTheme } from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { cfg } from '../src/faxi';
 
@@ -11,6 +11,7 @@ const TONE = { APPROVED: 'ok', PENDING: 'warn', REJECTED: 'error', SUSPENDED: 'e
 const LABEL = { APPROVED: 'Aprobado', PENDING: 'En revisión', REJECTED: 'Rechazado', SUSPENDED: 'Suspendido' } as const;
 
 export default function Pending() {
+  useTheme();
   const { profile, docs, refresh } = useDriver();
   const [refreshing, setRefreshing] = useState(false);
   if (!profile) return null;
@@ -21,7 +22,7 @@ export default function Pending() {
   const latest = [...docs.driver, ...vdocs].filter((d, i, all) => all.findIndex((x) => x.type === d.type) === i);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: c.surface }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
       <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await refresh(); setRefreshing(false); }} />}>
         <Brand suffix="Conductor" />

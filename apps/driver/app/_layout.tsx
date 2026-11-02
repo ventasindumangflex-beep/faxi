@@ -7,28 +7,40 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts, PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold } from '@expo-google-fonts/plus-jakarta-sans';
 import { isConfigured, missingConfig } from '@faxi/core';
-import { ConfigMissing, Loading, SessionProvider, c, registerForPush, useSession } from '@faxi/ui';
+import { ConfigMissing, Loading, SessionProvider, ThemeProvider, c, registerForPush, useSession, useTheme } from '@faxi/ui';
 import { DriverProvider, useDriver } from '../src/driverCtx';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+try { SplashScreen.setOptions({ duration: 400, fade: true }); } catch { /* versión sin soporte */ }
 
 export default Sentry.wrap(Root);
 
 function Root() {
   const [fonts] = useFonts({ PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
-  useEffect(() => { if (fonts) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
+  // Con la app configurada, la pantalla nativa se quita en Gate cuando ya se sabe a qué pantalla ir.
+  useEffect(() => { if (fonts && !isConfigured()) SplashScreen.hideAsync().catch(() => {}); }, [fonts]);
   if (!fonts) return null;
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      {isConfigured() ? (
-        <SessionProvider><DriverProvider><Gate /></DriverProvider></SessionProvider>
-      ) : <ConfigMissing missing={missingConfig()} />}
+      {/* La app del conductor arranca en modo oscuro (de noche se maneja mejor); cada quien lo cambia en Ajustes */}
+      <ThemeProvider defaultMode="dark">
+        <ThemedStatusBar />
+        {isConfigured() ? (
+          <SessionProvider><DriverProvider><Gate /></DriverProvider></SessionProvider>
+        ) : <ConfigMissing missing={missingConfig()} />}
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
 
+/** Íconos claros de la barra de estado en el tema oscuro y oscuros en el claro. */
+function ThemedStatusBar() {
+  const { scheme } = useTheme();
+  return <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />;
+}
+
 function Gate() {
+  useTheme(); // vuelve a dibujar al cambiar el tema
   const { session, me, loading } = useSession();
   useEffect(() => { Sentry.setUser(me ? { id: me.id } : null); }, [me?.id]);
   const { profile, missingDocs, loading: loadingDriver } = useDriver();
@@ -59,6 +71,13 @@ function Gate() {
     }
   }, [me?.id]);
 
+  // La pantalla nativa se queda hasta que la sesión y el perfil están listos: nada de salto al indicador de carga. Tope de 6 s por si no hay internet.
+  useEffect(() => {
+    if (!busy) { SplashScreen.hideAsync().catch(() => {}); return; }
+    const h = setTimeout(() => SplashScreen.hideAsync().catch(() => {}), 6000);
+    return () => clearTimeout(h);
+  }, [busy]);
+
   if (busy) return <Loading />;
-  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface }, animation: 'slide_from_right' }} />;
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'slide_from_right' }} />;
 }

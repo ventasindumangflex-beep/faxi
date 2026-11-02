@@ -73,7 +73,7 @@ function page({ path, title, description, body }) {
 <link rel="canonical" href="${SITIO}${path}">
 <link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-icon.png">
-<meta name="theme-color" content="#1B7A57">
+<meta name="theme-color" content="#0E1411">
 <link rel="stylesheet" href="/estilos.css">
 </head>
 <body>
@@ -139,27 +139,27 @@ ${SOPORTE || WHATSAPP ? `<h2>Escríbenos</h2>\n${contacto}\n` : ''}<p>Si tienes 
 const css = `@font-face { font-family: 'Plus Jakarta Sans'; font-weight: 500; font-display: swap; src: url(/fuentes/PlusJakartaSans_500Medium.ttf) format('truetype'); }
 @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 800; font-display: swap; src: url(/fuentes/PlusJakartaSans_800ExtraBold.ttf) format('truetype'); }
 :root {
-  --primary: #1B7A57; --primary-dark: #0F5A3F; --primary-soft: #D6EDE1; --on-primary: #FFFFFF;
-  --ink: #181C1A; --ink2: #414943; --outline-soft: #DDE3DD;
-  --surface: #F8FAF6; --surface2: #E6EBE4; --white: #FFFFFF; --warn: #7A5900; --warn-soft: #FFF1CC;
+  --primary: #05E072; --primary-dark: #0B5A36; --primary-soft: #E3F6EA; --on-primary: #04170D;
+  --ink: #181C1A; --ink2: #414943; --outline-soft: #E6EBE4;
+  --surface: #F1F5F0; --surface2: #EEF3EE; --white: #FFFFFF; --warn: #7A5900; --warn-soft: #FFF1CC;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --primary: #7FD3AE; --primary-dark: #A6E4C8; --primary-soft: #1E3A2E; --on-primary: #0B1F16;
-    --ink: #E6EBE4; --ink2: #B9C2BA; --outline-soft: #2C332E;
-    --surface: #111412; --surface2: #1B201C; --white: #181C1A; --warn: #FFD873; --warn-soft: #3A2F0E;
+    --primary: #05E072; --primary-dark: #7CF0B0; --primary-soft: #12301F; --on-primary: #04170D;
+    --ink: #F7FDF6; --ink2: #B9C4BC; --outline-soft: #232A26;
+    --surface: #0E1411; --surface2: #232A26; --white: #181C1A; --warn: #F0C54D; --warn-soft: #2E2608;
   }
 }
 :root[data-theme="dark"] {
-  --primary: #7FD3AE; --primary-dark: #A6E4C8; --primary-soft: #1E3A2E; --on-primary: #0B1F16;
-  --ink: #E6EBE4; --ink2: #B9C2BA; --outline-soft: #2C332E;
-  --surface: #111412; --surface2: #1B201C; --white: #181C1A; --warn: #FFD873; --warn-soft: #3A2F0E;
+  --primary: #05E072; --primary-dark: #7CF0B0; --primary-soft: #12301F; --on-primary: #04170D;
+  --ink: #F7FDF6; --ink2: #B9C4BC; --outline-soft: #232A26;
+  --surface: #0E1411; --surface2: #232A26; --white: #181C1A; --warn: #F0C54D; --warn-soft: #2E2608;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { background: var(--surface); color: var(--ink); font: 500 16px/1.6 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased; overflow-wrap: anywhere; }
-a { color: var(--primary); }
-a:hover { color: var(--primary-dark); }
+a { color: var(--primary-dark); }
+a:hover { color: var(--ink); }
 .barra { max-width: 820px; margin: 0 auto; padding: 20px 16px; display: flex; align-items: center; justify-content: space-between; }
 .marca { display: inline-flex; align-items: baseline; gap: 3px; font-weight: 800; font-size: 28px; letter-spacing: -0.05em; color: var(--ink); text-decoration: none; min-height: 44px; }
 .marca i { width: 8px; height: 8px; border-radius: 9px; background: var(--primary); display: inline-block; }

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { router } from 'expo-router';
 import { driver, fmtDate, rd, type CommissionStatus, type Trip } from '@faxi/core';
-import { Banner, Card, Chip, Header, Row, Screen, T, c, f } from '@faxi/ui';
+import { Banner, Card, Chip, Header, Row, Screen, T, c, useTheme } from '@faxi/ui';
 
 type Range = 'today' | 'week';
 const since = (r: Range) => { const d = new Date(); d.setHours(0, 0, 0, 0); if (r === 'week') d.setDate(d.getDate() - 6); return d.toISOString(); };
 
 export default function Earnings() {
+  useTheme();
   const [range, setRange] = useState<Range>('today');
   const [rows, setRows] = useState<Trip[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -28,14 +29,14 @@ export default function Earnings() {
         <Chip label="Últimos 7 días" selected={range === 'week'} onPress={() => setRange('week')} />
       </Row>
       <Card>
-        <T v="caption">Tu ganancia</T>
-        <T style={{ fontFamily: f.black, fontSize: 40, letterSpacing: -1.4 }}>{rd(total)}</T>
+        <T v="micro">Tu ganancia</T>
+        <T v="price" fit style={{ fontSize: 48, lineHeight: 54 }}>{rd(total)}</T>
         <T v="caption">{rows?.length ?? 0} viajes · cobrado {rd(gross)} · comisión faxi {rd(commission)}</T>
       </Card>
       {debt ? (
         <Card>
-          <T v="caption">Comisión por pagar a faxi</T>
-          <T style={{ fontFamily: f.black, fontSize: 28, letterSpacing: -1 }} color={debt.blocked ? c.error : c.ink}>{rd(Math.max(debt.owed, 0))}</T>
+          <T v="micro">Comisión por pagar a faxi</T>
+          <T v="price" fit style={{ fontSize: 34, lineHeight: 40 }} color={debt.blocked ? c.error : c.ink}>{rd(Math.max(debt.owed, 0))}</T>
           <T v="caption">Paga cada {debt.pay_day} la comisión de tus viajes en efectivo. Si debes más de {rd(debt.limit)}, no podrás conectarte hasta pagar.</T>
           {debt.pay_info ? <T v="label">Dónde pagar: {debt.pay_info}</T> : null}
           {debt.last_payment_at ? <T v="caption">Último pago: {rd(debt.last_payment_amount)} · {fmtDate(debt.last_payment_at)}</T> : null}

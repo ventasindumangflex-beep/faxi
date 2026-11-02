@@ -5,13 +5,16 @@ import * as Haptics from 'expo-haptics';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { driver, km, mins, rd, watchDriverRequests, type CommissionStatus, type PendingRequest } from '@faxi/core';
-import { Banner, Button, Icon, IconButton, Row, Sheet, StatusPill, T, c, f, region, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
+import {
+  Banner, BigButton, Button, CountdownPill, HudChip, Icon, IconButton, OnlineToggle, Row, Sheet, StatusScrim, T, c, region, SD_CENTER, useSession, useTheme, FaxiMap,
+} from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { currentPos, ensureLocationPermission, startTracking, stopTracking } from '../src/tracking';
 
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString(); };
 
 export default function Home() {
+  useTheme();
   const { me } = useSession();
   const { profile, refresh } = useDriver();
   const map = useRef<MapView>(null);
@@ -101,12 +104,11 @@ export default function Home() {
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(SD_CENTER, 0.05)} showsUserLocation showsMyLocationButton={false} toolbarEnabled={false} />
+      <StatusScrim />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, left: 16, right: 16, gap: 10 }}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <IconButton icon="menu" label="Menú" onPress={() => router.push('/account')} />
-          <View style={{ backgroundColor: c.white, borderRadius: 999, paddingHorizontal: 16, height: 44, justifyContent: 'center' }}>
-            <T v="label" onPress={() => router.push('/earnings')}>Hoy {rd(today.total)}</T>
-          </View>
+          <IconButton icon="settings" label="Ajustes" onPress={() => router.push('/account')} />
+          <HudChip dot={online} label={`Hoy ${rd(today.total)}`} onPress={() => router.push('/earnings')} accessibilityLabel={`Ganancias de hoy ${rd(today.total)}. Toca para ver más`} />
         </Row>
         {warn ? <Banner tone="warn" text={warn} actionLabel="Ajustes" onAction={() => Linking.openSettings()} /> : null}
       </SafeAreaView>
@@ -114,17 +116,12 @@ export default function Home() {
       <Sheet>
         {offer ? <Offer r={offer} busy={busy} onAccept={accept} onReject={reject} onExpire={() => { setOffer(null); poll(); }} /> : (
           <>
-            <Row style={{ justifyContent: 'space-between' }}>
-              <T v="title">{online ? 'Estás conectado' : 'Estás desconectado'}</T>
-              <StatusPill label={online ? 'En línea' : 'Fuera de línea'} tone={online ? 'ok' : 'neutral'} />
-            </Row>
-            <T v="caption">{online ? 'Buscando viajes cerca de ti… Te avisaremos con sonido y vibración.' : `${today.count} viaje(s) hoy. Conéctate para recibir solicitudes.`}</T>
+            <OnlineToggle online={online} loading={busy} onPress={online ? goOffline : goOnline} />
+            <T v="caption" center>{online ? 'Buscando viajes cerca de ti… Te avisaremos con sonido y vibración.' : `${today.count} viaje(s) hoy. Conéctate para recibir solicitudes.`}</T>
             {debt?.blocked && !online ? (
               <Banner text={`Debes ${rd(debt.owed)} de comisión. Paga para volver a conectarte.`} actionLabel="Ver" onAction={() => router.push('/earnings')} />
             ) : null}
             {err ? <Banner text={err} /> : null}
-            {online ? <Button title="Desconectarme" variant="outline" onPress={goOffline} loading={busy} />
-              : <Button title="Conectarme" icon="power-settings-new" onPress={goOnline} loading={busy} />}
           </>
         )}
       </Sheet>
@@ -133,6 +130,7 @@ export default function Home() {
 }
 
 function Offer({ r, busy, onAccept, onReject, onExpire }: { r: PendingRequest; busy: boolean; onAccept: () => void; onReject: () => void; onExpire: () => void }) {
+  useTheme();
   const left = () => Math.max(0, Math.round((new Date(r.expires_at).getTime() - Date.now()) / 1000));
   const [secs, setSecs] = useState(left());
   useEffect(() => {
@@ -144,22 +142,20 @@ function Offer({ r, busy, onAccept, onReject, onExpire }: { r: PendingRequest; b
     <>
       <Row style={{ justifyContent: 'space-between' }}>
         <T v="micro">Nueva solicitud · {r.trip_code}</T>
-        <View style={{ backgroundColor: secs <= 10 ? c.errorSoft : c.surface2, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
-          <T v="label" color={secs <= 10 ? c.error : c.ink}>{secs} s</T>
-        </View>
+        <CountdownPill seconds={secs} urgent={secs <= 10} label={`Te quedan ${secs} segundos para aceptar`} />
       </Row>
       <View>
-        <T style={{ fontFamily: f.black, fontSize: 40, letterSpacing: -1.4 }}>{rd(r.estimated_earnings)}</T>
+        <T v="price" fit>{rd(r.estimated_earnings)}</T>
         <T v="caption">Tu ganancia estimada · tarifa {rd(r.estimated_fare)} en efectivo</T>
       </View>
       <View style={{ gap: 8 }}>
         <Row gap={10}><View style={{ width: 12, height: 12, borderRadius: 6, borderWidth: 3.5, borderColor: c.ink }} /><T v="label" style={{ flex: 1 }} numberOfLines={1}>{r.origin_address}</T><T v="caption">a {km(r.distance_to_pickup_km)}</T></Row>
-        <Row gap={10}><View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: c.primary }} /><T v="label" style={{ flex: 1 }} numberOfLines={1}>{r.dest_address}</T><T v="caption">{km(r.distance_km)} · {mins(r.duration_min)}</T></Row>
+        <Row gap={10}><View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: c.neon }} /><T v="label" style={{ flex: 1 }} numberOfLines={1}>{r.dest_address}</T><T v="caption">{km(r.distance_km)} · {mins(r.duration_min)}</T></Row>
       </View>
       <Row gap={6}><Icon name="person" size={18} color={c.ink2} /><T v="caption">{r.passenger_name} · ★ {r.passenger_rating?.toFixed(1) ?? 'Nuevo'}</T></Row>
       <Row gap={10}>
         <Button title="Rechazar" variant="outline" style={{ flex: 1 }} onPress={onReject} disabled={busy} />
-        <Button title="Aceptar" style={{ flex: 2 }} onPress={onAccept} loading={busy} />
+        <BigButton title="Aceptar" icon="check" style={{ flex: 2 }} onPress={onAccept} loading={busy} />
       </Row>
     </>
   );

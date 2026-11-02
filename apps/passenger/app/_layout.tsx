@@ -6,7 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts, PlusJakartaSans_500Medium, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold } from '@expo-google-fonts/plus-jakarta-sans';
 import { isConfigured, missingConfig } from '@faxi/core';
-import { ConfigMissing, SessionProvider, c, registerForPush, useSession } from '@faxi/ui';
+import { ConfigMissing, SessionProvider, ThemeProvider, c, registerForPush, useSession, useTheme } from '@faxi/ui';
 import { Intro } from '../src/Intro';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -20,13 +20,22 @@ function Root() {
   if (!fonts) return null;
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      {isConfigured() ? <SessionProvider><Gate /></SessionProvider> : <ConfigMissing missing={missingConfig()} />}
+      <ThemeProvider defaultMode="auto">
+        <ThemedStatusBar />
+        {isConfigured() ? <SessionProvider><Gate /></SessionProvider> : <ConfigMissing missing={missingConfig()} />}
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
 
+/** Íconos claros de la barra de estado en el tema oscuro y oscuros en el claro. */
+function ThemedStatusBar() {
+  const { scheme } = useTheme();
+  return <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />;
+}
+
 function Gate() {
+  useTheme(); // vuelve a dibujar al cambiar el tema (el fondo de las pantallas sale de c.bg)
   const { session, me, loading } = useSession();
   useEffect(() => { Sentry.setUser(me ? { id: me.id } : null); }, [me?.id]);
   const seg = useSegments() as string[];
@@ -50,7 +59,7 @@ function Gate() {
 
   return (
     <>
-      {loading ? null : <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface }, animation: 'slide_from_right' }} />}
+      {loading ? null : <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg }, animation: 'slide_from_right' }} />}
       <Intro ready={!loading} />
     </>
   );

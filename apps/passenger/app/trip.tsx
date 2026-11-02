@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Linking, Platform, Share, StyleSheet, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Linking, Platform, ScrollView, Share, StyleSheet, View } from 'react-native';
+import MapView from 'react-native-maps';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ENDED_UNSUCCESSFUL, PASSENGER_CAN_CANCEL, etaMin, airportLine, passenger, rd, trips, waitLine, type TripDetails, type TripStatus,
+  ENDED_UNSUCCESSFUL, PASSENGER_CAN_CANCEL, airportLine, distanceKm, etaMin, passenger, rd, routes, trips, waitLine, type LatLng, type TripDetails, type TripStatus,
 } from '@faxi/core';
 import {
-  Avatar, Banner, Button, CarPin, DestPin, Field, Icon, IconButton, Loading, MAP_PADDING, OriginPin, Row, Sheet, Stars, T,
-  c, coord, f, region, useTripDetails, FaxiMap,
-} from '@faxi/ui';
+  ActionPill, Avatar, Banner, BigButton, Button, CarPin, Confetti, CountdownPill, DestPin, Field, HudChip, Icon, Loading, MAP_PADDING, OriginPin,
+  Plate, ProgressBar, Radar, RouteGlow, Row, Sheet, Stars, T, c, coord, f, region, useCountdown, useTheme, useTripDetails, FaxiMap, PinMarker } from '@faxi/ui';
 import { draft } from '../src/draft';
 
 type Phase = 'search' | 'pickup' | 'ride' | 'pay' | 'rate' | 'ended';
@@ -22,37 +21,58 @@ function phaseOf(s: TripStatus, rated: boolean): Phase {
   return 'ended';
 }
 
+const STAR_MSG = ['¿Cómo estuvo el viaje?', 'Lamentamos eso. Cuéntanos qué pasó.', 'Podemos mejorar.', 'Buen viaje.', '¡Muy bien! Gracias.', '¡Excelente! Gracias por viajar con faxi.'];
+
 export default function TripScreen() {
+  const { scheme } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
+  // La pantalla se arma siempre desde el servidor (trip_details): al reabrir la app vuelve a este viaje (activeTrip en Inicio)
   const { details, driverPos, error } = useTripDetails(id, { listenLocation: true });
   const map = useRef<MapView>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState('');
+  const [road, setRoad] = useState<LatLng[] | null>(null);          // origen → destino por las calles
+  const [pickupRoad, setPickupRoad] = useState<LatLng[] | null>(null); // conductor → origen por las calles
 
   const t = details?.trip;
   const phase = t ? phaseOf(t.status, !!details?.rating) : null;
+  const o = t ? { lat: t.origin_lat, lng: t.origin_lng } : null;
+  const d = t ? { lat: t.dest_lat, lng: t.dest_lng } : null;
+  const eta = t && o && driverPos ? etaMin(driverPos, o) : null;
+  const arrivalSecs = useCountdown(phase === 'pickup' && t?.status === 'ENROUTE' && eta ? eta * 60 : null);
+
+  // Rutas reales por las calles: una vez por viaje (el servidor ya la tiene guardada de la cotización) y una para ir a recoger.
+  const tid = t?.id;
+  useEffect(() => {
+    if (!o || !d) return;
+    routes.between(o, d).then((r) => { if (r) setRoad(r.points); });
+  }, [tid]);
+  const hasPickup = phase === 'pickup' && !!driverPos;
+  useEffect(() => {
+    if (!hasPickup || !driverPos || !o || pickupRoad) return;
+    routes.between(driverPos, o).then((r) => { if (r) setPickupRoad(r.points); });
+  }, [hasPickup]);
 
   // Encuadre del mapa según la fase
   useEffect(() => {
-    if (!t) return;
-    const o = { lat: t.origin_lat, lng: t.origin_lng }, d = { lat: t.dest_lat, lng: t.dest_lng };
+    if (!t || !o || !d) return;
     const pts = phase === 'pickup' && driverPos ? [o, driverPos] : phase === 'ride' && driverPos ? [driverPos, d] : [o, d];
     map.current?.fitToCoordinates(pts.map(coord), { edgePadding: MAP_PADDING, animated: true });
   }, [phase, t?.id, !!driverPos]);
 
-  if (!details || !t || !phase) {
+  if (!details || !t || !phase || !o || !d) {
     return error ? (
-      <View style={{ flex: 1, justifyContent: 'center', padding: 24, gap: 12, backgroundColor: c.surface }}>
+      <View style={{ flex: 1, justifyContent: 'center', padding: 24, gap: 12, backgroundColor: c.bg }}>
         <Banner text={error} />
         <Button title="Volver al inicio" onPress={() => router.replace('/')} />
       </View>
     ) : <Loading />;
   }
 
-  const o = { lat: t.origin_lat, lng: t.origin_lng };
   const dv = details.driver, veh = details.vehicle;
+  const firstName = dv?.name.split(' ')[0] ?? 'tu conductor';
 
   async function cancel() {
     Alert.alert('¿Cancelar el viaje?', phase === 'pickup' ? 'Tu conductor ya va en camino.' : undefined, [
@@ -80,102 +100,154 @@ export default function TripScreen() {
     router.replace('/quote');
   }
 
-  const eta = driverPos ? etaMin(driverPos, o) : null;
-  const pickupTitle = t.status === 'ARRIVED' ? 'Tu conductor llegó' : t.status === 'ENROUTE' && eta ? `Llega en ~${eta} min` : 'Tu conductor aceptó el viaje';
+  const sos = () => Linking.openURL('tel:911');
+  const route = phase === 'pickup' ? (pickupRoad ?? (driverPos ? [driverPos, o] : null)) : phase === 'ride' ? (road ?? [driverPos ?? o, d]) : null;
+  const minsLeft = phase === 'ride' ? (driverPos ? etaMin(driverPos, d) : Math.max(1, Math.round(t.duration_min))) : 0;
+  const total = distanceKm(o, d);
+  const progress = driverPos && total > 0 ? 1 - distanceKm(driverPos, d) / total : 0.08;
+  const arriving = t.status === 'ARRIVED';
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <FaxiMap ref={map} style={StyleSheet.absoluteFill} initialRegion={region(o, 0.04)} toolbarEnabled={false}>
-        <Marker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></Marker>
-        <Marker coordinate={{ latitude: t.dest_lat, longitude: t.dest_lng }} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></Marker>
+        {route ? <RouteGlow coordinates={route.map(coord)} /> : null}
+        <PinMarker coordinate={coord(o)} anchor={{ x: 0.5, y: 0.5 }}><OriginPin /></PinMarker>
+        <PinMarker coordinate={coord(d)} anchor={{ x: 0.5, y: 0.5 }}><DestPin /></PinMarker>
         {driverPos && (phase === 'pickup' || phase === 'ride') ? (
-          <Marker coordinate={coord(driverPos)} anchor={{ x: 0.5, y: 0.5 }}><CarPin /></Marker>
+          <PinMarker coordinate={coord(driverPos)} anchor={{ x: 0.5, y: 0.5 }}><CarPin /></PinMarker>
         ) : null}
       </FaxiMap>
-      {phase === 'ride' ? (
-        <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 8, right: 16 }}>
-          <IconButton icon="sos" label="Emergencia 911" onPress={() => Linking.openURL('tel:911')} />
+
+      {phase === 'pickup' || phase === 'ride' ? (
+        <SafeAreaView edges={['top']} pointerEvents="none" style={{ position: 'absolute', top: 8, left: 16, right: 16 }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <HudChip dot label={phase === 'ride' ? 'En viaje' : arriving ? 'Tu conductor llegó' : 'Tu conductor viene'} />
+            {phase === 'ride' ? <HudChip label="Efectivo" /> : null}
+          </Row>
         </SafeAreaView>
       ) : null}
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }} pointerEvents="box-none">
-        <Sheet>
-          {phase === 'search' && (
-            <>
-              <Row><ActivityIndicator color={c.primary} /><T v="title" style={{ flex: 1 }}>Buscando tu conductor…</T></Row>
-              <T v="caption">Te avisaremos en cuanto alguien acepte. Destino: {t.dest_address}</T>
-              <T v="label">Estimado {rd(t.estimated_fare)} · efectivo</T>
-              <Button title="Cancelar búsqueda" variant="outline" onPress={cancel} loading={busy} />
-            </>
-          )}
+      {phase === 'search' ? (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24, paddingBottom: 220 }]}>
+          <Radar />
+          <T v="display" center>Buscando tu conductor</T>
+          <T v="body" center color={c.muted} style={{ maxWidth: 300 }}>Avisamos a los conductores más cercanos. Suele tardar menos de un minuto.</T>
+          <T v="caption" center numberOfLines={2}>Destino: {t.dest_address}</T>
+          <T v="label" center>Estimado {rd(t.estimated_fare)} · efectivo</T>
+          {airportLine(t) ? <T v="caption" center>{airportLine(t)} (incluido)</T> : null}
+        </View>
+      ) : null}
 
-          {(phase === 'pickup' || phase === 'ride') && (
-            <>
-              <T v="title">{phase === 'ride' ? `Rumbo a ${t.dest_address.split(',')[0]}` : pickupTitle}</T>
-              {dv ? <DriverCard d={details} /> : null}
-              <Row gap={10}>
-                {phase === 'pickup' && dv?.phone ? (
-                  <Button title="Llamar" icon="call" variant="tonal" style={{ flex: 1 }} onPress={() => Linking.openURL(`tel:${dv.phone}`)} />
-                ) : null}
-                <Button title="Compartir viaje" icon="ios-share" variant="tonal" style={{ flex: 1 }} onPress={share} />
-              </Row>
-              {PASSENGER_CAN_CANCEL.includes(t.status) ? <Button title="Cancelar viaje" variant="danger" onPress={cancel} loading={busy} /> : null}
-            </>
-          )}
-
-          {phase === 'pay' && (
-            <>
-              <T v="title">Llegaste a tu destino</T>
-              <View style={{ alignItems: 'center', gap: 4, paddingVertical: 8 }}>
-                <T v="caption">Paga en efectivo a {dv?.name.split(' ')[0] ?? 'tu conductor'}</T>
-                <T style={{ fontFamily: f.black, fontSize: 44, letterSpacing: -1.5 }}>{rd(t.final_fare)}</T>
+      {phase === 'pay' || phase === 'rate' ? (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg }]}>
+          <View style={{ position: 'absolute', top: 0, left: -60, right: -60, height: 360, borderBottomLeftRadius: 400, borderBottomRightRadius: 400, backgroundColor: c.endTop, opacity: scheme === 'dark' ? 0.55 : 0.8 }} />
+          <Confetti />
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
+              <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', gap: 14, padding: 24 }} keyboardShouldPersistTaps="handled">
+                <T v="micro" color={c.accent}>Llegaste</T>
+                <T v="price" fit center style={{ fontSize: 60, lineHeight: 66 }}>{rd(t.final_fare)}</T>
                 {waitLine(t) ? <T v="caption">{waitLine(t)}</T> : null}
                 {airportLine(t) ? <T v="caption">{airportLine(t)}</T> : null}
-              </View>
-              <Row style={{ justifyContent: 'center' }}><ActivityIndicator color={c.primary} /><T v="caption">Esperando que el conductor confirme el cobro…</T></Row>
-            </>
-          )}
+                <T v="body" center>{phase === 'pay' ? `Paga en efectivo a ${firstName}` : `Pagaste en efectivo a ${firstName}`}</T>
+                {phase === 'pay' ? (
+                  <Row style={{ justifyContent: 'center' }}><ActivityIndicator color={c.primary} /><T v="caption">Esperando que el conductor confirme el cobro…</T></Row>
+                ) : (
+                  <View style={{ alignSelf: 'stretch', alignItems: 'center', gap: 10 }}>
+                    <Stars value={stars} onChange={setStars} />
+                    <T v="body" center color={c.muted} style={{ minHeight: 22 }}>{STAR_MSG[stars]}</T>
+                    <View style={{ alignSelf: 'stretch' }}>
+                      <Field value={comment} onChangeText={setComment} placeholder="Comentario (opcional)" maxLength={500} />
+                    </View>
+                    {err ? <View style={{ alignSelf: 'stretch' }}><Banner text={err} /></View> : null}
+                    <BigButton title="Enviar calificación" icon="check" onPress={rate} loading={busy} disabled={!stars} style={{ alignSelf: 'stretch' }} />
+                    <Button title="Ahora no" variant="outline" onPress={() => router.replace('/')} style={{ alignSelf: 'stretch' }} />
+                  </View>
+                )}
+                {phase === 'pay' && err ? <Banner text={err} /> : null}
+              </ScrollView>
+            </SafeAreaView>
+          </KeyboardAvoidingView>
+        </View>
+      ) : null}
 
-          {phase === 'rate' && (
-            <>
-              <T v="title" center>¿Cómo estuvo tu viaje{dv ? ` con ${dv.name.split(' ')[0]}` : ''}?</T>
-              <T v="caption" center>Pagaste {rd(t.final_fare)} en efectivo</T>
-              <Stars value={stars} onChange={setStars} />
-              <Field value={comment} onChangeText={setComment} placeholder="Comentario (opcional)" maxLength={500} />
-              <Button title="Enviar calificación" onPress={rate} loading={busy} disabled={!stars} />
-              <Button title="Ahora no" variant="outline" onPress={() => router.replace('/')} />
-            </>
-          )}
+      {phase !== 'pay' && phase !== 'rate' ? (
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }} pointerEvents="box-none">
+          <Sheet collapsible={phase === 'pickup' || phase === 'ride'}
+            peek={phase === 'ride' ? <T v="label" numberOfLines={1}>{minsLeft} min · {t.dest_address.split(',')[0]}</T> : <T v="label">{arriving ? 'Tu conductor llegó' : eta ? `Llega en ~${eta} min` : 'Tu conductor viene'}</T>}>
+            {phase === 'search' && (
+              <Button title="Cancelar búsqueda" variant="outline" onPress={cancel} loading={busy} />
+            )}
 
-          {phase === 'ended' && <Ended status={t.status} onRetry={retry} />}
+            {phase === 'pickup' && (
+              <>
+                {t.status === 'ENROUTE' && eta ? (
+                  <T v="eta">Llega en <T v="eta" color={c.accent}>{Math.max(1, Math.ceil(arrivalSecs / 60))}</T> min</T>
+                ) : (
+                  <T v="eta" style={{ fontSize: 32, lineHeight: 36 }}>{arriving ? 'Tu conductor llegó' : 'Tu conductor aceptó el viaje'}</T>
+                )}
+                <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  {t.status === 'ENROUTE' && eta ? <CountdownPill seconds={arrivalSecs} /> : <View />}
+                  {veh ? <Plate value={veh.plate} /> : null}
+                </Row>
+                {dv ? <DriverRow d={details} /> : null}
+                <Row gap={8}>
+                  <ActionPill label="Llamar" icon="call" disabled={!dv?.phone} onPress={() => dv?.phone && Linking.openURL(`tel:${dv.phone}`)} />
+                  <ActionPill label="Mensaje" icon="sms" disabled={!dv?.phone} onPress={() => dv?.phone && Linking.openURL(`sms:${dv.phone}`)} />
+                  <ActionPill label="SOS" icon="sos" tone="sos" onPress={sos} />
+                </Row>
+                {PASSENGER_CAN_CANCEL.includes(t.status) ? <Button title="Cancelar viaje" variant="danger" onPress={cancel} loading={busy} /> : null}
+              </>
+            )}
 
-          {err ? <Banner text={err} /> : null}
-        </Sheet>
-      </KeyboardAvoidingView>
+            {phase === 'ride' && (
+              <>
+                <Row style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <T v="eta"><T v="eta" color={c.accent}>{minsLeft}</T> min</T>
+                  <T v="label" color={c.muted} numberOfLines={1} style={{ flex: 1, textAlign: 'right' }}>{t.dest_address.split(',')[0]}</T>
+                </Row>
+                <ProgressBar value={progress} />
+                <Row style={{ justifyContent: 'space-between' }}>
+                  <T v="caption" numberOfLines={1} style={{ flexShrink: 1 }}>{firstName}{veh ? ` · ${veh.plate}` : ''}</T>
+                  <T v="caption" numberOfLines={1}>Total al llegar: {rd(t.estimated_fare)}</T>
+                </Row>
+                {airportLine(t) ? <T v="caption">{airportLine(t)} (incluido)</T> : null}
+                <Row gap={8}>
+                  <ActionPill label="Compartir viaje" icon="ios-share" onPress={share} />
+                  <ActionPill label="SOS" icon="sos" tone="sos" onPress={sos} />
+                </Row>
+              </>
+            )}
+
+            {phase === 'ended' && <Ended status={t.status} onRetry={retry} />}
+
+            {err && phase !== 'ended' ? <Banner text={err} /> : null}
+          </Sheet>
+        </KeyboardAvoidingView>
+      ) : null}
     </View>
   );
 }
 
-function DriverCard({ d }: { d: TripDetails }) {
+function DriverRow({ d }: { d: TripDetails }) {
+  useTheme();
   const dv = d.driver!, v = d.vehicle;
   return (
-    <Row style={{ backgroundColor: c.white, borderRadius: 20, borderWidth: 1, borderColor: c.outlineSoft, padding: 14 }}>
-      <Avatar name={dv.name} />
-      <View style={{ flex: 1 }}>
-        <T v="label">{dv.name}</T>
-        <Row gap={4}><Icon name="star" size={16} color={c.star} /><T v="caption">{dv.rating?.toFixed(1) ?? 'Nuevo'} · {dv.trips} viajes</T></Row>
-        {v ? <T v="caption">{v.make} {v.model} · {v.color}</T> : null}
+    <Row gap={14}>
+      <Avatar name={dv.name} size={56} />
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <T numberOfLines={1} style={{ fontFamily: f.black, fontSize: 17, lineHeight: 22 }}>{dv.name}</T>
+        <Row gap={4}>
+          <Icon name="star" size={15} color={c.star} />
+          <T v="caption" color={c.muted} numberOfLines={2} style={{ flexShrink: 1 }}>{dv.rating?.toFixed(1) ?? 'Nuevo'} · {dv.trips} viajes{v ? ` · ${v.make} ${v.model} ${v.color}` : ''}</T>
+        </Row>
       </View>
-      {v ? (
-        <View style={{ backgroundColor: c.surface2, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6 }}>
-          <T style={{ fontFamily: f.black, fontSize: 16, letterSpacing: 1 }}>{v.plate}</T>
-        </View>
-      ) : null}
     </Row>
   );
 }
 
 function Ended({ status, onRetry }: { status: TripStatus; onRetry: () => void }) {
+  useTheme();
   const msg: Partial<Record<TripStatus, string>> = {
     NO_DRIVER: 'No encontramos conductores disponibles',
     REQUEST_TIMEOUT: 'La solicitud venció',
@@ -188,7 +260,7 @@ function Ended({ status, onRetry }: { status: TripStatus; onRetry: () => void })
   return (
     <>
       <T v="title">{msg[status] ?? 'Viaje terminado'}</T>
-      {canRetry ? <Button title="Pedir otro faxi" onPress={onRetry} /> : null}
+      {canRetry ? <BigButton title="Pedir otro faxi" onPress={onRetry} /> : null}
       <Button title="Volver al inicio" variant={canRetry ? 'outline' : 'filled'} onPress={() => router.replace('/')} />
     </>
   );

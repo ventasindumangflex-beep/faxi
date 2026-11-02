@@ -1,5 +1,7 @@
 export * from './tokens';
+export * from './theme';
 export * from './components';
+export * from './kit';
 export * from './session';
 export * from './auth';
 export * from './push';

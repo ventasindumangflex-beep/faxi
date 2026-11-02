@@ -35,3 +35,11 @@ Sigue `docs/GUIA_PASOS_1_A_4.md`. Usa **faxi-pruebas** (no producción). Lo que 
 Igual que `send-push`: Edge Functions → Deploy a new function → *Via Editor* → nombre `purge-storage` → pega `supabase/functions/purge-storage/index.ts` → **desactiva "Verify JWT"** → Deploy. Luego, en el SQL Editor del mismo proyecto:
 `select vault.create_secret('https://<ref del proyecto>.supabase.co/functions/v1/purge-storage', 'faxi_purge_url');`
 Hasta hacerlo, los archivos de documentos borrados esperan en una cola y no se borran de Storage.
+
+## Rutas reales por las calles (migración 022 · función `route`)
+- Producción ya tiene la 021 (tarifas por tramos) y la 022 (rutas) aplicadas, y la función `route` desplegada con "Verify JWT" **encendido**
+  (las otras dos, `send-push` y `purge-storage`, van apagadas).
+- Falta el secreto: Supabase → **faxi** (producción) → Edge Functions → Secrets → `GOOGLE_ROUTES_KEY` = clave de Google Cloud restringida solo a *Routes API*
+  (puede ser la misma `faxi-rutas-servidor` de pruebas). Sin ella la app funciona igual, con la línea recta y la estimación de antes.
+- Tope de consultas: Google Cloud → IAM y administración → Cuotas → *Routes API* (hoy 100 al día y 30 por minuto). Se sube ahí cuando crezca el uso.
+- Cada ruta se guarda 6 horas en `route_cache`, así que repetir el mismo viaje no gasta consultas.

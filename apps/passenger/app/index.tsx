@@ -4,16 +4,11 @@ import MapView from 'react-native-maps';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { passenger, type Place } from '@faxi/core';
-import { Banner, Icon, IconButton, ListItem, Row, Sheet, StatusScrim, T, c, f, r, region, shadow, SD_CENTER, useSession, FaxiMap } from '@faxi/ui';
-import type { IconName } from '@faxi/ui';
+import {
+  Banner, CashNote, HudChip, IconButton, ListItem, Sheet, StatusScrim, T, c, f, glow, r, region, SD_CENTER, useSession, useTheme, FaxiMap,
+} from '@faxi/ui';
 import { getHere, type Here } from '../src/location';
 import { draft } from '../src/draft';
-
-const PERKS: { icon: IconName; text: string }[] = [
-  { icon: 'payments', text: 'Pagas en efectivo' },
-  { icon: 'verified-user', text: 'Conductores verificados' },
-  { icon: 'share', text: 'Comparte tu viaje' },
-];
 
 function greeting(name?: string) {
   const h = new Date().getHours();
@@ -22,6 +17,7 @@ function greeting(name?: string) {
 }
 
 export default function Home() {
+  useTheme();
   const { me } = useSession();
   const map = useRef<MapView>(null);
   const [here, setHere] = useState<Here | null>(null);
@@ -32,14 +28,15 @@ export default function Home() {
 
   useFocusEffect(useCallback(() => {
     let alive = true;
+    // Recuperación al reabrir la app: si hay un viaje activo, se vuelve a él
     passenger.activeTrip().then((t) => { if (alive && t) router.replace({ pathname: '/trip', params: { id: t.id } }); }).catch(() => {});
     passenger.history(20).then((rows) => {
       const seen = new Set<string>();
       const list: Place[] = [];
-      for (const r of rows) {
-        if (r.status !== 'COMPLETED' || seen.has(r.dest_address)) continue;
-        seen.add(r.dest_address);
-        list.push({ address: r.dest_address, lat: r.dest_lat, lng: r.dest_lng });
+      for (const row of rows) {
+        if (row.status !== 'COMPLETED' || seen.has(row.dest_address)) continue;
+        seen.add(row.dest_address);
+        list.push({ address: row.dest_address, lat: row.dest_lat, lng: row.dest_lng });
         if (list.length === 3) break;
       }
       if (alive) setRecents(list);
@@ -59,10 +56,15 @@ export default function Home() {
         showsUserLocation={!!here && !here.denied} showsMyLocationButton={false} toolbarEnabled={false} />
       <StatusScrim />
       <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, left: 16, right: 16, gap: 10 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-          <IconButton icon="menu" label="Menú" onPress={() => router.push('/account')} />
-          {here ? <IconButton icon="my-location" label="Centrar mapa" onPress={() => map.current?.animateToRegion(region(here.place, 0.012), 500)} /> : null}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+          {here ? <HudChip dot label={here.denied ? 'Ubicación aproximada' : 'Tu ubicación'} /> : <View />}
+          <HudChip icon="settings" label="Ajustes" onPress={() => router.push('/account')} accessibilityLabel="Ajustes" />
         </View>
+        {here ? (
+          <View style={{ alignItems: 'flex-end' }}>
+            <IconButton icon="my-location" label="Centrar mapa" onPress={() => map.current?.animateToRegion(region(here.place, 0.012), 500)} />
+          </View>
+        ) : null}
         {here?.denied ? (
           <Banner tone="warn" text="Ubicación desactivada. Usamos una ubicación aproximada." actionLabel="Activar" onAction={() => Linking.openSettings()} />
         ) : null}
@@ -70,34 +72,23 @@ export default function Home() {
 
       <Sheet>
         <View style={{ gap: 2 }}>
-          <T v="title" numberOfLines={1}>{greeting(me?.full_name.split(' ')[0])}</T>
-          <T v="caption">Viajes por todo el Gran Santo Domingo</T>
+          <T v="label" color={c.muted} numberOfLines={1}>{greeting(me?.full_name.split(' ')[0])}</T>
+          <T v="display" style={{ fontSize: 34, lineHeight: 38 }}>¿A dónde vamos?</T>
         </View>
-        <Pressable onPress={() => go()} accessibilityRole="button" accessibilityLabel="¿A dónde vas?"
-          style={({ pressed }) => [{ minHeight: 64, borderRadius: r.pill, backgroundColor: c.white, borderWidth: 1, borderColor: c.outlineSoft, flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 8, paddingRight: 18, opacity: pressed ? 0.85 : 1 }, shadow]}>
-          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="search" size={26} color={c.onPrimary} />
-          </View>
-          <T style={{ fontFamily: f.bold, fontSize: 18, flex: 1 }} numberOfLines={1}>¿A dónde vas?</T>
-          <Icon name="arrow-forward" color={c.primaryDark} />
+        <Pressable onPress={() => go()} accessibilityRole="button" accessibilityLabel="Busca tu destino"
+          style={({ pressed }) => [{ minHeight: 60, borderRadius: r.pill, backgroundColor: c.cardSel, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 18, opacity: pressed ? 0.88 : 1 }, glow]}>
+          <View style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: c.neon }} />
+          <T color={c.cardSelFg} numberOfLines={1} style={{ fontFamily: f.black, fontSize: 18, lineHeight: 24, flex: 1 }}>Busca tu destino</T>
         </Pressable>
         {recents.length ? (
           <View>
-            <T v="micro" style={{ marginTop: 4 }}>Viajes recientes</T>
+            <T v="micro" style={{ marginBottom: 2 }}>Lugares recientes</T>
             {recents.map((p) => (
               <ListItem key={p.address} icon="history" title={p.address.split(',')[0]} subtitle={p.address} onPress={() => go(p)} />
             ))}
           </View>
-        ) : (
-          <Row gap={10} style={{ alignItems: 'stretch' }}>
-            {PERKS.map((p) => (
-              <View key={p.icon} style={{ flex: 1, backgroundColor: c.primarySoft, borderRadius: r.md, paddingVertical: 12, paddingHorizontal: 8, alignItems: 'center', gap: 6 }}>
-                <Icon name={p.icon} color={c.primaryDark} />
-                <T v="caption" center color={c.primaryDark} style={{ fontSize: 12, lineHeight: 16 }}>{p.text}</T>
-              </View>
-            ))}
-          </Row>
-        )}
+        ) : null}
+        <CashNote text="Pagas en efectivo al conductor, al final del viaje." />
       </Sheet>
     </View>
   );
