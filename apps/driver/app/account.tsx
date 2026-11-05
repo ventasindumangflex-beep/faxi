@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { auth, CATEGORY_LABEL, driver } from '@faxi/core';
-import { AppearancePicker, Avatar, Banner, Card, Header, Row, Screen, SettingsGroup, SettingsRow, T, useSession, useTheme } from '@faxi/ui';
+import { AppearancePicker, describePushStatus, registerForPush, Avatar, Banner, Card, Header, Row, Screen, SettingsGroup, SettingsRow, T, useSession, useTheme } from '@faxi/ui';
 import { useDriver } from '../src/driverCtx';
 import { cfg } from '../src/faxi';
 import { stopTracking } from '../src/tracking';
@@ -13,6 +13,7 @@ export default function Account() {
   const { me } = useSession();
   const { profile } = useDriver();
   const [err, setErr] = useState<string | null>(null);
+  const [pushMsg, setPushMsg] = useState(describePushStatus());
   const v = profile?.vehicle;
 
   async function signOut() {
@@ -57,6 +58,7 @@ export default function Account() {
         <SettingsRow title="Ganancias" onPress={() => router.push('/earnings')} />
         <SettingsRow title="Cobro" value="Efectivo" />
         <SettingsRow title="Avisos de viajes" value="Ajustes del teléfono" onPress={() => Linking.openSettings()} />
+        <SettingsRow title="Probar avisos" value={pushMsg} onPress={async () => { setPushMsg('Probando…'); await registerForPush(); setPushMsg(describePushStatus()); }} />
         <SettingsRow title="Idioma" value="Español" />
       </SettingsGroup>
 
