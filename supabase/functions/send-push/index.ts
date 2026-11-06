@@ -47,5 +47,6 @@ Deno.serve(async (req) => {
     .filter(Boolean);
   if (dead.length) await sb.from('push_tokens').delete().in('token', dead);
 
-  return Response.json({ sent: messages.length, removed: dead.length });
+  // Devuelve también lo que respondió Expo (tickets o errores) para poder diagnosticar; el trigger solo guarda la respuesta en net._http_response
+  return Response.json({ sent: messages.length, removed: dead.length, expo: out?.errors ?? out?.data ?? null });
 });
