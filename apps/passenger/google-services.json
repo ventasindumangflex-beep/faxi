@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "132235326103",
+    "project_id": "faxi-88d9a",
+    "storage_bucket": "faxi-88d9a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132235326103:android:8100e8a85cbcb039536fd2",
+        "android_client_info": {
+          "package_name": "com.faxi.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD56LE9w_7h1TQrGTERRRiUg_foIG8LSgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132235326103:android:441dea83f954952b536fd2",
+        "android_client_info": {
+          "package_name": "com.faxi.conductor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD56LE9w_7h1TQrGTERRRiUg_foIG8LSgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

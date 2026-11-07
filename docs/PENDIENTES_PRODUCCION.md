@@ -94,3 +94,17 @@ Mientras tanto: pruebas con números verificados como Caller ID en Twilio.
 - **Corregido:** permisos de más en las apps (micrófono en conductor; almacenamiento y superposición en pasajero; textos de permiso de iOS en inglés). Comprobado con `expo config --type introspect` en modo producción y desarrollo.
 - **Agregado:** perfiles de EAS con su grupo de variables y `.aab` en producción; `owner` y ID de proyecto fijos en la app de pasajeros; sitio estático `sitio/` para la web pública (`scripts/build_sitio.mjs` + `netlify.toml`); `docs/LANZAMIENTO.md`.
 - **Pendiente nuevo:** tras la primera subida a Google Play, añadir la SHA-1 de la clave de firma de Play a la clave de Maps; declaración de servicio en primer plano (conductor); geo-permisos de Twilio solo RD.
+
+## ⛔ Notificaciones push en Android: falta Firebase (hallado el 2-nov-2026)
+Hoy **ningún teléfono recibe avisos**: `push_tokens` está vacío en faxi-pruebas y los avisos del servidor (llegada, "va en camino", solicitud de viaje) no tienen a quién enviarse.
+Causa: en Android las notificaciones pasan por Firebase Cloud Messaging y las apps no tienen `google-services.json` ni las credenciales FCM cargadas en Expo; sin eso `getExpoPushTokenAsync` falla y la app lo ignora en silencio (`registerForPush(...).catch(() => {})`).
+El código de la app y del servidor está bien (`packages/ui/src/push.ts`, función `send-push`, trigger `notifications_push`).
+
+Para dejarlo funcionando (dueño ~15 min + Claude):
+1. 👤 Firebase (console.firebase.google.com) → crear proyecto `faxi` (sin Analytics) → agregar **dos apps Android**: `com.faxi.app` y `com.faxi.conductor` → bajar el `google-services.json` de cada una.
+2. 👤 Firebase → Configuración del proyecto → Cuentas de servicio → **Generar nueva clave privada** (secreta: no se pega en el chat ni va al repositorio).
+3. 👤 Expo → proyecto `faxi` y `faxi-conductor` → Credentials → Android → **FCM V1 service account key** → subir esa clave en cada uno.
+4. 👤 Pasar a Claude los dos `google-services.json` (no son secretos).
+5. 🤖 Poner cada archivo en su app (`apps/passenger/google-services.json`, `apps/driver/google-services.json`), agregar `android.googleServicesFile` en los `app.config.ts`, recompilar los APK de prueba y los `.aab` de producción.
+6. 🤖 Probar con un teléfono: debe aparecer una fila en `push_tokens` y llegar un aviso real.
+**Los `.aab` de producción hechos el 1-nov (build 3) NO reciben avisos: hay que recompilar antes de subir a Play.**

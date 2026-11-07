@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { auth } from '@faxi/core';
-import { AppearancePicker, Avatar, Banner, Header, Row, Screen, SettingsGroup, SettingsRow, T, useSession, useTheme } from '@faxi/ui';
+import { AppearancePicker, describePushStatus, registerForPush, Avatar, Banner, Header, Row, Screen, SettingsGroup, SettingsRow, T, useSession, useTheme } from '@faxi/ui';
 import { cfg } from '../src/faxi';
 
 /** Ajustes: apariencia (solo en este teléfono), cuenta, ayuda y legal. */
@@ -10,6 +10,7 @@ export default function Account() {
   useTheme();
   const { me } = useSession();
   const [err, setErr] = useState<string | null>(null);
+  const [pushMsg, setPushMsg] = useState(describePushStatus());
 
   function confirmDelete() {
     Alert.alert('Eliminar tu cuenta', 'Se borrarán tus datos personales y no podrás recuperar la cuenta. Tu historial de viajes se conserva de forma anónima por obligaciones legales.', [
@@ -39,6 +40,7 @@ export default function Account() {
       <SettingsGroup title="Cuenta">
         <SettingsRow title="Forma de pago" value="Efectivo" />
         <SettingsRow title="Avisos del viaje" value="Ajustes del teléfono" onPress={() => Linking.openSettings()} />
+        <SettingsRow title="Probar avisos" value={pushMsg} onPress={async () => { setPushMsg('Probando…'); await registerForPush(); setPushMsg(describePushStatus()); }} />
         <SettingsRow title="Idioma" value="Español" />
         <SettingsRow title="Tus viajes" onPress={() => router.push('/history')} />
       </SettingsGroup>

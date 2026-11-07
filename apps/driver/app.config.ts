@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import type { ExpoConfig } from 'expo/config';
 
 const DEV = process.env.APP_VARIANT === 'development';
@@ -9,6 +10,14 @@ const MAPS_KEY = process.env.GOOGLE_MAPS_ANDROID_KEY?.trim().replace(/^['"]+|['"
 if (process.env.EAS_BUILD && process.env.EAS_BUILD_PLATFORM === 'android' && !/^AIza[\w-]{35}$/.test(MAPS_KEY ?? '')) {
   throw new Error('GOOGLE_MAPS_ANDROID_KEY falta o no es una clave de Google (empieza por "AIza" y tiene 39 caracteres). '
     + 'Revísala en expo.dev → Environment variables, en el entorno de este build (ver docs/MAPA_ANDROID.md).');
+}
+
+// Notificaciones push en Android: Firebase (FCM). Necesita el google-services.json de ESTA app (paquete com.faxi.conductor):
+// o bien el archivo en apps/driver/google-services.json (no es secreto), o bien la variable de archivo GOOGLE_SERVICES_JSON de EAS.
+// Sin él la app funciona, pero el teléfono no puede registrarse para recibir avisos (ver docs/PENDIENTES_PRODUCCION.md).
+const GOOGLE_SERVICES = process.env.GOOGLE_SERVICES_JSON || (existsSync('./google-services.json') ? './google-services.json' : undefined);
+if (process.env.EAS_BUILD && process.env.EAS_BUILD_PLATFORM === 'android' && !GOOGLE_SERVICES) {
+  console.warn('[faxi] Falta google-services.json: este build de Android NO recibirá notificaciones push.');
 }
 
 const config: ExpoConfig = {
@@ -37,6 +46,7 @@ const config: ExpoConfig = {
   android: {
     adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: '#181C1A' },
     package: 'com.faxi.conductor',
+    ...(GOOGLE_SERVICES ? { googleServicesFile: GOOGLE_SERVICES } : {}),
     permissions: [
       'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'ACCESS_BACKGROUND_LOCATION',
       'FOREGROUND_SERVICE', 'FOREGROUND_SERVICE_LOCATION', 'CAMERA', 'VIBRATE',
