@@ -22,7 +22,7 @@ Recursos gráficos (generados con `scripts/make_icons.py`):
 
 **Subtítulo App Store (30):** `Pide tu viaje en segundos`
 
-**Descripción corta Play (80):** `Pide un viaje seguro en el Gran Santo Domingo. Ve la tarifa antes y paga en efectivo.`
+**Descripción corta Play (80):** `Pide un viaje seguro en Santo Domingo. Ve la tarifa antes y paga en efectivo.`
 
 **Descripción completa:**
 
