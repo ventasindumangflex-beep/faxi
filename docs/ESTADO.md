@@ -1,4 +1,30 @@
-# faxi · Estado del proyecto (2-nov-2026)
+# faxi · Estado del proyecto
+
+> Esta es la verdad del proyecto. Si no está aquí, no pasó. Equipo y cargos: `docs/EQUIPO.md`.
+
+## 🔴 Tablero al 25-nov-2026
+
+**Lo que tranca todo:**
+
+| Qué | Estado | De quién depende |
+|---|---|---|
+| **Twilio** · perfil de cumplimiento sin aprobar (error 20003) | Trancado | Twilio Trust Hub. **Ningún SMS funciona en producción.** Los testers no pueden entrar |
+| **Video de ubicación en segundo plano** (conductor) | Falta grabar | CEO. Se graba con la cuenta demo de producción |
+| **Enlace de prueba a los 15 testers** (pasajero) | Enviándose | CEO y Virgilio. Los 14 días no empiezan hasta que acepten 12 |
+
+**App de pasajeros (com.faxi.app):** publicada en prueba cerrada desde el 17-nov-2026, versión 4 (1.0.0). Ficha completa, 5 capturas, 10 declaraciones. 15 testers en la lista "Probadores". Enlace: `https://play.google.com/apps/testing/com.faxi.app`
+
+**App de conductores (com.faxi.conductor):** versión 5 (1.0.0) subida como borrador y aceptada por Play (firma E8:7B correcta). Ficha completa con 4 capturas. Cuenta demo verificada. **Faltan** las dos declaraciones de ubicación (necesitan el video) y confirmar y enviar la versión.
+
+**Expo:** compilaciones de Android del plan gratis agotadas hasta el **1-dic-2026**. La clave de firma del conductor en Expo sigue siendo la equivocada (EA:B6): hay que corregirla antes del próximo build. El `.aab` actual se firmó por fuera y es válido.
+
+**Cuenta demo de producción:** existe un conductor demo aprobado (Toyota Corolla 2021, placa A777001) y un pasajero demo. Son números de prueba de Supabase: no envían SMS. **El número y el código no se escriben aquí**; están en Supabase → Authentication → Providers → Phone → *Test phone numbers and OTPs*, y en Play Console → Contenido de la app → Acceso a la app. Borrar las dos cuentas cuando termine la revisión de Google.
+
+**Límite de gasto:** US$100 al mes hasta que faxi genere dinero (decisión del CEO, 25-nov-2026).
+
+---
+
+## Historial
 
 > **Al 2-nov-2026:** producción (faxi) con las migraciones 001–022, función `route` y huella igual a faxi-pruebas; tarifas por tramos (Económico 15 km ≈ RD$485), ruta real por las calles (necesita el secreto `GOOGLE_ROUTES_KEY`),
 > rediseño completo y compilaciones `.aab` de producción hechas (build 3). Falta: verificación de identidad de Google Play, aprobación de Twilio y los 12 probadores (14 días). Subida paso a paso: `docs/SUBIDA_A_PLAY.md`.

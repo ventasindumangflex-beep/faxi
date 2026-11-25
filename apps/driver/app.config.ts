@@ -57,6 +57,7 @@ const config: ExpoConfig = {
   },
   plugins: [
     './plugins/with-gradle-memory',
+    './plugins/with-optional-portrait',
     'expo-router',
     'expo-font',
     ['expo-location', {

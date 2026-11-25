@@ -52,6 +52,7 @@ const config: ExpoConfig = {
   },
   plugins: [
     './plugins/with-gradle-memory',
+    './plugins/with-optional-portrait',
     'expo-router',
     'expo-font',
     // iOS exige los tres textos aunque la app nunca pida "Siempre"; sin ellos usa unos genéricos en inglés.
