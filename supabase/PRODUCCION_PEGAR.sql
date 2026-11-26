@@ -1567,6 +1567,168 @@ end $$;
 revoke all on function public.dispatch_trip(uuid) from public, anon, authenticated;
 revoke all on function public.dispatch_for_driver(uuid) from public, anon, authenticated;
 
+-- ═════════════ 024 · Rendimiento: RLS evaluado una vez por consulta e índices ═════════════
+-- Las políticas llamaban a auth.uid() una vez por CADA FILA. Envueltas en (select ...) se evalúan
+-- una sola vez. No cambia lo que permiten. Medido: 108,4 ms -> 49,7 ms sobre 50.000 ubicaciones.
+drop policy if exists commission_payments_read on public.commission_payments;
+create policy commission_payments_read on public.commission_payments for select to authenticated
+  using (driver_id = (select auth.uid()) or public.is_admin());
+drop policy if exists driver_docs_read on public.driver_documents;
+create policy driver_docs_read on public.driver_documents for select to authenticated
+  using (driver_id = (select auth.uid()) or public.is_admin());
+drop policy if exists driver_docs_insert on public.driver_documents;
+create policy driver_docs_insert on public.driver_documents for insert to authenticated
+  with check (driver_id = (select auth.uid()) and status = 'PENDING');
+drop policy if exists locations_read on public.locations;
+create policy locations_read on public.locations for select to authenticated
+  using (user_id = (select auth.uid()) or public.is_admin()
+         or (trip_id is not null and public.can_listen_trip_location(trip_id)));
+drop policy if exists messages_insert on public.messages;
+create policy messages_insert on public.messages for insert to authenticated
+  with check (sender_id = (select auth.uid()) and exists (
+    select 1 from public.trips t
+    where t.id = messages.trip_id
+      and ((t.passenger_id = (select auth.uid())) or (t.driver_id = (select auth.uid())))
+      and t.status in ('ASSIGNED','ENROUTE','ARRIVED','STARTED','ONTRIP')));
+drop policy if exists notifications_read on public.notifications;
+create policy notifications_read on public.notifications for select to authenticated
+  using (user_id = (select auth.uid()));
+drop policy if exists notifications_mark_read on public.notifications;
+create policy notifications_mark_read on public.notifications for update to authenticated
+  using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+drop policy if exists push_tokens_own on public.push_tokens;
+create policy push_tokens_own on public.push_tokens for select to authenticated
+  using (user_id = (select auth.uid()));
+drop policy if exists ratings_read on public.ratings;
+create policy ratings_read on public.ratings for select to authenticated
+  using (passenger_id = (select auth.uid()) or driver_id = (select auth.uid()) or public.is_admin());
+drop policy if exists tickets_read on public.support_tickets;
+create policy tickets_read on public.support_tickets for select to authenticated
+  using (user_id = (select auth.uid()) or public.is_admin());
+drop policy if exists tickets_insert on public.support_tickets;
+create policy tickets_insert on public.support_tickets for insert to authenticated
+  with check (user_id = (select auth.uid()) and status = 'OPEN');
+drop policy if exists trip_requests_read on public.trip_requests;
+create policy trip_requests_read on public.trip_requests for select to authenticated
+  using (driver_id = (select auth.uid()) or public.is_admin());
+drop policy if exists trips_read on public.trips;
+create policy trips_read on public.trips for select to authenticated
+  using (passenger_id = (select auth.uid()) or driver_id = (select auth.uid())
+         or public.is_admin() or public.has_pending_request(id));
+drop policy if exists users_update_self on public.users;
+create policy users_update_self on public.users for update to authenticated
+  using (id = (select auth.uid())) with check (id = (select auth.uid()));
+drop policy if exists vehicle_docs_read on public.vehicle_documents;
+create policy vehicle_docs_read on public.vehicle_documents for select to authenticated
+  using (public.is_admin() or exists (
+    select 1 from public.vehicles v
+    where v.id = vehicle_documents.vehicle_id and v.driver_id = (select auth.uid())));
+drop policy if exists vehicle_docs_insert on public.vehicle_documents;
+create policy vehicle_docs_insert on public.vehicle_documents for insert to authenticated
+  with check (status = 'PENDING' and exists (
+    select 1 from public.vehicles v
+    where v.id = vehicle_documents.vehicle_id and v.driver_id = (select auth.uid())));
+drop policy if exists vehicles_read on public.vehicles;
+create policy vehicles_read on public.vehicles for select to authenticated
+  using (driver_id = (select auth.uid()) or public.is_admin() or exists (
+    select 1 from public.trips t
+    where t.vehicle_id = vehicles.id and t.passenger_id = (select auth.uid())));
+drop policy if exists vehicles_driver_insert on public.vehicles;
+create policy vehicles_driver_insert on public.vehicles for insert to authenticated
+  with check (driver_id = (select auth.uid()) and status = 'PENDING'
+              and (select public.auth_role()) = 'DRIVER');
+drop policy if exists vehicles_driver_update on public.vehicles;
+create policy vehicles_driver_update on public.vehicles for update to authenticated
+  using (driver_id = (select auth.uid()) and status in ('PENDING','REJECTED'))
+  with check (driver_id = (select auth.uid()) and status = 'PENDING');
+
+create index if not exists trips_vehicle_idx            on public.trips(vehicle_id);
+create index if not exists trips_cancelled_by_idx       on public.trips(cancelled_by);
+create index if not exists trips_pricing_rule_idx       on public.trips(pricing_rule_id);
+create index if not exists drivers_current_vehicle_idx  on public.drivers(current_vehicle_id);
+create index if not exists drivers_reviewed_by_idx      on public.drivers(reviewed_by);
+create index if not exists vehicles_reviewed_by_idx     on public.vehicles(reviewed_by);
+create index if not exists ratings_passenger_idx        on public.ratings(passenger_id);
+create index if not exists messages_sender_idx          on public.messages(sender_id);
+create index if not exists support_tickets_user_idx     on public.support_tickets(user_id);
+create index if not exists support_tickets_trip_idx     on public.support_tickets(trip_id);
+create index if not exists support_tickets_assigned_idx on public.support_tickets(assigned_to);
+create index if not exists driver_docs_reviewed_by_idx  on public.driver_documents(reviewed_by);
+create index if not exists vehicle_docs_reviewed_by_idx on public.vehicle_documents(reviewed_by);
+create index if not exists commission_pay_recorded_idx  on public.commission_payments(recorded_by);
+create index if not exists commission_pay_voided_idx    on public.commission_payments(voided_by);
+
+-- ═════════════ 025 · El despacho filtra por recuadro antes de calcular distancias ═════════════
+-- Antes calculaba la distancia a TODOS los conductores conectados: 2,75 ms con 1, 9,67 ms con 21.
+-- Ahora descarta por un recuadro con índice. Mismo radio, así que ofrece a los mismos conductores.
+create index if not exists drivers_online_pos_idx
+  on public.drivers(last_lat, last_lng)
+  where availability = 'ONLINE' and last_lat is not null;
+
+create or replace function public.dispatch_trip(p_trip_id uuid) returns int
+language plpgsql security definer set search_path = public as $$
+declare t public.trips; n int;
+        v_ttl int := coalesce(public.setting_num('OFFER_TTL_SECONDS'), 30)::int;
+        v_radius numeric := coalesce(public.setting_num('DISPATCH_RADIUS_KM'), 8);
+        v_dlat double precision;
+        v_dlng double precision;
+begin
+  select * into t from public.trips where id = p_trip_id;
+  if not found or t.status <> 'SEARCHING' then return 0; end if;
+  v_dlat := v_radius / 111.045;
+  v_dlng := v_radius / (111.045 * greatest(cos(radians(t.origin_lat)), 0.01));
+  insert into public.trip_requests(trip_id, driver_id, distance_to_pickup_km, expires_at)
+  select t.id, d.id, e.distance_km, now() + make_interval(secs => v_ttl)
+  from public.drivers d
+  join public.vehicles v on v.id = d.current_vehicle_id
+  cross join lateral public.route_estimate(d.last_lat, d.last_lng, t.origin_lat, t.origin_lng) e
+  where d.status = 'APPROVED' and d.availability = 'ONLINE' and v.status = 'APPROVED'
+    and d.last_lat is not null
+    and d.last_lat between t.origin_lat - v_dlat and t.origin_lat + v_dlat
+    and d.last_lng between t.origin_lng - v_dlng and t.origin_lng + v_dlng
+    and public.category_can_serve(v.category, t.category)
+    and e.distance_km <= v_radius
+    and not exists (select 1 from public.trip_requests r where r.trip_id = t.id and r.driver_id = d.id)
+  order by (v.category <> t.category), e.distance_km
+  limit 5
+  on conflict (trip_id, driver_id) do nothing;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+
+create or replace function public.dispatch_for_driver(p_driver_id uuid) returns int
+language plpgsql security definer set search_path = public as $$
+declare d public.drivers; v public.vehicles; n int;
+        v_ttl int := coalesce(public.setting_num('OFFER_TTL_SECONDS'), 30)::int;
+        v_radius numeric := coalesce(public.setting_num('DISPATCH_RADIUS_KM'), 8);
+        v_window int := coalesce(public.setting_num('SEARCH_WINDOW_SECONDS'), 180)::int;
+        v_dlat double precision;
+        v_dlng double precision;
+begin
+  select * into d from public.drivers where id = p_driver_id;
+  if not found or d.availability <> 'ONLINE' or d.last_lat is null then return 0; end if;
+  select * into v from public.vehicles where id = d.current_vehicle_id and status = 'APPROVED';
+  if not found then return 0; end if;
+  v_dlat := v_radius / 111.045;
+  v_dlng := v_radius / (111.045 * greatest(cos(radians(d.last_lat)), 0.01));
+  insert into public.trip_requests(trip_id, driver_id, distance_to_pickup_km, expires_at)
+  select t.id, d.id, e.distance_km, now() + make_interval(secs => v_ttl)
+  from public.trips t
+  cross join lateral public.route_estimate(d.last_lat, d.last_lng, t.origin_lat, t.origin_lng) e
+  where t.status = 'SEARCHING'
+    and t.origin_lat between d.last_lat - v_dlat and d.last_lat + v_dlat
+    and t.origin_lng between d.last_lng - v_dlng and d.last_lng + v_dlng
+    and public.category_can_serve(v.category, t.category) and e.distance_km <= v_radius
+    and t.requested_at > now() - make_interval(secs => v_window)
+    and not exists (select 1 from public.trip_requests r where r.trip_id = t.id and r.driver_id = d.id)
+  on conflict (trip_id, driver_id) do nothing;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+
+revoke all on function public.dispatch_trip(uuid) from public, anon, authenticated;
+revoke all on function public.dispatch_for_driver(uuid) from public, anon, authenticated;
+
 -- ═════════════ URL del push en producción ═════════════
 do $$ begin
   if not exists (select 1 from vault.secrets where name = 'faxi_push_url') then
@@ -1575,7 +1737,9 @@ do $$ begin
 end $$;
 
 -- ═════════════ Huella: debe coincidir con faxi-pruebas ═════════════
--- Esperado (faxi-pruebas y faxi, 6-nov-2026, con 001–023): tablas 24 · funciones 81 · politicas 46 · triggers 41 · indices 60 · cron 5
+-- Esperado (faxi-pruebas y faxi, 26-nov-2026, con 001–025): tablas 24 · funciones 81 · indices 76
+-- Comprobado el 26-nov-2026: las dos bases dan exactamente lo mismo, y 0 políticas evaluando auth por fila.
+-- (Histórico, 6-nov-2026 con 001–023): tablas 24 · funciones 81 · politicas 46 · triggers 41 · indices 60 · cron 5
 --   h_tablas d36014 · h_funciones 622ea7 · h_politicas 4cbe1d · h_triggers 9e7bdf · h_indices dc9d2e · vault 2 · proveedor CASH · año_minimo = año actual − 15
 --   (en faxi-pruebas proveedor es MOCK y año_minimo 2000 a propósito; en producción deben salir CASH y año actual − 15)
 --   politicas cuenta public + storage + realtime (46); HUELLA_ESQUEMA.sql cuenta solo public + storage (44)

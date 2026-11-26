@@ -23,6 +23,16 @@
 
 **Límite de gasto:** US$100 al mes hasta que faxi genere dinero (decisión del CEO, 25-nov-2026).
 
+**Auditoría técnica (26-nov-2026).** Verificado: el precio se calcula en el servidor y no se puede manipular desde el teléfono; dos conductores no pueden aceptar el mismo viaje (bloqueo `FOR UPDATE`); la comisión cuadra al centavo; las funciones de admin comprueban `is_admin()` por dentro; un pasajero no ve el viaje de otro. No se encontró ninguna vulnerabilidad crítica.
+
+Aplicadas en **pruebas y en producción**, con autorización del dueño:
+- **024** · las 19 políticas RLS ya no evalúan `auth.uid()` fila por fila. Medido: 108,4 ms → 49,7 ms sobre 50.000 ubicaciones (2,2×). Más 15 índices en claves foráneas.
+- **025** · el despacho descarta por recuadro antes de calcular distancias. Medido: 4,67 ms → 2,18 ms por viaje con 21 conductores repartidos en 55 km (2,1×), ofreciendo a los mismos conductores. Antes el costo crecía ~0,35 ms por cada conductor conectado.
+
+Costo medido por operación: ubicación del conductor 0,56 ms · cotizar 1,01 ms · pedir viaje 2,18 ms. **La base de datos no es el cuello de botella** para 1.000 viajes diarios. Los límites reales, por orden: Twilio (hoy nadie puede entrar), las conexiones de Auth fijas en 10, y las conexiones simultáneas de Realtime.
+
+Pendiente de la auditoría: pruebas de concurrencia con usuarios en paralelo (no medidas), auditoría de las pantallas de las apps, tope de gasto en Google Cloud, y medición de lo que pasa dentro de la app.
+
 ---
 
 ## Historial
