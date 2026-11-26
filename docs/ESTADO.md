@@ -11,6 +11,7 @@
 | **Twilio** · perfil de cumplimiento sin aprobar (error 20003) | Trancado | Twilio Trust Hub. **Ningún SMS funciona en producción.** Los testers no pueden entrar |
 | **Video de ubicación en segundo plano** (conductor) | Falta grabar | CEO. Se graba con la cuenta demo de producción |
 | **Enlace de prueba a los 15 testers** (pasajero) | Enviándose | CEO y Virgilio. Los 14 días no empiezan hasta que acepten 12 |
+| **Clave de Google Maps restringida por huella** | Por arreglar | Google Cloud Console. El mapa NO carga con la firma nueva (`E8:7B`). Hay que añadir a la clave de Maps las huellas SHA-1 de la clave de firma de app y de la clave de carga de **las dos** apps, o el mapa fallará también para los testers |
 
 **App de pasajeros (com.faxi.app):** publicada en prueba cerrada desde el 17-nov-2026, versión 4 (1.0.0). Ficha completa, 5 capturas, 10 declaraciones. 15 testers en la lista "Probadores". Enlace: `https://play.google.com/apps/testing/com.faxi.app`
 
